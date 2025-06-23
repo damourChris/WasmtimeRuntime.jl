@@ -1,0 +1,81 @@
+{
+  "tasks": [
+    {
+      "args": [
+        "-m",
+        "pre_commit",
+        "run",
+        "--all-files"
+      ],
+      "command": "${workspaceFolder}/.venv/bin/python",
+      "group": "build",
+      "label": "Pre-commit: Run on all files",
+      "options": {
+        "env": {
+          "PATH": "${env:HOME}/.juliaup/bin:${env:HOME}/.julia/bin:${env:PATH}"
+        }
+      },
+      "presentation": {
+        "clear": false,
+        "echo": true,
+        "focus": false,
+        "panel": "shared",
+        "reveal": "always",
+        "showReuseMessage": true
+      },
+      "problemMatcher": [],
+      "type": "shell"
+    },
+    {
+      "args": [
+        "-m",
+        "pre_commit",
+        "install"
+      ],
+      "command": "${workspaceFolder}/.venv/bin/python",
+      "group": "build",
+      "label": "Pre-commit: Install hooks",
+      "options": {
+        "env": {
+          "PATH": "${env:HOME}/.juliaup/bin:${env:HOME}/.julia/bin:${env:PATH}"
+        }
+      },
+      "presentation": {
+        "clear": false,
+        "echo": true,
+        "focus": false,
+        "panel": "shared",
+        "reveal": "always",
+        "showReuseMessage": true
+      },
+      "problemMatcher": [],
+      "type": "shell"
+    },
+    {
+      "args": [
+        "-m",
+        "pre_commit",
+        "run"
+      ],
+      "command": "${workspaceFolder}/.venv/bin/python",
+      "group": "build",
+      "label": "Pre-commit: Run on staged files",
+      "options": {
+        "env": {
+          "PATH": "${env:HOME}/.juliaup/bin:${env:HOME}/.julia/bin:${env:PATH}"
+        }
+      },
+      "presentation": {
+        "clear": false,
+        "echo": true,
+        "focus": false,
+        "panel": "shared",
+        "reveal": "always",
+        "showReuseMessage": true
+      },
+      "problemMatcher": [],
+      "type": "shell"
+    }
+  ],
+  "version": "2.0.0"
+}
