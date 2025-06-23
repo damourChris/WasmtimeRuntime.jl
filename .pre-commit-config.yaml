@@ -16,11 +16,10 @@ repos:
         require_serial: false
       - id: julia-explicit-imports
         name: Julia Explicit Imports
-        entry: bash -c 'export PATH="$HOME/.juliaup/bin:$HOME/.julia/bin:$PATH"; julia --project=@ExplicitImports -e "using ExplicitImports; ExplicitImports.main(ARGS)" "$@"' --
+        entry: bash -c 'export PATH="$HOME/.juliaup/bin:$HOME/.julia/bin:$PATH"; julia --project=@ExplicitImports -e "using ExplicitImports; ExplicitImports.main(["--print", "--checklist", "exclude_all_qualified_accesses_are_public"])" "$@"' --
         language: system
         files: '\.jl$'
         require_serial: false
-        args: [--print, --checklist, exclude_all_qualified_accesses_are_public]
   - repo: https://github.com/pre-commit/pre-commit-hooks
     rev: v5.0.0
     hooks:
