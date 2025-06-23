@@ -94,7 +94,7 @@ if !@isdefined(WASMTIME_GENERATOR_FUNCTIONS_LOADED)
 
     # Get the location of the binary wasmtime artifacts
     function get_wasmtime_include_path(;
-        artifacts_toml = joinpath(@__DIR__, "Artifacts.toml"),
+        artifacts_toml = joinpath(@__DIR__, "..", "Artifacts.toml"),
     )
         @debug "🔍 Locating Wasmtime artifacts and include directory"
         @debug "Looking for artifacts TOML" file = artifacts_toml
