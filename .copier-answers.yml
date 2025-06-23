@@ -1,0 +1,41 @@
+# Changes here will be overwritten by Copier
+AddAllcontributors: true
+AddCitationCFF: true
+AddCodeOfConduct: true
+AddCompatHelperCI: true
+AddContributionDocs: true
+AddCopierCI: false
+AddDependabot: true
+AddDocs: true
+AddDocsCI: true
+AddFormatterAndLinterConfigFiles: true
+AddGitHubPRTemplate: true
+AddGitHubTemplates: true
+AddLintCI: true
+AddLychee: true
+AddMacToCI: true
+AddPrecommit: true
+AddTagBotCI: true
+AddTestCI: true
+AddWinToCI: true
+Authors: Chris Damour <damourchris0@gmail.com>
+AutoIncludeTests: true
+CheckExplicitImports: true
+CodeOfConductContact: damourchris0@gmail.com
+ConfigIndentation: 2
+ExplicitImportsChecklist: exclude_all_qualified_accesses_are_public
+JuliaIndentation: 4
+JuliaMinCIVersion: lts
+JuliaMinVersion: '1.10'
+License: MIT
+LicenseCopyrightHolders: Chris Damour
+MarkdownIndentation: 2
+PackageName: WasmtimeRuntime
+PackageOwner: damourChris
+PackageUUID: dc48198e-2624-5460-a0a1-815fcb3f503d
+RunJuliaNightlyOnCI: false
+StrategyConfirmIncluded: true
+StrategyLevel: 1
+StrategyReviewExcluded: false
+UseCirrusCI: true
+_src_path: /home/damourchris/.julia/packages/BestieTemplate/jdG8v

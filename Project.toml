@@ -1,0 +1,7 @@
+name = "WasmtimeRuntime"
+uuid = "dc48198e-2624-5460-a0a1-815fcb3f503d"
+authors = ["Chris Damour <damourchris0@gmail.com>"]
+version = "0.1.0"
+
+[compat]
+julia = "1.10"
