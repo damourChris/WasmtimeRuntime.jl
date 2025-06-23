@@ -1,0 +1,10 @@
+{
+  "[julia]": {
+    "editor.defaultFormatter": "julialang.language-julia"
+  },
+  "git.alwaysSignOff": false,
+  "git.enableCommitSigning": false,
+  "git.postCommitCommand": "none",
+  "git.useCommitInputAsStashMessage": true,
+  "scm.inputFontFamily": "monospace"
+}
