@@ -16,7 +16,7 @@ repos:
         require_serial: false
       - id: julia-explicit-imports
         name: Julia Explicit Imports
-        entry: bash -c 'export PATH="$HOME/.juliaup/bin:$HOME/.julia/bin:$PATH"; julia --project=@ExplicitImports -e "using ExplicitImports; run(ARGS)" "$@"' --
+        entry: bash -c 'export PATH="$HOME/.juliaup/bin:$HOME/.julia/bin:$PATH"; julia --project=@ExplicitImports -e "using ExplicitImports; main(ARGS)" "$@"' --
         language: system
         files: '\.jl$'
         require_serial: false
