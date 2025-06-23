@@ -88,29 +88,22 @@ if !@isdefined(WASMTIME_GENERATOR_FUNCTIONS_LOADED)
             :abi => "",
         )
 
-        @debug "Detected base system info" arch = arch os = os word_size = Sys.WORD_SIZE
-
         # Set CPU target and ABI based on architecture
         if arch == :x86_64
             arch_info[:cpu_target] = "x86_64-$os-gnu"
             arch_info[:abi] = "lp64"  # Long and Pointer are 64-bit
             arch_info[:march] = "x86-64"
-            @debug "Configured x86_64 architecture" target = arch_info[:cpu_target] abi =
-                arch_info[:abi]
         elseif arch == :aarch64
             arch_info[:cpu_target] = "aarch64-$os-gnu"
             arch_info[:abi] = "lp64"
             arch_info[:march] = "armv8-a"
-            @debug "Configured aarch64 architecture" target = arch_info[:cpu_target] abi =
-                arch_info[:abi]
         elseif arch == :i686
             arch_info[:cpu_target] = "i686-$os-gnu"
             arch_info[:abi] = "ilp32"  # Int, Long, and Pointer are 32-bit
             arch_info[:march] = "i686"
-            @debug "Configured i686 architecture" target = arch_info[:cpu_target] abi =
-                arch_info[:abi]
         else
             @warn "Unknown architecture detected, using x86_64 defaults" unknown_arch = arch
+            # Fallback to most common configuration
             arch_info[:cpu_target] = "x86_64-linux-gnu"
             arch_info[:abi] = "lp64"
             arch_info[:march] = "x86-64"
@@ -136,7 +129,6 @@ if !@isdefined(WASMTIME_GENERATOR_FUNCTIONS_LOADED)
         artifacts_toml = joinpath(@__DIR__, "..", "Artifacts.toml"),
     )
         @debug "🔍 Locating Wasmtime artifacts and include directory"
-        @debug "Looking for artifacts TOML" file = artifacts_toml
 
         if !isfile(artifacts_toml)
             error(
@@ -152,10 +144,8 @@ if !@isdefined(WASMTIME_GENERATOR_FUNCTIONS_LOADED)
 
         # Get the wasmtime artifact directory
         wasmtime_path = artifact_path(artifact_hash("libwasmtime", artifacts_toml))
-        @debug "Found Wasmtime artifact path" path = wasmtime_path
 
         child_folders = readdir(wasmtime_path)
-        @debug "Artifact contents" folders = child_folders
 
         if isempty(child_folders)
             @error "Artifact directory is empty" path = parent_path
@@ -164,9 +154,8 @@ if !@isdefined(WASMTIME_GENERATOR_FUNCTIONS_LOADED)
 
         child_folder = child_folders[1]
 
-        # The include directory should be under the first child folder
+        # Extract from the versioned subdirectory structure
         include_path = joinpath(wasmtime_path, child_folder, "include")
-        @debug "Checking include directory" path = include_path
 
         if !isdir(include_path)
             error("Include directory not found at: $include_path")
@@ -197,59 +186,45 @@ if !@isdefined(WASMTIME_GENERATOR_FUNCTIONS_LOADED)
             "-Wextra",  # Extra warnings
         ]
 
-        @debug "Starting with default Clang args" default_args = args
-
         # Include paths
         push!(args, "-I" * include_path)
-        @debug "Added include path" include_path
 
         # Target specification - CRITICAL for correct struct layout
         push!(args, "-target", target_info[:cpu_target])
-        @debug "Set target specification" target = target_info[:cpu_target]
 
         # Architecture-specific flags
         push!(args, "-march=" * target_info[:march])
-        @debug "Set architecture flags" march = target_info[:march]
 
         # Endianness (explicit for clarity)
         if target_info[:endianness] == :little
             push!(args, "-mlittle-endian")
-            @debug "Set endianness" endianness = "little"
         else
             push!(args, "-mbig-endian")
-            @debug "Set endianness" endianness = "big"
         end
 
-        # ABI specification
+        # ABI specification - critical for struct layout compatibility
         if target_info[:abi] == "lp64"
             push!(args, "-mabi=lp64")
-            @debug "Set ABI" abi = "lp64"
         elseif target_info[:abi] == "ilp32"
             push!(args, "-mabi=ilp32")
-            @debug "Set ABI" abi = "ilp32"
         end
 
         # Standard specification for consistency
         push!(args, "-std=c11")
-        @debug "Set C standard" standard = "c11"
 
         # Optimization level (no optimization for precise layout)
         push!(args, "-O0")
-        @debug "Set optimization level" level = "O0"
 
         # System-specific definitions
         if target_info[:os] == "linux"
             push!(args, "-D_GNU_SOURCE")
             push!(args, "-D__linux__")
-            @debug "Added Linux-specific definitions"
         elseif target_info[:os] == "windows"
             push!(args, "-D_WIN32")
             push!(args, "-DWIN32")
-            @debug "Added Windows-specific definitions"
         elseif target_info[:os] == "darwin"
             push!(args, "-D__APPLE__")
             push!(args, "-D__MACH__")
-            @debug "Added macOS-specific definitions"
         end
 
         # Wasmtime-specific definitions
@@ -265,15 +240,8 @@ if !@isdefined(WASMTIME_GENERATOR_FUNCTIONS_LOADED)
         for def in wasmtime_defs
             push!(args, def)
         end
-        @debug "Added Wasmtime-specific definitions" definitions = wasmtime_defs
 
         @info "🏗️ Clang argument construction complete" total_args = length(args)
-        @debug "Final Clang arguments" args
-
-        # Log arguments in a readable format for debugging
-        for (i, arg) in enumerate(args)
-            @debug "Clang arg [$i]" argument = arg
-        end
 
         return args
     end
@@ -297,7 +265,6 @@ if !@isdefined(WASMTIME_GENERATOR_FUNCTIONS_LOADED)
                 if endswith(file, ".h")
                     header_path = joinpath(root, file)
                     push!(headers, header_path)
-                    @debug "Found header file" file = header_path
                 end
             end
         end
@@ -306,11 +273,6 @@ if !@isdefined(WASMTIME_GENERATOR_FUNCTIONS_LOADED)
         sort!(headers)
 
         @info "📄 Header discovery completed" total_headers = length(headers)
-
-        # Log all discovered headers
-        for (i, header) in enumerate(headers)
-            @debug "Header [$i]" file = header
-        end
 
         return headers
     end
@@ -325,7 +287,7 @@ if !@isdefined(WASMTIME_GENERATOR_FUNCTIONS_LOADED)
     """
     function create_rewriter_functions()
         function rewrite!(e::Expr)
-            # Empty for now - this is where we'll add custom rewrites
+            # Framework for future AST transformations
             return e
         end
 
@@ -343,8 +305,6 @@ if !@isdefined(WASMTIME_GENERATOR_FUNCTIONS_LOADED)
             end
 
             @info "✅ AST rewriting completed" nodes_processed = node_count expressions_processed =
-                expr_count
-            @debug "Rewrite statistics" total_nodes = node_count total_expressions =
                 expr_count
         end
 
@@ -397,7 +357,6 @@ if !@isdefined(WASMTIME_GENERATOR_FUNCTIONS_LOADED)
         end
 
         @info "🔍 Enhanced LibWasmtime.jl Generator with Deep Clang.jl Integration"
-        @info "="^70
 
         # Change to the generator directory
         cd(@__DIR__)
@@ -407,14 +366,11 @@ if !@isdefined(WASMTIME_GENERATOR_FUNCTIONS_LOADED)
         wasmtime_include = get_wasmtime_include_path()
         target_info = get_detailed_target_info()
 
-        @debug "Loading generator options from TOML"
         options = load_options(joinpath(@__DIR__, "generator.toml"))
-        @debug "Generator options loaded" options
 
         @info "🎯 Target Information Summary" target_info
 
         # Build arguments
-        @debug "Building Clang arguments"
         args = build_clang_args(target_info, wasmtime_include)
 
         # Find all headers automatically
@@ -426,16 +382,13 @@ if !@isdefined(WASMTIME_GENERATOR_FUNCTIONS_LOADED)
 
         # Create context with enhanced error handling
         @info "🔨 Creating Clang.jl context..."
-        @debug "Context creation parameters" headers args options
 
         try
-            @debug "Initializing Clang context with headers and arguments"
             ctx = create_context(headers, args, options)
             @info "✅ Clang.jl context created successfully"
 
             # Build without printing for custom rewriting
             @info "🔄 Building AST (Stage 1: Parsing)..."
-            @debug "Starting AST parsing phase"
             build!(ctx, BUILDSTAGE_NO_PRINTING)
             @info "✅ AST parsing completed"
 
@@ -443,12 +396,10 @@ if !@isdefined(WASMTIME_GENERATOR_FUNCTIONS_LOADED)
             rewrite! = create_rewriter_functions()
 
             # Apply rewrites
-            @debug "Starting custom rewrite phase"
             rewrite!(ctx.dag)
 
             # Print the final code
             @info "🔄 Building final code (Stage 2: Code Generation)..."
-            @debug "Starting code generation phase"
             build!(ctx, BUILDSTAGE_PRINTING_ONLY)
             @info "✅ Code generation completed"
 
@@ -458,8 +409,6 @@ if !@isdefined(WASMTIME_GENERATOR_FUNCTIONS_LOADED)
 
         catch e
             @error "❌ Failed to create Clang.jl context" exception = (e, catch_backtrace())
-            @debug "Detailed error information" error_type = typeof(e) error_message =
-                string(e)
             rethrow(e)
         end
     end
