@@ -54,3 +54,8 @@ repos:
       - id: explicit-imports
         name: ExplicitImports checks
         args: [--print, --checklist, exclude_all_qualified_accesses_are_public]
+  - repo: https://github.com/compilerla/conventional-pre-commit
+    rev: v4.2.0
+    hooks:
+      - id: conventional-pre-commit
+        stages: [commit-msg]
