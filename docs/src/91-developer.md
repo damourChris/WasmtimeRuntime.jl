@@ -160,4 +160,4 @@ After that, you only need to wait and verify:
 - After the merge happens, TagBot will trigger and create a new GitHub tag. Check on <https://github.com/damourChris/WasmtimeRuntime.jl/releases>
 - After the release is create, a "docs" GitHub action will start for the tag.
 - After it passes, a deploy action will run.
-- After that runs, the [stable docs](https://damourChris.github.io/WasmtimeRuntime.jl/stable) should be updated. Check them and look for the version number.
+<!-- - After that runs, the [stable docs](https://damourChris.github.io/WasmtimeRuntime.jl/stable) should be updated. Check them and look for the version number. -->
