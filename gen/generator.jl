@@ -1,11 +1,24 @@
-# Main generator script that runs the generation process
-# This file can be executed directly to run the generation,
-# or the functions can be imported from generator_functions.jl for testing
+"""
+    WasmtimeRuntime.jl Generator
+
+Main entry point for generating Julia bindings from Wasmtime C API headers.
+
+# Usage
+
+```bash
+julia gen/generator.jl              # Generate bindings
+```
+
+```julia
+include("generator.jl")             # Include without running
+```
+
+Generates `../src/LibWasmtime.jl` from C headers using Clang.jl.
+"""
 
 include("generator_functions.jl")
 
-# Run the generation when this file is executed directly
-# This allows the file to be included without running generation
+# Run generation when executed directly
 if abspath(PROGRAM_FILE) == @__FILE__
     run_generation()
 end
