@@ -64,7 +64,7 @@ function make_artifacts(dir; release_version = nothing)
 
     asset_names = wasmtime_asset_name.(platforms)
     assets = filter(asset -> asset["name"] ∈ asset_names, release.assets)
-    artifacts_toml = joinpath(@__DIR__, "Artifacts.toml")
+    artifacts_toml = joinpath(@__DIR__, "..", "Artifacts.toml")
 
     for (platform, asset) in zip(platforms, assets)
         @info "Downloading $(asset["browser_download_url"]) for $platform"
