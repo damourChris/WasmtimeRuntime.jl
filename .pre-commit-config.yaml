@@ -14,6 +14,13 @@ repos:
         language: system
         files: '\.jl$'
         require_serial: false
+      - id: julia-explicit-imports
+        name: Julia Explicit Imports
+        entry: bash -c 'export PATH="$HOME/.juliaup/bin:$HOME/.julia/bin:$PATH"; julia --project=@ExplicitImports -e "using ExplicitImports; run(ARGS)" "$@"' --
+        language: system
+        files: '\.jl$'
+        require_serial: false
+        args: [--print, --checklist, exclude_all_qualified_accesses_are_public]
   - repo: https://github.com/pre-commit/pre-commit-hooks
     rev: v5.0.0
     hooks:
@@ -48,12 +55,6 @@ repos:
     rev: v1.35.1
     hooks:
       - id: yamllint
-  - repo: https://github.com/ericphanson/ExplicitImports.jl
-    rev: v1.10.1
-    hooks:
-      - id: explicit-imports
-        name: ExplicitImports checks
-        args: [--print, --checklist, exclude_all_qualified_accesses_are_public]
   - repo: https://github.com/compilerla/conventional-pre-commit
     rev: v4.2.0
     hooks:
