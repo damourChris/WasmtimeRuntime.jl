@@ -1,3 +1,20 @@
+"""
+    WasmtimeRuntime.jl Code Generation Functions
+
+Generates Julia bindings from Wasmtime's C API headers using Clang.jl.
+
+# Main Functions
+- `run_generation()`: Generate bindings
+- `get_detailed_target_info()`: Detect system architecture
+- `get_wasmtime_include_path()`: Locate header files
+- `build_clang_args()`: Configure Clang compilation
+
+# Usage
+```julia
+run_generation()  # Generate with default settings
+```
+"""
+
 # Include guard to prevent multiple inclusions
 if !@isdefined(WASMTIME_GENERATOR_FUNCTIONS_LOADED)
     const WASMTIME_GENERATOR_FUNCTIONS_LOADED = true
@@ -8,7 +25,12 @@ if !@isdefined(WASMTIME_GENERATOR_FUNCTIONS_LOADED)
     using LoggingExtras
     using Dates
 
-    # Enhanced logging setup with LoggingExtras
+    """
+        setup_enhanced_logging() -> Logger
+
+    Configure logging system with console output and debug file logging.
+    Creates `generator_debug.log` for detailed debug information.
+    """
     function setup_enhanced_logging()
         # Create different loggers for different purposes
         console_logger = ConsoleLogger(stdout, Logging.Info)
@@ -40,7 +62,14 @@ if !@isdefined(WASMTIME_GENERATOR_FUNCTIONS_LOADED)
         return main_logger
     end
 
-    # Enhanced architecture and ABI detection
+    """
+        get_detailed_target_info() -> Dict{Symbol,Any}
+
+    Detect system architecture and ABI information for Clang compilation.
+
+    Returns target triple, ABI specification, and architecture details needed
+    for accurate C header parsing and struct layout detection.
+    """
     function get_detailed_target_info()
         @debug "🔍 Detecting system architecture and ABI information"
 
@@ -92,7 +121,17 @@ if !@isdefined(WASMTIME_GENERATOR_FUNCTIONS_LOADED)
         return arch_info
     end
 
-    # Get the location of the binary wasmtime artifacts
+    """
+        get_wasmtime_include_path(; artifacts_toml) -> String
+
+    Locate Wasmtime C header files from project artifacts.
+
+    Parses `Artifacts.toml` to find the `libwasmtime` artifact and returns
+    the path to its include directory.
+
+    Throws if `Artifacts.toml` is missing or `libwasmtime` artifact not found.
+    Run `julia gen/build_artifacts.jl` to create artifacts first.
+    """
     function get_wasmtime_include_path(;
         artifacts_toml = joinpath(@__DIR__, "..", "Artifacts.toml"),
     )
@@ -137,7 +176,15 @@ if !@isdefined(WASMTIME_GENERATOR_FUNCTIONS_LOADED)
         return include_path
     end
 
-    # Enhanced Clang argument construction
+    """
+        build_clang_args(target_info::Dict, include_path::String) -> Vector{String}
+
+    Construct Clang compilation arguments for target architecture.
+
+    Critical for ensuring correct struct layouts and ABI compatibility.
+    Configures target specification, architecture flags, and preprocessor
+    definitions for accurate C header parsing.
+    """
     function build_clang_args(target_info, include_path)
         @debug "🔨 Building comprehensive Clang arguments for target compilation"
 
@@ -231,8 +278,14 @@ if !@isdefined(WASMTIME_GENERATOR_FUNCTIONS_LOADED)
         return args
     end
 
-    # Find the headers to process
-    # Automatically discover all header files in the include directory
+    """
+        find_wasmtime_headers(include_path::String) -> Vector{String}
+
+    Discover all C header files in the Wasmtime include directory.
+
+    Recursively searches for `.h` files and returns sorted absolute paths
+    for consistent processing order.
+    """
     function find_wasmtime_headers(include_path)
         @debug "🔍 Discovering header files in include directory" path = include_path
 
@@ -262,7 +315,14 @@ if !@isdefined(WASMTIME_GENERATOR_FUNCTIONS_LOADED)
         return headers
     end
 
-    # Enhanced rewriter with detailed logging
+    """
+        create_rewriter_functions() -> Function
+
+    Create AST rewriting framework for post-processing generated code.
+
+    Provides extension points for future enhancements. Currently minimal
+    to avoid breaking changes.
+    """
     function create_rewriter_functions()
         function rewrite!(e::Expr)
             # Empty for now - this is where we'll add custom rewrites
@@ -291,7 +351,13 @@ if !@isdefined(WASMTIME_GENERATOR_FUNCTIONS_LOADED)
         return rewrite!
     end
 
-    # Add a helper function to disable logging for tests
+    """
+        with_quiet_logging(f::Function) -> Any
+
+    Execute function with suppressed logging (errors only).
+
+    Useful for testing or reducing output during generation.
+    """
     function with_quiet_logging(f)
         original_logger = global_logger()
         try
@@ -304,7 +370,26 @@ if !@isdefined(WASMTIME_GENERATOR_FUNCTIONS_LOADED)
         end
     end
 
-    # Main generation function that can be called explicitly
+    """
+        run_generation(; setup_logging::Bool = true) -> Context
+
+    Execute the complete Wasmtime Julia binding generation process.
+
+    Orchestrates system detection, Clang configuration, AST processing,
+    and code generation to produce `../src/LibWasmtime.jl`.
+
+    # Arguments
+    - `setup_logging::Bool = true`: Configure enhanced logging
+
+    # Examples
+    ```julia
+    ctx = run_generation()                      # Standard generation
+    ctx = run_generation(setup_logging = false) # Quiet generation
+    ```
+
+    Generated output: `../src/LibWasmtime.jl` with complete C API bindings.
+    Debug output: `generator_debug.log` (if logging enabled).
+    """
     function run_generation(; setup_logging = true)
         if setup_logging
             # Setup logging first
