@@ -11,6 +11,13 @@ export WasmtimeObject, WasmtimeResource, WasmtimeValue, WasmtimeType
 export AbstractEngine, AbstractConfig
 export AbstractStore, AbstractModule, AbstractInstance
 export AbstractFunc, AbstractMemory, AbstractGlobal, AbstractTable
+
+# Enums
+export OptimizationLevel, ProfilingStrategy
+export None, Speed, SpeedAndSize
+export NoProfilingStrategy,
+    JitdumpProfilingStrategy, VTuneProfilingStrategy, PerfMapProfilingStrategy
+
 # Error types
 export WasmtimeError
 # Core types
