@@ -1,4 +1,5 @@
 [deps]
 Clang = "40e3b903-d033-50b4-a0cc-940c62c95e31"
+DirectedAcyclicGraphs = "1e6dae5e-d6e2-422d-9af3-452e7a3785ee"
 GitHub = "bc5e4493-9b4d-5f90-b8aa-2b2bcaad7a26"
 LoggingExtras = "e6f89c97-d47a-5376-807f-9c37f3926c36"
