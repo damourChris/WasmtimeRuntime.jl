@@ -9,6 +9,7 @@ include("errors.jl")
 include("config.jl")
 include("engine.jl")
 include("store.jl")
+include("values.jl")
 export WasmtimeObject, WasmtimeResource, WasmtimeValue, WasmtimeType
 export AbstractEngine, AbstractConfig
 export AbstractStore, AbstractModule, AbstractInstance
@@ -24,9 +25,14 @@ export NoProfilingStrategy,
 export WasmtimeError
 # Core types
 export Config, Engine, Store
+export WasmValue, WasmI32, WasmI64, WasmF32, WasmF64, WasmFuncRef, WasmExternRef, WasmV128
+
 export debug_info!,
     optimization_level!, profiler!, consume_fuel!, epoch_interruption!, max_wasm_stack!
 
 # Store management
 export add_fuel!, fuel_consumed, set_epoch_deadline!
+
+# Conversion functions
+export is_wasm_convertible, to_wasm, from_wasm
 end
