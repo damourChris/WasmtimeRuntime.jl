@@ -203,17 +203,23 @@ function make_artifacts(dir; release_version = nothing)
 
     platforms = [
         Platform("aarch64", "linux"; libc = "glibc"),
+        Platform("aarch64", "macos"),
         Platform("x86_64", "linux"; libc = "glibc"),
         Platform("x86_64", "macos"),
-        Platform("aarch64", "macos"),
         Platform("x86_64", "windows"),
     ]
 
     tripletnolibc(platform) = replace(triplet(platform), "-gnu" => "")
     function wasmtime_asset_name(platform)
+        zip_or_tar = if platform.tags["os"] == "windows"
+            "zip"
+        else
+            "tar.xz"
+        end
         replace(
-            "wasmtime-v$release_version-$(tripletnolibc(platform))-c-api.tar.xz",
+            "wasmtime-v$release_version-$(tripletnolibc(platform))-c-api.$zip_or_tar",
             "apple-darwin" => "macos",
+            "w64-mingw32" => "windows",
         )
     end
 
@@ -233,7 +239,11 @@ function make_artifacts(dir; release_version = nothing)
         println()
 
         artifact_hash = create_artifact() do artifact_dir
-            run(`tar -xvf $archive_location -C $artifact_dir`)
+            if endswith(archive_location, ".zip")
+                run(`unzip -q $archive_location -d $artifact_dir`)
+            else
+                run(`tar -xvf $archive_location -C $artifact_dir`)
+            end
         end
 
         download_hash = open(archive_location, "r") do f
