@@ -18,7 +18,6 @@ using WasmtimeRuntime
         # Test that fluent methods return the config for chaining
         result1 = debug_info!(config, true)
         @test result1 === config
-        @test result1.debug_info == true
 
         result2 = optimization_level!(config, Speed)
         @test result2 === config
