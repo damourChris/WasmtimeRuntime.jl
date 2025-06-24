@@ -32,7 +32,7 @@ export WasmtimeError
 export Config, Engine, Store
 export WasmValue, WasmI32, WasmI64, WasmF32, WasmF64, WasmFuncRef, WasmExternRef, WasmV128
 
-Configuration functions
+# Configuration functions
 export debug_info!,
     optimization_level!, profiler!, consume_fuel!, epoch_interruption!, max_wasm_stack!
 
