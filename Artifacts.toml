@@ -4,39 +4,31 @@ git-tree-sha1 = "82ebdbdcaf28191c749accbd575d3dc3f60df7d2"
 libc = "glibc"
 os = "linux"
 
-    [[libwasmtime.download]]
-    sha256 = "aa950e47fdff4970efb7a59a3ea9e96b965180f9e84be46280915086f0ad7519"
-    url = "https://github.com/bytecodealliance/wasmtime/releases/download/v1.0.1/wasmtime-v1.0.1-aarch64-linux-c-api.tar.xz"
+[[libwasmtime.download]]
+sha256 = "aa950e47fdff4970efb7a59a3ea9e96b965180f9e84be46280915086f0ad7519"
+url = "https://github.com/bytecodealliance/wasmtime/releases/download/v1.0.1/wasmtime-v1.0.1-aarch64-linux-c-api.tar.xz"
 [[libwasmtime]]
 arch = "aarch64"
 git-tree-sha1 = "ad7eea0ac271a37f2059d4ad5d49b65e3ed09782"
 os = "macos"
 
-    [[libwasmtime.download]]
-    sha256 = "48fe254302c6519bf289a4d1385dd425a1c65c4dd521d88dc6a1fab6f025bd19"
-    url = "https://github.com/bytecodealliance/wasmtime/releases/download/v1.0.1/wasmtime-v1.0.1-aarch64-macos-c-api.tar.xz"
+[[libwasmtime.download]]
+sha256 = "48fe254302c6519bf289a4d1385dd425a1c65c4dd521d88dc6a1fab6f025bd19"
+url = "https://github.com/bytecodealliance/wasmtime/releases/download/v1.0.1/wasmtime-v1.0.1-aarch64-macos-c-api.tar.xz"
 [[libwasmtime]]
 arch = "x86_64"
 git-tree-sha1 = "32ab34e1e4b546ae29bc8c24e2a930fdce4367fc"
 libc = "glibc"
 os = "linux"
 
-    [[libwasmtime.download]]
-    sha256 = "b481b015c8805acabf2d1aad3b005a8564ac11f3c5b360bbbf71ba0f03e2c067"
-    url = "https://github.com/bytecodealliance/wasmtime/releases/download/v1.0.1/wasmtime-v1.0.1-x86_64-linux-c-api.tar.xz"
+[[libwasmtime.download]]
+sha256 = "b481b015c8805acabf2d1aad3b005a8564ac11f3c5b360bbbf71ba0f03e2c067"
+url = "https://github.com/bytecodealliance/wasmtime/releases/download/v1.0.1/wasmtime-v1.0.1-x86_64-linux-c-api.tar.xz"
 [[libwasmtime]]
 arch = "x86_64"
 git-tree-sha1 = "0f30cd20774ea5a7a405c11125e7e0f5e93c59ce"
 os = "macos"
 
-    [[libwasmtime.download]]
-    sha256 = "fc570e49cf3c4d66b69770ecee692e1cf27d0fa6a6363c83f3f5cca23ac9dc3b"
-    url = "https://github.com/bytecodealliance/wasmtime/releases/download/v1.0.1/wasmtime-v1.0.1-x86_64-macos-c-api.tar.xz"
-[[libwasmtime]]
-arch = "x86_64"
-git-tree-sha1 = "142ab701923e33fbc776505bef315238870fd318"
-os = "windows"
-
-    [[libwasmtime.download]]
-    sha256 = "7b8ae00997d3d6fef21d084141f843db9d2c562ca24aebccb5b20cdbba93c8c2"
-    url = "https://github.com/bytecodealliance/wasmtime/releases/download/v1.0.1/wasmtime-v1.0.1-x86_64-windows-c-api.zip"
+[[libwasmtime.download]]
+sha256 = "fc570e49cf3c4d66b69770ecee692e1cf27d0fa6a6363c83f3f5cca23ac9dc3b"
+url = "https://github.com/bytecodealliance/wasmtime/releases/download/v1.0.1/wasmtime-v1.0.1-x86_64-macos-c-api.tar.xz"

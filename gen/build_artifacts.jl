@@ -206,7 +206,8 @@ function make_artifacts(dir; release_version = nothing)
         Platform("aarch64", "macos"),
         Platform("x86_64", "linux"; libc = "glibc"),
         Platform("x86_64", "macos"),
-        Platform("x86_64", "windows"),
+        # Platform("x86_64", "windows"), # For now, we only support the
+        # precompiled artifacts which are available in .tar.xz format
     ]
 
     tripletnolibc(platform) = replace(triplet(platform), "-gnu" => "")
