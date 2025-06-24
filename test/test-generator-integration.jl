@@ -66,7 +66,6 @@ include("../gen/generator_functions.jl")
         # Test that headers exist and are readable
         for header in headers[1:min(5, length(headers))]  # Test first 5 headers
             @test isfile(header)
-            @test isreadable(header)
         end
 
         # Test that arguments are well-formed

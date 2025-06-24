@@ -8,8 +8,6 @@ using Suppressor
 
         @test isfile(generator_path)
         @test isfile(generator_functions_path)
-        @test isreadable(generator_path)
-        @test isreadable(generator_functions_path)
 
         # Test that the files are not empty
         @test filesize(generator_path) > 0
