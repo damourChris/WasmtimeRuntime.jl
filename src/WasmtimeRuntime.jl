@@ -10,6 +10,7 @@ include("config.jl")
 include("engine.jl")
 include("store.jl")
 include("values.jl")
+include("module.jl")
 export WasmtimeObject, WasmtimeResource, WasmtimeValue, WasmtimeType
 export AbstractEngine, AbstractConfig
 export AbstractStore, AbstractModule, AbstractInstance
@@ -35,4 +36,6 @@ export add_fuel!, fuel_consumed, set_epoch_deadline!
 
 # Conversion functions
 export is_wasm_convertible, to_wasm, from_wasm
+export WasmModule, Instance, Func, Memory, Global, Table
+export validate, exports, imports, wat_to_wasm
 end
