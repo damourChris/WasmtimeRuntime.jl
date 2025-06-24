@@ -287,7 +287,23 @@ if !@isdefined(WASMTIME_GENERATOR_FUNCTIONS_LOADED)
     """
     function create_rewriter_functions()
         function rewrite!(e::Expr)
-            # Framework for future AST transformations
+            Meta.isexpr(e, :const) || return e
+
+            eq = e.args[1]
+
+            # replace assignments to WASM_EMPTY_VEC to nothing
+            if eq.head === :(=) && eq.args[1] === :WASM_EMPTY_VEC
+                e.args[1].args[2] = nothing
+                # replace assignments to wasm_name and wasm_byte_vec to wasm_byte_vec_t
+            elseif eq.head === :(=) &&
+                   eq.args[1] === :wasm_name &&
+                   eq.args[2] === :wasm_byte_vec
+                e.args[1].args[2] = :wasm_byte_vec_t
+                # replace assignments to wasm_byte_t to UInt8
+            elseif eq.head === :(=) && eq.args[1] === :wasm_byte_t
+                e.args[1].args[2] = :UInt8
+            end
+
             return e
         end
 
