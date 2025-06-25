@@ -134,8 +134,21 @@ using WasmtimeRuntime.LibWasmtime
     @testset "should reject invalid type conversions" begin
         vec = WasmVec(UInt8[1, 2, 3])
 
-        @test_throws CanonicalIndexError vec[1] = "wrong type"
-        @test_throws CanonicalIndexError vec[1] = 1.5  # Fractional part
+        @test_throws TypeError vec[1] = "wrong type"
+
+        @test_throws InexactError vec[2] = 3.14  # Float64 unsupported
+        @test_throws InexactError vec[1] = 1.5  # Fractional part
+
+        @test_throws BoundsError vec[0] = UInt8(0)  # Out of bounds
+    end
+
+    @testset "should reject invalid bounds access and indexing" begin
+        vec = WasmVec(UInt8[1, 2, 3])
+
+        @test_throws BoundsError vec[0]  # Invalid index
+        @test_throws BoundsError vec[4]  # Out of bounds index
+
+        @test_throws BoundsError vec[0:3]  # Invalid range start
     end
 
     @testset "should accept valid type conversions" begin
