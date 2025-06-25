@@ -1,5 +1,7 @@
 name: "General issue"
 description: In case none of the others templates apply
+title: "[General] "
+labels: ["general"]
 body:
   - type: markdown
     attributes:

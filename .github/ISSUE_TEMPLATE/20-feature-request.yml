@@ -1,5 +1,7 @@
 name: "Feature Request"
-description: Suggest a new feature for the package
+description: Suggest a new feature for the package\
+title: "[Feature Request] "
+labels: ["enhancement"]
 body:
   - type: markdown
     attributes:

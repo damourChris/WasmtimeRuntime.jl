@@ -1,6 +1,7 @@
 name: "Usage question"
 description: Questions related to the usage
-labels: ["documentation"]
+title: "[Usage] "
+labels: ["question"]
 body:
   - type: markdown
     attributes:
