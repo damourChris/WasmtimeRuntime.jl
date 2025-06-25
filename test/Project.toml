@@ -1,7 +1,9 @@
 [deps]
+BenchmarkTools = "6e4b80f9-dd63-53aa-95a3-0cdb28fa8baf"
 Clang = "40e3b903-d033-50b4-a0cc-940c62c95e31"
 Dates = "ade2ca70-3891-5945-98fb-dc099432e06a"
 LoggingExtras = "e6f89c97-d47a-5376-807f-9c37f3926c36"
 Pkg = "44cfe95a-1eb2-52ea-b672-e2afdf69b78f"
+Random = "9a3f8284-a2c9-5f02-9a11-845980a1fd5c"
 Suppressor = "fd094767-a336-5f1f-9728-57cf17d0bbfb"
 Test = "8dfed614-e22c-5e08-85e1-65c5234f0b40"
