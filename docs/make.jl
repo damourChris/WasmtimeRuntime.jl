@@ -25,4 +25,4 @@ makedocs(;
     pages = ["index.md"; numbered_pages],
 )
 
-deploydocs(; repo = "github.com/damourChris/WasmtimeRuntime.jl")
+deploydocs(; push_preview = true, repo = "github.com/damourChris/WasmtimeRuntime.jl")
