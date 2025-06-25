@@ -576,6 +576,61 @@ function reorder_declarations(input_file::String, output_file::String = input_fi
     end
 end
 
+
+"""
+    normalize_unnamed_unions(content::String) -> String
+
+Normalize unnamed union declarations to use clean Julia identifiers.
+
+Replaces verbose unnamed union names like:
+`var"union (unnamed at /path/to/file.h:123)"`
+with clean names like:
+`WasmUnnamedUnion_1`
+
+This ensures the generated code uses valid Julia identifiers instead of
+problematic variable names with quotes and special characters.
+"""
+function normalize_unnamed_unions(content::String)
+    @info "🔄 Normalizing unnamed union declarations..."
+
+    # Counter for generating unique union names
+    union_counter = 1
+    union_mapping = Dict{String,String}()
+
+    # First pass: find all unnamed unions and create a mapping
+    unnamed_union_pattern = r"var\"union \(unnamed at [^\"]+\)\""
+
+    for match in eachmatch(unnamed_union_pattern, content)
+        old_name = match.match
+        if !haskey(union_mapping, old_name)
+            new_name = "WasmUnnamedUnion_$(union_counter)"
+            union_mapping[old_name] = new_name
+            union_counter += 1
+            @debug "  📝 Mapping: $old_name -> $new_name"
+        end
+    end
+
+    if isempty(union_mapping)
+        @info "✅ No unnamed unions found to normalize"
+        return content
+    end
+
+    @info "🎯 Found $(length(union_mapping)) unnamed unions to normalize"
+
+    # Second pass: replace all occurrences
+    result = content
+    for (old_name, new_name) in union_mapping
+        # Escape special regex characters in the old name
+        escaped_old_name = replace(old_name, r"[()[\]{}.*+?^$|\\]" => s"\\\0")
+        result = replace(result, Regex(escaped_old_name) => new_name)
+        @debug "  ✅ Replaced all occurrences of: $old_name -> $new_name"
+    end
+
+    @info "✅ Unnamed union normalization completed"
+    return result
+end
+
+
 """
     test_reordering()
 
@@ -688,8 +743,17 @@ function postprocess_libwasmtime(lib_file::String = "../src/LibWasmtime.jl")
     @info "💾 Created backup: $backup_file"
 
     try
+        # Rename unnamed unions to clean identifiers
+        @info "🔄 Normalizing unnamed unions in $lib_file..."
+        open(lib_file, "r") do f
+            content = read(f, String)
+            normalized_content = normalize_unnamed_unions(content)
+            write(lib_file, normalized_content)
+        end
+
         # Perform the reordering
         success = reorder_declarations(lib_file)
+
 
         if success
             @info "✅ LibWasmtime.jl post-processing completed successfully!"
