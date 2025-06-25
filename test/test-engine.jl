@@ -6,7 +6,7 @@ using WasmtimeRuntime
 Random.seed!(1234)
 
 @testset "Engine - Resource Management" begin
-    @testset "Engine creation without config" begin
+    @testset "should create engine successfully without config" begin
         engine = Engine()
         @test engine isa Engine
         @test engine isa AbstractEngine
@@ -14,7 +14,7 @@ Random.seed!(1234)
         @test engine.ptr != C_NULL
     end
 
-    @testset "Engine creation with config" begin
+    @testset "should create engine successfully with valid config" begin
         config = Config()
         debug_info!(config, true)
 
@@ -24,20 +24,20 @@ Random.seed!(1234)
         @test engine.ptr != C_NULL
     end
 
-    @testset "Engine creation with invalid config should fail" begin
+    @testset "should throw WasmtimeError when config is invalid" begin
         config = Config()
         config.ptr = C_NULL  # Make config invalid
 
         @test_throws WasmtimeError Engine(config)
     end
 
-    @testset "Engine resource cleanup (finalizer behavior)" begin
+    @testset "should handle resource cleanup properly" begin
         engine = Engine()
 
         # Trigger finalize to simulate gc
         finalize(engine)
 
-        # Simulate cleanup
+        # Simulate cleanup - in real scenario this would be done by finalizer
         engine.ptr = C_NULL
         @test !isvalid(engine)
     end

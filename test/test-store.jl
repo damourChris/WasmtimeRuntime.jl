@@ -6,7 +6,7 @@ using WasmtimeRuntime
 Random.seed!(1234)
 
 @testset "Store - Context Management" begin
-    @testset "Store creation with valid engine" begin
+    @testset "should create store successfully with valid engine" begin
         engine = Engine()
         store = Store(engine)
 
@@ -18,7 +18,7 @@ Random.seed!(1234)
         @test store.engine === engine
     end
 
-    @testset "Store creation with invalid engine should fail" begin
+    @testset "should throw WasmtimeError when engine is invalid" begin
         engine = Engine()
         engine.ptr = C_NULL  # Make engine invalid
 
