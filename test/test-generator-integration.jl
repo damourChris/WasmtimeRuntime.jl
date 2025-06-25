@@ -1,6 +1,10 @@
 using Test
 using Clang.Generators
 using Suppressor
+using Random
+
+# Set deterministic seed for reproducible tests
+Random.seed!(1234)
 
 # Include the generator functions for testing
 include("../gen/generator_functions.jl")
@@ -73,7 +77,7 @@ include("../gen/generator_functions.jl")
         @test all(arg -> !isempty(arg), args)
     end
 
-    @testset "Error Resilience" begin
+    @testset "should handle error conditions gracefully" begin
         # Test behavior with invalid inputs
 
         # Test with empty include path - should work but may have warnings
@@ -81,10 +85,10 @@ include("../gen/generator_functions.jl")
         @test isa(result, Vector{String})
         @test length(result) > 0
 
-        # Test with non-existent configuration
+        # Test with non-existent configuration file
         @test_throws Exception load_options("/nonexistent/config.toml")
 
-        # Test with malformed target info
+        # Test with incomplete target info
         incomplete_target = Dict(:arch => :x86_64)  # Missing required fields
         try
             result = build_clang_args(incomplete_target, "/tmp")

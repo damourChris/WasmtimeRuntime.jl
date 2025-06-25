@@ -1,5 +1,9 @@
-# Test the core abstract type hierarchy - Phase 1 Foundation
+using Test
+using Random
 using WasmtimeRuntime
+
+# Set deterministic seed for reproducible tests
+Random.seed!(1234)
 
 @testset "Abstract Type Hierarchy" begin
     @testset "WasmtimeObject is the root type" begin

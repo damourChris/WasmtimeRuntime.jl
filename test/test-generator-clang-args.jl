@@ -1,6 +1,10 @@
 using Test
 using Clang.Generators
 using Suppressor
+using Random
+
+# Set deterministic seed for reproducible tests
+Random.seed!(1234)
 
 # Include the generator functions for testing
 include("../gen/generator_functions.jl")

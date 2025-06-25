@@ -1,3 +1,10 @@
+using Random
+using Test
+using WasmtimeRuntime
+
+# Set deterministic seed for reproducible tests
+Random.seed!(1234)
+
 @testset "Store - Context Management" begin
     @testset "Store creation with valid engine" begin
         engine = Engine()

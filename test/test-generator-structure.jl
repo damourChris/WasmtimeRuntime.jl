@@ -1,5 +1,9 @@
 using Test
 using Suppressor
+using Random
+
+# Set deterministic seed for reproducible tests
+Random.seed!(1234)
 
 @testset "Generator Script Structure" begin
     @testset "File Existence and Readability" begin

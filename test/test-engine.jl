@@ -1,3 +1,10 @@
+using Random
+using Test
+using WasmtimeRuntime
+
+# Set deterministic seed for reproducible tests
+Random.seed!(1234)
+
 @testset "Engine - Resource Management" begin
     @testset "Engine creation without config" begin
         engine = Engine()

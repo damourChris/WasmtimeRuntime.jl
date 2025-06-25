@@ -1,5 +1,9 @@
 using Test
 using Suppressor
+using Random
+
+# Set deterministic seed for reproducible tests
+Random.seed!(1234)
 
 # Include only the generator functions for testing (without running generation)
 include("../gen/generator_functions.jl")

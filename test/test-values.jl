@@ -1,3 +1,10 @@
+using Random
+using Test
+using WasmtimeRuntime
+
+# Set deterministic seed for reproducible tests
+Random.seed!(1234)
+
 @testset "Value System - Type-Safe Conversions" begin
     @testset "WasmValue type hierarchy" begin
         @test WasmI32 <: WasmValue{Int32}

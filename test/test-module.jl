@@ -1,4 +1,9 @@
+using Random
+using Test
 using WasmtimeRuntime
+
+# Set deterministic seed for reproducible tests
+Random.seed!(1234)
 
 @testset "Module - WebAssembly Module Management" begin
     @testset "Module Type Hierarchy" begin
@@ -28,7 +33,7 @@ using WasmtimeRuntime
     end
 
     @testset "Module Creation and Basic Properties" begin
-        @testset "Module creation with valid engine and WASM bytes" begin
+        @testset "should create module successfully with valid engine and WASM bytes" begin
             engine = Engine()
 
             # Valid empty WASM module
@@ -51,7 +56,7 @@ using WasmtimeRuntime
             @test module_obj.engine === engine
         end
 
-        @testset "Module creation with invalid engine should fail" begin
+        @testset "should throw WasmtimeError when engine is invalid" begin
             engine = Engine()
             engine.ptr = C_NULL  # Make engine invalid
 
@@ -60,7 +65,7 @@ using WasmtimeRuntime
             @test_throws WasmtimeError WasmModule(engine, empty_wasm)
         end
 
-        @testset "Module creation with invalid WASM bytes should fail" begin
+        @testset "should throw WasmtimeError when WASM bytes are invalid" begin
             engine = Engine()
 
             # Invalid WASM bytes
@@ -69,7 +74,7 @@ using WasmtimeRuntime
             @test_throws WasmtimeError WasmModule(engine, invalid_wasm)
         end
 
-        @testset "Module creation with empty bytes should fail" begin
+        @testset "should throw WasmtimeError when WASM bytes are empty" begin
             engine = Engine()
             empty_bytes = UInt8[]
 

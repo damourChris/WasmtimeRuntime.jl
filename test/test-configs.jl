@@ -1,4 +1,9 @@
+using Test
+using Random
 using WasmtimeRuntime
+
+# Set deterministic seed for reproducible tests
+Random.seed!(1234)
 
 @testset "Config - Builder Pattern Implementation" begin
     @testset "Config creation and basic properties" begin
