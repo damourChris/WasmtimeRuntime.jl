@@ -6,6 +6,7 @@ using .LibWasmtime
 # Include all components in the correct order
 include("types.jl")
 include("errors.jl")
+include("vec.jl")
 include("config.jl")
 include("engine.jl")
 include("store.jl")
@@ -31,6 +32,11 @@ export WasmtimeError
 # Core types
 export Config, Engine, Store
 export WasmValue, WasmI32, WasmI64, WasmF32, WasmF64, WasmFuncRef, WasmExternRef, WasmV128
+
+# Generic vector wrapper
+export WasmVec, WasmByteVec, WasmName, WasmExternVec, WasmImportTypeVec, WasmExportTypeVec
+export WasmValtypeVec, WasmValVec, WasmTableTypeVec, WasmExternTypeVec, WasmFrameVec
+export WasmPtrVec, to_julia_vector
 
 # Configuration functions
 export debug_info!,
