@@ -41,12 +41,15 @@ end
 # Helper functions for C function name resolution
 
 function _get_delete_function(T)
+    @assert parentmodule(T) == LibWasmtime || T <: Ptr "$T should be a LibWasmtime type or pointer"
     type_name = string(nameof(T))
     delete_name = replace(type_name, r"_vec_t$" => "_vec_delete")
     return getproperty(LibWasmtime, Symbol(delete_name))
 end
 
 function _get_uninitialized_function(T)
+    @assert parentmodule(T) == LibWasmtime || T <: Ptr "$T should be a LibWasmtime type or pointer"
+
     type_name = string(nameof(T))
     uninit_name = replace(type_name, r"_vec_t$" => "_vec_new_uninitialized")
     return getproperty(LibWasmtime, Symbol(uninit_name))
