@@ -34,7 +34,18 @@ export Config, Engine, Store
 export WasmValue, WasmI32, WasmI64, WasmF32, WasmF64, WasmFuncRef, WasmExternRef, WasmV128
 
 # Generic vector wrapper
-export WasmVec, WasmByteVec, WasmName, WasmExternVec, WasmImportTypeVec, WasmExportTypeVec
+export WasmVec,
+    WasmPtrVec,
+    WasmByteVec,
+    WasmName,
+    WasmExternVec,
+    WasmImportTypeVec,
+    WasmExportTypeVec,
+    WasmValtypeVec,
+    WasmValVec,
+    WasmTableTypeVec,
+    WasmExternTypeVec,
+    WasmFrameVec
 export WasmValtypeVec, WasmValVec, WasmTableTypeVec, WasmExternTypeVec, WasmFrameVec
 export WasmPtrVec, to_julia_vector
 
