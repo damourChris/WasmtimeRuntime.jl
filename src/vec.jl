@@ -118,6 +118,25 @@ function Base.setindex!(vec::WasmVec{T,S}, v::S, i::Int) where {T,S}
     return v
 end
 
+# Overload for setindex! to handle assignment of values of type different from S
+# This allows for automatic conversion of values to the correct type S
+function Base.setindex!(vec::WasmVec{T,S}, v, i::Int) where {T,S}
+    # Try to convert v to type S if necessary
+    if !isa(v, S)
+        try
+            v = S(v)
+        catch e
+            if e isa MethodError
+                throw(TypeError(:setindex!, :WasmVec, S, v))
+            else
+                rethrow(e)
+            end
+        end
+    end
+
+    return Base.setindex!(vec, v, i)
+end
+
 # C interop conversions
 
 Base.unsafe_convert(::Type{Ptr{T}}, vec::WasmVec{T,S}) where {T,S} =
