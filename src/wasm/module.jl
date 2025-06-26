@@ -3,9 +3,9 @@
 # Module implementation
 mutable struct WasmModule <: AbstractModule
     ptr::Ptr{LibWasmtime.wasm_module_t}
-    store::Store
+    store::WasmStore
 
-    function WasmModule(store::Store, wasm_bytes::Vector{UInt8})
+    function WasmModule(store::WasmStore, wasm_bytes::Vector{UInt8})
         isvalid(store) || throw(WasmtimeError("Invalid store"))
 
         # Validate WebAssembly bytes first
@@ -36,15 +36,15 @@ end
 Base.isvalid(module_obj::WasmModule) = module_obj.ptr != C_NULL
 
 # Multiple ways to create modules
-WasmModule(store::Store, path::AbstractString) = WasmModule(store, read(path))
+WasmModule(store::WasmStore, path::AbstractString) = WasmModule(store, read(path))
 
-function WasmModule(store::Store, wat::AbstractString, ::Val{:wat})
+function WasmModule(store::WasmStore, wat::AbstractString, ::Val{:wat})
     wasm_bytes = wat_to_wasm(wat)
     WasmModule(store, wasm_bytes)
 end
 
 # Validation function
-function validate(store::Store, wasm_bytes::Vector{UInt8})::Bool
+function validate(store::WasmStore, wasm_bytes::Vector{UInt8})::Bool
     # Check for invalid store first
     if !isvalid(store)
         return false
