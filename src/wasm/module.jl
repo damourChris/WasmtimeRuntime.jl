@@ -9,13 +9,13 @@ mutable struct WasmModule <: AbstractModule
         isvalid(store) || throw(WasmtimeError("Invalid store"))
 
         # Validate WebAssembly bytes first
-        validate(store, wasm_bytes) || throw(WasmtimeError("Invalid WebAssembly module"))
+        validate(store, wasm_bytes) || throw(WasmtimeError("Invalid WebAssembly bytes"))
 
         # Create a WasmByteVec from the bytes
         byte_vec = WasmByteVec(wasm_bytes)
 
         # Create the module using the wasm C API
-        module_ptr = LibWasmtime.wasm_module_new(store.wasm_ptr, byte_vec)
+        module_ptr = LibWasmtime.wasm_module_new(store.ptr, byte_vec)
 
         if module_ptr == C_NULL
             throw(WasmtimeError("Failed to create WebAssembly module"))
@@ -60,11 +60,18 @@ function validate(store::WasmStore, wasm_bytes::Vector{UInt8})::Bool
         byte_vec = WasmByteVec(wasm_bytes)
 
         # wasm_module_validate returns 1 on success, 0 on failure
-        result = LibWasmtime.wasm_module_validate(store.wasm_ptr, byte_vec)
+        result = LibWasmtime.wasm_module_validate(store.ptr, byte_vec)
         return result != 0
     catch
         return false
     end
+end
+
+function validate(module_obj::WasmModule, wasm_bytes::Vector{UInt8})::Bool
+    isvalid(module_obj) || throw(WasmtimeError("Invalid module"))
+
+    # Validate the module using the store's wasm_ptr
+    return validate(module_obj.store, module_obj.wasm_bytes)
 end
 
 # Module introspection functions
