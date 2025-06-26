@@ -4,7 +4,7 @@
 mutable struct WasmEngine <: AbstractEngine
     ptr::Ptr{LibWasmtime.wasm_engine_t}
 
-    function WasmEngine(config::Union{Config,Nothing} = nothing)
+    function WasmEngine(config::Union{WasmConfig,Nothing} = nothing)
         ptr = if config === nothing
             LibWasmtime.wasm_engine_new()
         else

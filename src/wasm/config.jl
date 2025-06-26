@@ -1,11 +1,11 @@
 # Configuration management for WasmtimeRuntime
 
 # Configuration builder pattern
-mutable struct Config <: AbstractConfig
+mutable struct WasmConfig <: AbstractConfig
     ptr::Ptr{LibWasmtime.wasm_config_t}
     consumed::Bool  # Track if config has been consumed by engine creation
 
-    function Config(ptr::Ptr{LibWasmtime.wasm_config_t})
+    function WasmConfig(ptr::Ptr{LibWasmtime.wasm_config_t})
         if ptr == C_NULL
             throw(WasmtimeError("Failed to create Config"))
         end
@@ -24,7 +24,7 @@ mutable struct Config <: AbstractConfig
 end
 
 # Public constructor with keyword arguments (also works as default constructor)
-function Config(;
+function WasmConfig(;
     debug_info::Bool = false,
     optimization_level::OptimizationLevel = Speed,
     profiling_strategy::ProfilingStrategy = NoProfilingStrategy,
@@ -34,7 +34,7 @@ function Config(;
 )
     # Create basic config first
     ptr = LibWasmtime.wasm_config_new()
-    config = Config(ptr)  # Use internal constructor
+    config = WasmConfig(ptr)  # Use internal constructor
 
     try
         # Apply configuration options
@@ -55,46 +55,46 @@ function Config(;
     end
 end
 
-Base.isvalid(config::Config) = config.ptr != C_NULL && !config.consumed
+Base.isvalid(config::WasmConfig) = config.ptr != C_NULL && !config.consumed
 
 # Mark config as consumed (used internally by Engine constructor)
-function _consume!(config::Config)
+function _consume!(config::WasmConfig)
     config.consumed = true
     return config
 end
 
 # Fluent configuration API - return config for method chaining
-function debug_info!(config::Config, enable::Bool = true)
+function debug_info!(config::WasmConfig, enable::Bool = true)
     isvalid(config) || throw(WasmtimeError("Invalid config"))
     LibWasmtime.wasmtime_config_debug_info_set(config.ptr, enable)
     return config
 end
 
-function optimization_level!(config::Config, level::OptimizationLevel)
+function optimization_level!(config::WasmConfig, level::OptimizationLevel)
     isvalid(config) || throw(WasmtimeError("Invalid config"))
     LibWasmtime.wasmtime_config_cranelift_opt_level_set(config.ptr, UInt8(level))
     return config
 end
 
-function profiler!(config::Config, strategy::ProfilingStrategy)
+function profiler!(config::WasmConfig, strategy::ProfilingStrategy)
     isvalid(config) || throw(WasmtimeError("Invalid config"))
     LibWasmtime.wasmtime_config_profiler_set(config.ptr, Int32(strategy))
     return config
 end
 
-function consume_fuel!(config::Config, enable::Bool = true)
+function consume_fuel!(config::WasmConfig, enable::Bool = true)
     isvalid(config) || throw(WasmtimeError("Invalid config"))
     LibWasmtime.wasmtime_config_consume_fuel_set(config.ptr, enable)
     return config
 end
 
-function epoch_interruption!(config::Config, enable::Bool = true)
+function epoch_interruption!(config::WasmConfig, enable::Bool = true)
     isvalid(config) || throw(WasmtimeError("Invalid config"))
     LibWasmtime.wasmtime_config_epoch_interruption_set(config.ptr, enable)
     return config
 end
 
-function max_wasm_stack!(config::Config, size::Integer)
+function max_wasm_stack!(config::WasmConfig, size::Integer)
     isvalid(config) || throw(WasmtimeError("Invalid config"))
     LibWasmtime.wasmtime_config_max_wasm_stack_set(config.ptr, size)
     return config
