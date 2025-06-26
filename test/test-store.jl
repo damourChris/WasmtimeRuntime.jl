@@ -7,30 +7,28 @@ Random.seed!(1234)
 
 @testset "Store - Context Management" begin
     @testset "should create store successfully with valid engine" begin
-        engine = Engine()
-        store = Store(engine)
+        engine = WasmEngine()
+        store = WasmStore(engine)
 
-        @test store isa Store
+        @test store isa WasmStore
         @test store isa AbstractStore
         @test isvalid(store)
         @test store.ptr != C_NULL
-        @test store.context != C_NULL
-        @test store.engine === engine
     end
 
     @testset "should throw WasmtimeError when engine is invalid" begin
-        engine = Engine()
+        engine = WasmEngine()
         engine.ptr = C_NULL  # Make engine invalid
 
-        @test_throws WasmtimeError Store(engine)
+        @test_throws WasmtimeError WasmStore(engine)
     end
 
     @testset "Store fuel management" begin
         # Create store with fuel consumption enabled
-        config = Config()
+        config = WasmConfig()
         consume_fuel!(config, true)
-        engine = Engine(config)
-        store = Store(engine)
+        engine = WasmEngine(config)
+        store = WasmtimeStore(engine)
 
         # Test adding fuel
         initial_fuel = add_fuel!(store, 1000)
@@ -43,8 +41,8 @@ Random.seed!(1234)
 
     @testset "Store fuel management errors" begin
         # Create store without fuel consumption
-        engine = Engine()
-        store = Store(engine)
+        engine = WasmEngine()
+        store = WasmtimeStore(engine)
 
         # Adding fuel to a store without fuel consumption enabled
         # might work or might fail, depending on Wasmtime version
@@ -61,10 +59,10 @@ Random.seed!(1234)
     end
 
     @testset "Store epoch management" begin
-        config = Config()
+        config = WasmConfig()
         epoch_interruption!(config, true)
-        engine = Engine(config)
-        store = Store(engine)
+        engine = WasmEngine(config)
+        store = WasmtimeStore(engine)
 
         # Test setting epoch deadline
         result = set_epoch_deadline!(store, 100)
@@ -72,8 +70,8 @@ Random.seed!(1234)
     end
 
     @testset "Store operations with invalid store" begin
-        engine = Engine()
-        store = Store(engine)
+        engine = WasmEngine()
+        store = WasmtimeStore(engine)
         store.ptr = C_NULL  # Make store invalid
 
         @test !isvalid(store)

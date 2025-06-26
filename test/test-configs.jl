@@ -8,8 +8,8 @@ Random.seed!(1234)
 @testset "Config - Builder Pattern Implementation" begin
     @testset "Config creation and basic properties" begin
         # Test default constructor
-        config = Config()
-        @test config isa Config
+        config = WasmConfig()
+        @test config isa WasmConfig
         @test config isa AbstractConfig
         @test isvalid(config)
 
@@ -18,7 +18,7 @@ Random.seed!(1234)
     end
 
     @testset "Config fluent API - method chaining" begin
-        config = Config()
+        config = WasmConfig()
 
         # Test that fluent methods return the config for chaining
         result1 = debug_info!(config, true)
@@ -42,7 +42,7 @@ Random.seed!(1234)
 
     @testset "Config method chaining workflow" begin
         # Test complete fluent chain
-        config = Config()
+        config = WasmConfig()
         debug_info!(config, true)
         optimization_level!(config, SpeedAndSize)
         profiler!(config, VTuneProfilingStrategy)
@@ -56,7 +56,7 @@ Random.seed!(1234)
     end
 
     @testset "Config error handling with invalid config" begin
-        config = Config()
+        config = WasmConfig()
         # Simulate invalid config by setting ptr to NULL
         config.ptr = C_NULL
 
@@ -71,11 +71,11 @@ Random.seed!(1234)
 
     @testset "Config keyword constructor" begin
         # Test default values
-        config1 = Config()
+        config1 = WasmConfig()
         @test isvalid(config1)
 
         # Test with specific options
-        config2 = Config(
+        config2 = WasmConfig(
             debug_info = true,
             optimization_level = SpeedAndSize,
             profiling_strategy = JitdumpProfilingStrategy,
@@ -88,7 +88,7 @@ Random.seed!(1234)
 
     @testset "Config finalization and cleanup" begin
         # Test that finalizer cleans up resources
-        config = Config()
+        config = WasmConfig()
         ptr_before = config.ptr
         config.consumed = true
 
