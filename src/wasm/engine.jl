@@ -1,10 +1,10 @@
 # Engine implementation for WasmtimeRuntime
 
 # Engine implementation
-mutable struct Engine <: AbstractEngine
+mutable struct WasmEngine <: AbstractEngine
     ptr::Ptr{LibWasmtime.wasm_engine_t}
 
-    function Engine(config::Union{Config,Nothing} = nothing)
+    function WasmEngine(config::Union{Config,Nothing} = nothing)
         ptr = if config === nothing
             LibWasmtime.wasm_engine_new()
         else
@@ -30,4 +30,4 @@ mutable struct Engine <: AbstractEngine
     end
 end
 
-Base.isvalid(engine::Engine) = engine.ptr != C_NULL
+Base.isvalid(engine::WasmEngine) = engine.ptr != C_NULL
