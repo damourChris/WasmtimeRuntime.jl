@@ -10,10 +10,11 @@ mutable struct WasmStore <: AbstractStore
 
         wasm_store_ptr = LibWasmtime.wasm_store_new(wasm_engine)
 
-        finalizer(store) do store
-            if store.wasm_store_ptr != C_NULL
-                LibWasmtime.wasm_store_delete(store.wasm_store_ptr)
-                store.wasm_store_ptr = C_NULL
+        store = new(wasm_store_ptr, Vector{Base.CFunction}())
+        finalizer(store) do s
+            if s.ptr != C_NULL
+                LibWasmtime.wasm_store_delete(s.ptr)
+                s.ptr = C_NULL
             end
         end
     end
@@ -24,3 +25,4 @@ add_extern_func!(wasm_store::WasmStore, cfunc::Base.CFunction) =
 
 Base.unsafe_convert(::Type{Ptr{wasm_store_t}}, wasm_store::WasmStore) = wasm_store.ptr
 Base.show(io::IO, ::WasmStore) = print(io, "WasmStore()")
+Base.isvalid(wasm_store::WasmStore) = wasm_store.ptr != C_NULL
