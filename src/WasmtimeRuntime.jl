@@ -6,30 +6,68 @@ using .LibWasmtime
 
 # Core types and utilities
 include("types.jl")
-include("errors.jl")
-include("vec.jl")
-include("values.jl")
-include("objects.jl")
-
-# Wasm
-include("wasm/engine.jl")
-include("wasm/module.jl")
-include("wasm/config.jl")
-
-# Wasmtime
-include("wasmtime/store.jl")
-include("wasmtime/instance.jl")
-
 export WasmtimeObject, WasmtimeResource, WasmtimeValue, WasmtimeType
 export AbstractEngine, AbstractConfig
 export AbstractStore, AbstractModule, AbstractInstance
 export AbstractFunc, AbstractMemory, AbstractGlobal, AbstractTable
-
-# Enums
 export OptimizationLevel, ProfilingStrategy
 export None, Speed, SpeedAndSize
 export NoProfilingStrategy,
     JitdumpProfilingStrategy, VTuneProfilingStrategy, PerfMapProfilingStrategy
+
+
+include("errors.jl")
+export WasmtimeError, check_error, @safe_resource
+
+include("vec.jl")
+export WasmVec, WasmByteVec, WasmValVec, WasmName
+export WasmPtrVec,
+    WasmExternVec,
+    WasmImportTypeVec,
+    WasmExportTypeVec,
+    WasmValtypeVec,
+    WasmTableTypeVec,
+    WasmExternTypeVec,
+    WasmFrameVec
+export to_julia_vector
+
+include("values.jl")
+export WasmValue, WasmI32, WasmI64, WasmF32, WasmF64, WasmFuncRef, WasmExternRef, WasmV128
+export is_wasm_convertible, to_wasm, from_wasm
+
+# Wasm
+include("wasm/store.jl")
+export WasmStore
+export add_extern_func!
+
+include("wasm/config.jl")
+export WasmConfig
+export debug_info!,
+    optimization_level!, profiler!, consume_fuel!, epoch_interruption!, max_wasm_stack!
+
+include("wasm/engine.jl")
+export WasmEngine
+
+include("wasm/module.jl")
+export WasmModule
+export validate, exports, imports, wat_to_wasm
+
+
+# Wasmtime
+include("wasmtime/store.jl")
+export WasmtimeStore
+export add_fuel!, fuel_consumed, set_epoch_deadline!
+
+include("wasmtime/module.jl")
+export WasmtimeModule
+
+include("wasmtime/instance.jl")
+export WasmtimeInstance
+export instantiate
+
+
+include("objects.jl")
+export Func, Memory, Global, Table
 
 # Error types
 export WasmtimeError
@@ -38,21 +76,7 @@ export WasmtimeError
 export Config, Engine, Store
 export WasmValue, WasmI32, WasmI64, WasmF32, WasmF64, WasmFuncRef, WasmExternRef, WasmV128
 
-# Generic vector wrapper
-export WasmVec,
-    WasmPtrVec,
-    WasmByteVec,
-    WasmName,
-    WasmExternVec,
-    WasmImportTypeVec,
-    WasmExportTypeVec,
-    WasmValtypeVec,
-    WasmValVec,
-    WasmTableTypeVec,
-    WasmExternTypeVec,
-    WasmFrameVec
-export WasmValtypeVec, WasmValVec, WasmTableTypeVec, WasmExternTypeVec, WasmFrameVec
-export WasmPtrVec, to_julia_vector
+
 
 # Configuration functions
 export debug_info!,
