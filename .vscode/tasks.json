@@ -75,6 +75,40 @@
       },
       "problemMatcher": [],
       "type": "shell"
+    },
+    {
+      "label": "Run Julia Test File (Dynamic)",
+      "type": "shell",
+      "command": "julia",
+      "args": [
+        "--project",
+        "-e",
+        "using Pkg; Pkg.test(; test_args=[\"${input:testFile}\"])"
+      ],
+      "options": {
+        "cwd": "${workspaceFolder}"
+      },
+      "problemMatcher": [],
+      "presentation": {
+        "reveal": "always"
+      },
+    },
+  ],
+  "inputs": [
+    {
+      "id": "testFile",
+      "type": "command",
+      "command": "extension.commandvariable.file.pickFile",
+      "args": {
+        "include": "test/**/*.jl",
+        "exclude": "**/.*",
+        "display": "fileName",
+        "description": "Choose a Julia test file",
+        "fromFolder": {
+          "folder": "~/test",
+          "keyRemember": "testFile"
+        }
+      }
     }
   ],
   "version": "2.0.0"
