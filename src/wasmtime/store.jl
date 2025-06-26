@@ -30,7 +30,9 @@ mutable struct WasmtimeStore <: AbstractStore
     end
 end
 
-Base.isvalid(store::WasmtimeStore) = store.ptr != C_NULL && store.context != C_NULL
+Base.isvalid(store::WasmtimeStore) = store.ptr != C_NULL
+Base.unsafe_convert(::Type{Ptr{LibWasmtime.wasmtime_store_t}}, store::WasmtimeStore) =
+    store.ptr
 
 # Fuel management for Store
 function add_fuel!(store::WasmtimeStore, fuel::Integer)
@@ -64,7 +66,9 @@ end
 
 
 function Base.getproperty(store::WasmtimeStore, prop::Symbol)
-    isvalid(store) || throw(WasmtimeError("Invalid store"))
+    if prop == :ptr
+        return getfield(store, :ptr)
+    end
 
     if prop == :context
         LibWasmtime.wasmtime_store_context(store)
