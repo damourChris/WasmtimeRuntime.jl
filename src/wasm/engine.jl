@@ -31,3 +31,4 @@ mutable struct WasmEngine <: AbstractEngine
 end
 
 Base.isvalid(engine::WasmEngine) = engine.ptr != C_NULL
+Base.unsafe_convert(::Type{Ptr{LibWasmtime.wasm_engine_t}}, engine::WasmEngine) = engine.ptr
