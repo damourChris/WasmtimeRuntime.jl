@@ -143,7 +143,7 @@ Random.seed!(1234)
         @testset "Validation with invalid WASM bytes" begin
             engine = WasmEngine()
             store = WasmStore(engine)
-            invalid_wasm = UInt8[0x00, 0x00, 0x00, 0x00]
+            invalid_wasm = UInt8[0x00]
 
             @test validate(store, invalid_wasm) == false
         end
