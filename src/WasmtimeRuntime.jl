@@ -36,10 +36,6 @@ export WasmValue, WasmI32, WasmI64, WasmF32, WasmF64, WasmFuncRef, WasmExternRef
 export is_wasm_convertible, to_wasm, from_wasm
 
 # Wasm
-include("wasm/store.jl")
-export WasmStore
-export add_extern_func!
-
 include("wasm/config.jl")
 export WasmConfig
 export debug_info!,
@@ -47,6 +43,13 @@ export debug_info!,
 
 include("wasm/engine.jl")
 export WasmEngine
+
+include("wasm/store.jl")
+export WasmStore
+export add_extern_func!
+
+
+
 
 include("wasm/module.jl")
 export WasmModule
