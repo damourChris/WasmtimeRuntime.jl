@@ -91,8 +91,3 @@ function imports(module_obj::WasmModule)
     # For now, return empty dict as placeholder
     return Dict{String,Any}()
 end
-
-# Placeholder for WAT to WASM conversion
-function wat_to_wasm(wat::AbstractString)
-    throw(WasmtimeError("wat_to_wasm not yet implemented"))
-end
