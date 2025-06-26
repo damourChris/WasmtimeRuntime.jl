@@ -1,0 +1,7 @@
+{
+  "recommendations": [
+    "julialang.language-julia",
+    "tamasfe.even-better-toml",
+    "rioj7.command-variable"
+  ]
+}
