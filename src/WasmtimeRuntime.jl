@@ -3,17 +3,22 @@ module WasmtimeRuntime
 # Include LibWasmtime for low-level bindings
 include("LibWasmtime.jl")
 using .LibWasmtime
-# Include all components in the correct order
+
+# Core types and utilities
 include("types.jl")
 include("errors.jl")
 include("vec.jl")
-include("config.jl")
-include("engine.jl")
-include("store.jl")
 include("values.jl")
-include("module.jl")
-include("instance.jl")
 include("objects.jl")
+
+# Wasm
+include("wasm/engine.jl")
+include("wasm/module.jl")
+include("wasm/config.jl")
+
+# Wasmtime
+include("wasmtime/store.jl")
+include("wasmtime/instance.jl")
 
 export WasmtimeObject, WasmtimeResource, WasmtimeValue, WasmtimeType
 export AbstractEngine, AbstractConfig

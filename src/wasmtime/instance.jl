@@ -2,7 +2,7 @@
 
 # Instance implementation
 mutable struct Instance <: AbstractInstance
-    ptr::Ptr{LibWasmtime.wasmtime_instance_t}
+    instance::LibWasmtime.wasmtime_instance_t
     store::Store
     module_obj::Module
 

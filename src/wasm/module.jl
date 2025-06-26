@@ -2,29 +2,29 @@
 
 # Module implementation
 mutable struct WasmModule <: AbstractModule
-    ptr::Ptr{LibWasmtime.wasmtime_module_t}
-    engine::Engine
+    ptr::Ptr{LibWasmtime.wasm_module_t}
+    store::Store
 
-    function WasmModule(engine::Engine, wasm_bytes::Vector{UInt8})
-        isvalid(engine) || throw(WasmtimeError("Invalid engine"))
+    function WasmModule(store::Store, wasm_bytes::Vector{UInt8})
+        isvalid(store) || throw(WasmtimeError("Invalid store"))
 
         # Validate WebAssembly bytes first
-        validate(engine, wasm_bytes) || throw(WasmtimeError("Invalid WebAssembly module"))
+        validate(store, wasm_bytes) || throw(WasmtimeError("Invalid WebAssembly module"))
 
-        ptr_ref = Ref{Ptr{LibWasmtime.wasmtime_module_t}}()
-        error_ptr = LibWasmtime.wasmtime_module_new(
-            engine.ptr,
-            pointer(wasm_bytes),
-            length(wasm_bytes),
-            ptr_ref,
-        )
+        # Create a WasmByteVec from the bytes
+        byte_vec = WasmByteVec(wasm_bytes)
 
-        check_error(error_ptr)
+        # Create the module using the wasm C API
+        module_ptr = LibWasmtime.wasm_module_new(store.wasm_ptr, byte_vec)
 
-        module_obj = new(ptr_ref[], engine)
+        if module_ptr == C_NULL
+            throw(WasmtimeError("Failed to create WebAssembly module"))
+        end
+
+        module_obj = new(module_ptr, store)
         finalizer(module_obj) do m
             if m.ptr != C_NULL
-                LibWasmtime.wasmtime_module_delete(m.ptr)
+                LibWasmtime.wasm_module_delete(m.ptr)
                 m.ptr = C_NULL
             end
         end
@@ -36,17 +36,17 @@ end
 Base.isvalid(module_obj::WasmModule) = module_obj.ptr != C_NULL
 
 # Multiple ways to create modules
-WasmModule(engine::Engine, path::AbstractString) = WasmModule(engine, read(path))
+WasmModule(store::Store, path::AbstractString) = WasmModule(store, read(path))
 
-function WasmModule(engine::Engine, wat::AbstractString, ::Val{:wat})
+function WasmModule(store::Store, wat::AbstractString, ::Val{:wat})
     wasm_bytes = wat_to_wasm(wat)
-    WasmModule(engine, wasm_bytes)
+    WasmModule(store, wasm_bytes)
 end
 
 # Validation function
-function validate(engine::Engine, wasm_bytes::Vector{UInt8})::Bool
-    # Check for invalid engine first
-    if !isvalid(engine)
+function validate(store::Store, wasm_bytes::Vector{UInt8})::Bool
+    # Check for invalid store first
+    if !isvalid(store)
         return false
     end
 
@@ -56,23 +56,15 @@ function validate(engine::Engine, wasm_bytes::Vector{UInt8})::Bool
     end
 
     try
-        error_ptr = LibWasmtime.wasmtime_module_validate(
-            engine.ptr,
-            pointer(wasm_bytes),
-            length(wasm_bytes),
-        )
-        # wasmtime_module_validate returns NULL on success, error pointer on failure
-        return error_ptr == C_NULL
+        # Create a WasmByteVec from the bytes
+        byte_vec = WasmByteVec(wasm_bytes)
+
+        # wasm_module_validate returns 1 on success, 0 on failure
+        result = LibWasmtime.wasm_module_validate(store.wasm_ptr, byte_vec)
+        return result != 0
     catch
         return false
     end
-end
-
-# WAT to WASM conversion (placeholder)
-function wat_to_wasm(wat::AbstractString)::Vector{UInt8}
-    # This is a placeholder
-    # For now, assume the input is already WASM bytes
-    throw(WasmtimeError("WAT to WASM conversion not yet implemented"))
 end
 
 # Module introspection functions
@@ -98,4 +90,9 @@ function imports(module_obj::WasmModule)
     # TODO: Process imports and return structured data
     # For now, return empty dict as placeholder
     return Dict{String,Any}()
+end
+
+# Placeholder for WAT to WASM conversion
+function wat_to_wasm(wat::AbstractString)
+    throw(WasmtimeError("wat_to_wasm not yet implemented"))
 end
