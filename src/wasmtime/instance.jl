@@ -1,19 +1,21 @@
 # Instance implementation for WasmtimeRuntime
 
 # Instance implementation
-mutable struct Instance <: AbstractInstance
+mutable struct WasmtimeInstance <: AbstractInstance
     instance::LibWasmtime.wasmtime_instance_t
-    store::Store
-    module_obj::Module
 
-    function Instance(store::Store, module_obj::Module, imports::Vector = [])
+    function WasmtimeInstance(
+        store::WasmtimeStore,
+        module_obj::WasmtimeModule,
+        imports::Vector = [],
+    )
         isvalid(store) || throw(WasmtimeError("Invalid store"))
         isvalid(module_obj) || throw(WasmtimeError("Invalid module"))
 
         # Convert imports to wasmtime format (placeholder for now)
         # TODO: Implement proper import handling
 
-        ptr_ref = Ref{Ptr{LibWasmtime.wasmtime_instance_t}}()
+        instance_ptr_ref = Ref{Ptr{LibWasmtime.wasmtime_instance_t}}()
         trap_ptr = Ref{Ptr{LibWasmtime.wasm_trap_t}}()
 
         error_ptr = LibWasmtime.wasmtime_instance_new(
@@ -21,7 +23,7 @@ mutable struct Instance <: AbstractInstance
             module_obj.ptr,
             C_NULL,  # imports (empty for now)
             0,       # imports length
-            ptr_ref,
+            instance_ptr_ref,
             trap_ptr,
         )
 
@@ -34,7 +36,7 @@ mutable struct Instance <: AbstractInstance
 
         check_error(error_ptr)
 
-        instance = new(ptr_ref[], store, module_obj)
+        instance = new(instance_ptr_ref[])
         finalizer(instance) do i
             # Note: Instances are tied to the store lifecycle
             # No explicit delete needed
@@ -45,7 +47,7 @@ mutable struct Instance <: AbstractInstance
     end
 end
 
-Base.isvalid(instance::Instance) = instance.ptr != C_NULL
+Base.isvalid(instance::WasmtimeInstance) = instance.ptr != C_NULL
 
 # Convenience function for basic instantiation
-instantiate(store::Store, module_obj::Module) = Instance(store, module_obj)
+instantiate(store::WasmtimeStore, module_obj::Module) = WasmtimeInstance(store, module_obj)
