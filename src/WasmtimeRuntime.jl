@@ -35,6 +35,9 @@ include("values.jl")
 export WasmValue, WasmI32, WasmI64, WasmF32, WasmF64, WasmFuncRef, WasmExternRef, WasmV128
 export is_wasm_convertible, to_wasm, from_wasm
 
+include("wat2wasm.jl")
+export wat2wasm, @wat_str
+
 # Wasm
 include("wasm/config.jl")
 export WasmConfig
