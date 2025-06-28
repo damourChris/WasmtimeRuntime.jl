@@ -22,7 +22,7 @@ const JULIA_TO_WASM_TYPE_MAP = Dict(
     Float32 => (kind = LibWasmtime.WASM_F32, of_field = :f32),
     Float64 => (kind = LibWasmtime.WASM_F64, of_field = :f64),
     Any => (kind = LibWasmtime.WASM_ANYREF, of_field = :anyref),
-    AbstractFunc => (kind = LibWasmtime.WASM_FUNCREF, of_field = :funcref),
+    Function => (kind = LibWasmtime.WASM_FUNCREF, of_field = :funcref),
 )
 
 

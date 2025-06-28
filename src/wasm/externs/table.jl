@@ -12,7 +12,7 @@ mutable struct WasmTableType
     function WasmTableType(limits::Pair{Int,Int} = (0 => 0))
         # Convert limits to wasm_limits_t
         wasm_limits = WasmLimits(limits.first, limits.second)
-        table_valtype = WasmValType(AbstractFunc)
+        table_valtype = WasmValType(Function)
 
         tabletype_ptr = GC.@preserve wasm_limits LibWasmtime.wasm_tabletype_new(
             table_valtype,

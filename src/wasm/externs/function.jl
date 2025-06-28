@@ -1,4 +1,4 @@
-mutable struct WasmFuncType <: AbstractWasmExternType
+mutable struct WasmFuncType
     ptr::Ptr{LibWasmtime.wasm_functype_t}
 
     function WasmFuncType(params_types::Vector{DataType}, results_types::Vector{DataType})
@@ -31,7 +31,7 @@ Base.show(io::IO, func_type::WasmFuncType) = print(io, "WasmFuncType()")
 params(func_type::WasmFuncType) = LibWasmtime.wasm_functype_params(func_type)
 results(func_type::WasmFuncType) = LibWasmtime.wasm_functype_results(func_type)
 
-mutable struct WasmFunc <: AbstractWasmExtern
+mutable struct WasmFunc <: Function
     ptr::Ptr{LibWasmtime.wasm_func_t}
     func_type::WasmFuncType
 
