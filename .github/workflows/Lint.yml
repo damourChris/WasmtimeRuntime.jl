@@ -15,8 +15,8 @@ concurrency:
   cancel-in-progress: ${{ startsWith(github.ref, 'refs/pull/') }}
 
 jobs:
-
   lint:
+    if: github.event.pull_request.draft == false
     name: Linting
     runs-on: ubuntu-latest
     steps:
