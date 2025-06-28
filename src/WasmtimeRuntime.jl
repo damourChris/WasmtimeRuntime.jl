@@ -55,6 +55,8 @@ include("wasm/module.jl")
 export WasmModule
 export validate, exports, imports, wat_to_wasm
 
+include("wasm/instance.jl")
+export WasmInstance
 
 # Wasmtime
 include("wasmtime/store.jl")
