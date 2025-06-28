@@ -5,17 +5,10 @@ mutable struct WasmModule <: AbstractModule
     ptr::Ptr{LibWasmtime.wasm_module_t}
     store::WasmStore
 
-    function WasmModule(store::WasmStore, wasm_bytes::Vector{UInt8})
-        isvalid(store) || throw(WasmtimeError("Invalid store"))
-
-        # Validate WebAssembly bytes first
-        validate(store, wasm_bytes) || throw(WasmtimeError("Invalid WebAssembly bytes"))
-
-        # Create a WasmByteVec from the bytes
-        byte_vec = WasmByteVec(wasm_bytes)
+    function WasmModule(store::WasmStore, wasm_bytes::WasmByteVec)
 
         # Create the module using the wasm C API
-        module_ptr = LibWasmtime.wasm_module_new(store.ptr, byte_vec)
+        module_ptr = LibWasmtime.wasm_module_new(store.ptr, wasm_bytes)
 
         if module_ptr == C_NULL
             throw(WasmtimeError("Failed to create WebAssembly module"))
