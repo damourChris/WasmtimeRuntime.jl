@@ -34,6 +34,9 @@ mutable struct WasmModule <: AbstractModule
 end
 
 Base.isvalid(module_obj::WasmModule) = module_obj.ptr != C_NULL
+Base.unsafe_convert(::Type{Ptr{LibWasmtime.wasm_module_t}}, module_obj::WasmModule) =
+    module_obj.ptr
+Base.show(io::IO, module_obj::WasmModule) = print(io, "WasmModule()")
 
 # Multiple ways to create modules
 WasmModule(store::WasmStore, path::AbstractString) = WasmModule(store, read(path))
