@@ -16,7 +16,7 @@ on:
       - "docs/**"
       - "src/**"
       - "*.toml"
-    types: [opened, synchronize, reopened]
+    types: [opened, synchronize, reopened, ready_for_review]
 
 concurrency:
   # Skip intermediate builds: always.
