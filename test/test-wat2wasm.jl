@@ -75,3 +75,25 @@ Random.seed!(1234)
         @test_throws WasmtimeError wat2wasm(invalid_wat_code)
     end
 end
+
+@testset "Wat2wasm macro" begin
+    @testset "should convert WAT string to Wasm binary using macro" begin
+        # Define a simple WAT module
+        wasm_binary = wat"""
+        (module
+            (func (export "add") (param i32 i32) (result i32)
+                local.get 0
+                local.get 1
+                i32.add)
+        )
+        """
+
+        # Check that the result is a non-empty vector of UInt8
+        @test !isempty(wasm_binary)
+        @test length(wasm_binary) > 0
+
+        # Check that the Wasm code matches the expected binary format
+        @test wasm_binary[1:4] == UInt8[0x00, 0x61, 0x73, 0x6d]  # Magic number for Wasm
+    end
+
+end # testset Wat 2 Wasm conversion
