@@ -19,3 +19,29 @@ wat = """
 
 wasm = wat2wasm(wat)
 ```
+
+For convenience, you can also use the `@wat_str` macro to convert a WAT string into a WASM binary format:
+
+```julia
+using WasmtimeRuntime
+
+wasm_binary = @wat_str """
+(module
+  (func (export "add") (param i32 i32) (result i32)
+    local.get 0
+    local.get 1
+    i32.add)
+  )
+"""
+
+# or simply:
+
+wasm_binary = wat"""
+(module
+  (func (export "add") (param i32 i32) (result i32)
+    local.get 0
+    local.get 1
+    i32.add)
+  )
+"""
+```
