@@ -93,6 +93,27 @@ function WasmPtrVec(vec::Vector{Ptr{S}}) where {S}
     return WasmVec{vec_type,Ptr{S}}(vec)
 end
 
+function WasmPtrVec(vec::Vector{WasmValType{S}}) where {S}
+    # Convert WasmValType to Ptr{wasm_valtype_t}
+    ptr_vec = Vector{Ptr{wasm_valtype_t}}(undef, length(vec))
+    for (i, valtype) in enumerate(vec)
+        ptr_vec[i] = Base.unsafe_convert(Ptr{wasm_valtype_t}, valtype)
+    end
+    return WasmVec{wasm_valtype_vec_t,Ptr{wasm_valtype_t}}(ptr_vec)
+end
+
+function WasmPtrVec(vec::Vector{DataType})
+    # Convert DataType to WasmValType and then to Ptr{wasm_valtype_t}
+
+    ptr_vec = Vector{Ptr{wasm_valtype_t}}(undef, length(vec))
+    for (i, datatype) in enumerate(vec)
+        valtype = WasmValType(datatype)
+        ptr_vec[i] = Base.unsafe_convert(Ptr{wasm_valtype_t}, valtype)
+    end
+    return WasmVec{wasm_valtype_vec_t,Ptr{wasm_valtype_t}}(ptr_vec)
+end
+
+
 # AbstractVector interface implementation
 
 
