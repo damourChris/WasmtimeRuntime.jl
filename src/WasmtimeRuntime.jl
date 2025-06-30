@@ -9,6 +9,7 @@ include("types.jl")
 export WasmtimeObject, WasmtimeResource, WasmtimeValue, WasmtimeType
 export AbstractEngine, AbstractConfig
 export AbstractStore, AbstractModule, AbstractInstance
+export AbstractWasmExternType
 export AbstractFunc, AbstractMemory, AbstractGlobal, AbstractTable
 export OptimizationLevel, ProfilingStrategy
 export None, Speed, SpeedAndSize
@@ -60,6 +61,9 @@ export validate, exports, imports, wat_to_wasm
 
 include("wasm/instance.jl")
 export WasmInstance
+
+include("wasm/externs/function.jl")
+export WasmFunc, WasmFuncType, WasmValType
 
 # Wasmtime
 include("wasmtime/store.jl")

@@ -15,12 +15,10 @@ abstract type AbstractConfig <: WasmtimeObject end
 abstract type AbstractStore <: WasmtimeResource end
 abstract type AbstractModule <: WasmtimeResource end
 abstract type AbstractInstance <: WasmtimeResource end
+abstract type AbstractWasmExtern <: WasmtimeObject end
 
-# WebAssembly objects
-abstract type AbstractFunc <: WasmtimeResource end
-abstract type AbstractMemory <: WasmtimeResource end
-abstract type AbstractGlobal <: WasmtimeResource end
-abstract type AbstractTable <: WasmtimeResource end
+abstract type AbstractWasmExternType <: WasmtimeType end
+abstract type AbstractWasmExternObject <: AbstractWasmExtern end
 
 # Core enums for type safety
 @enum OptimizationLevel begin
