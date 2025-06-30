@@ -31,10 +31,7 @@ Base.unsafe_convert(::Type{Ptr{LibWasmtime.wasm_module_t}}, module_obj::WasmModu
     module_obj.ptr
 Base.show(io::IO, module_obj::WasmModule) = print(io, "WasmModule()")
 
-# Multiple ways to create modules
-WasmModule(store::WasmStore, path::AbstractString) = WasmModule(store, read(path))
-
-function WasmModule(store::WasmStore, wat::AbstractString, ::Val{:wat})
+function WasmModule(store::WasmStore, wat::AbstractString)
     wasm_bytes = wat_to_wasm(wat)
     WasmModule(store, wasm_bytes)
 end
