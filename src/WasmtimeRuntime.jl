@@ -15,10 +15,15 @@ export OptimizationLevel, ProfilingStrategy
 export None, Speed, SpeedAndSize
 export NoProfilingStrategy,
     JitdumpProfilingStrategy, VTuneProfilingStrategy, PerfMapProfilingStrategy
-
+export WasmExternFunc,
+    WasmExternGlobal, WasmExternTable, WasmExternMemory, WasmExternSharedMemory
 
 include("errors.jl")
 export WasmtimeError, check_error, @safe_resource
+
+include("values.jl")
+export WasmValue, WasmI32, WasmI64, WasmF32, WasmF64, WasmFuncRef, WasmExternRef, WasmV128
+export is_wasm_convertible, to_wasm, from_wasm
 
 include("vec.jl")
 export WasmVec, WasmByteVec, WasmValVec, WasmName
@@ -32,9 +37,6 @@ export WasmPtrVec,
     WasmFrameVec
 export to_julia_vector
 
-include("values.jl")
-export WasmValue, WasmI32, WasmI64, WasmF32, WasmF64, WasmFuncRef, WasmExternRef, WasmV128
-export is_wasm_convertible, to_wasm, from_wasm
 
 include("wat2wasm.jl")
 export wat2wasm, @wat_str
