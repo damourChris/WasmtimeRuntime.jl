@@ -1,4 +1,20 @@
-# WebAssembly value types for WasmtimeRuntime
+mutable struct WasmValType{S}
+    ptr::Ptr{LibWasmtime.wasm_valtype_t}
+
+    function WasmValType(dt::DataType)
+        valtype_ptr = LibWasmtime.wasm_valtype_new(to_wasm(dt))
+
+        @assert valtype_ptr != C_NULL "Failed to create WasmValType"
+
+        valtype = new{dt}(valtype_ptr)
+        return valtype
+    end
+end
+
+Base.unsafe_convert(::Type{Ptr{LibWasmtime.wasm_valtype_t}}, valtype::WasmValType) =
+    valtype.ptr
+Base.isvalid(valtype::WasmValType) = valtype.ptr != C_NULL
+Base.show(io::IO, valtype::WasmValType) = print(io, "WasmValType()")
 
 # Value type system using Julia's parametric types
 abstract type WasmValue{T} <: WasmtimeValue end
