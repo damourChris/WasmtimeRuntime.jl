@@ -186,6 +186,9 @@ if !@isdefined(WASMTIME_GENERATOR_FUNCTIONS_LOADED)
             "-Wextra",  # Extra warnings
         ]
 
+        default_args = get_default_args()
+        [push!(args, da) for da in default_args]
+
         # Include paths
         push!(args, "-I" * include_path)
 
