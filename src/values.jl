@@ -37,6 +37,7 @@ end
 julia_type_to_valtype(julia_type)::Ptr{wasm_valtype_t} =
     julia_type_to_valkind(julia_type) |> wasm_valtype_new
 
+abstract type WasmValue{T} end
 function WasmValue(value::T) where {T}
     val = Ref(wasm_val_t(tuple((zero(UInt8) for _ = 1:16)...)))
     ptr = Base.unsafe_convert(Ptr{wasm_val_t}, Base.pointer_from_objref(val))
@@ -73,9 +74,6 @@ function Base.convert(julia_type, wasm_val::wasm_val_t)
     jl_val = GC.@preserve ctag unsafe_load(Ptr{julia_type}(ptr))
     jl_val
 end
-
-Base.unsafe_convert(::Type{Ptr{wasm_val_t}}, val::WasmValue) =
-    Base.unsafe_convert(Ptr{wasm_val_t}, Base.pointer_from_objref(val))
 
 from_wasm(::Type{T}, val::WasmValue{T}) where {T} = val.value
 to_wasm(T::DataType) = JULIA_TO_WASM_TYPE_MAP[T].kind
