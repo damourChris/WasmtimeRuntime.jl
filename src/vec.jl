@@ -118,12 +118,9 @@ end
 
 
 Base.length(vec::WasmVec) = Int(vec.size)
-
 Base.size(vec::WasmVec) = (length(vec),)
-
 Base.eltype(::Type{<:WasmVec{T,S}}) where {T,S} = S
 Base.IndexStyle(::Type{<:WasmVec}) = IndexLinear()
-
 
 function Base.getindex(vec::WasmVec, i::Int)
     @boundscheck checkbounds(vec, i)
