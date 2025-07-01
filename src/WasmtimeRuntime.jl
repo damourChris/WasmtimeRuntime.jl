@@ -21,6 +21,9 @@ export WasmExternFunc,
 include("errors.jl")
 export WasmtimeError, check_error, @safe_resource
 
+include("utils.jl")
+export WasmLimits
+
 include("values.jl")
 export WasmValue, WasmI32, WasmI64, WasmF32, WasmF64, WasmFuncRef, WasmExternRef, WasmV128
 export is_wasm_convertible, to_wasm, from_wasm
