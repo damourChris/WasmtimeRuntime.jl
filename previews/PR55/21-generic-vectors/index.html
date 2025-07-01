@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><title>Generic Vector Wrapper (WasmVec) · WasmtimeRuntime.jl</title><meta name="title" content="Generic Vector Wrapper (WasmVec) · WasmtimeRuntime.jl"/><meta property="og:title" content="Generic Vector Wrapper (WasmVec) · WasmtimeRuntime.jl"/><meta property="twitter:title" content="Generic Vector Wrapper (WasmVec) · WasmtimeRuntime.jl"/><meta name="description" content="Documentation for WasmtimeRuntime.jl."/><meta property="og:description" content="Documentation for WasmtimeRuntime.jl."/><meta property="twitter:description" content="Documentation for WasmtimeRuntime.jl."/><meta property="og:url" content="https://damourChris.github.io/WasmtimeRuntime.jl/21-generic-vectors/"/><meta property="twitter:url" content="https://damourChris.github.io/WasmtimeRuntime.jl/21-generic-vectors/"/><link rel="canonical" href="https://damourChris.github.io/WasmtimeRuntime.jl/21-generic-vectors/"/><script data-outdated-warner src="../assets/warner.js"></script><link href="https://cdnjs.cloudflare.com/ajax/libs/lato-font/3.0.0/css/lato-font.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/juliamono/0.050/juliamono.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/fontawesome.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/solid.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/brands.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.8/katex.min.css" rel="stylesheet" type="text/css"/><script>documenterBaseURL=".."</script><script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.6/require.min.js" data-main="../assets/documenter.js"></script><script src="../search_index.js"></script><script src="../siteinfo.js"></script><script src="../../versions.js"></script><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../assets/themes/catppuccin-mocha.css" data-theme-name="catppuccin-mocha"/><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../assets/themes/catppuccin-macchiato.css" data-theme-name="catppuccin-macchiato"/><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../assets/themes/catppuccin-frappe.css" data-theme-name="catppuccin-frappe"/><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../assets/themes/catppuccin-latte.css" data-theme-name="catppuccin-latte"/><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../assets/themes/documenter-dark.css" data-theme-name="documenter-dark" data-theme-primary-dark/><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../assets/themes/documenter-light.css" data-theme-name="documenter-light" data-theme-primary/><script src="../assets/themeswap.js"></script></head><body><div id="documenter"><nav class="docs-sidebar"><div class="docs-package-name"><span class="docs-autofit"><a href="../">WasmtimeRuntime.jl</a></span></div><button class="docs-search-query input is-rounded is-small is-clickable my-2 mx-auto py-1 px-2" id="documenter-search-query">Search docs (Ctrl + /)</button><ul class="docs-menu"><li><a class="tocitem" href="../">WasmtimeRuntime</a></li><li class="is-active"><a class="tocitem" href>Generic Vector Wrapper (<code>WasmVec</code>)</a><ul class="internal"><li><a class="tocitem" href="#Overview"><span>Overview</span></a></li><li><a class="tocitem" href="#Type-Parameters"><span>Type Parameters</span></a></li><li><a class="tocitem" href="#Basic-Usage"><span>Basic Usage</span></a></li><li><a class="tocitem" href="#Type-Aliases"><span>Type Aliases</span></a></li><li><a class="tocitem" href="#Memory-Management"><span>Memory Management</span></a></li><li><a class="tocitem" href="#C-Interoperability"><span>C Interoperability</span></a></li><li><a class="tocitem" href="#Working-with-Pointers"><span>Working with Pointers</span></a></li><li><a class="tocitem" href="#Type-Safety"><span>Type Safety</span></a></li><li><a class="tocitem" href="#Examples"><span>Examples</span></a></li></ul></li><li><a class="tocitem" href="../40-instances/">WebAssembly Instances</a></li><li><a class="tocitem" href="../50-functions/">Function Calling and Type Conversion</a></li><li><a class="tocitem" href="../51-memory/">WebAssembly Memory</a></li><li><a class="tocitem" href="../81-conversions/">Conversion</a></li><li><a class="tocitem" href="../90-contributing/">Contributing guidelines</a></li><li><a class="tocitem" href="../91-developer/">Developer documentation</a></li><li><a class="tocitem" href="../95-reference/">Reference</a></li></ul><div class="docs-version-selector field has-addons"><div class="control"><span class="docs-label button is-static is-size-7">Version</span></div><div class="docs-selector control is-expanded"><div class="select is-fullwidth is-size-7"><select id="documenter-version-selector"></select></div></div></div></nav><div class="docs-main"><header class="docs-navbar"><a class="docs-sidebar-button docs-navbar-link fa-solid fa-bars is-hidden-desktop" id="documenter-sidebar-button" href="#"></a><nav class="breadcrumb"><ul class="is-hidden-mobile"><li class="is-active"><a href>Generic Vector Wrapper (<code>WasmVec</code>)</a></li></ul><ul class="is-hidden-tablet"><li class="is-active"><a href>Generic Vector Wrapper (<code>WasmVec</code>)</a></li></ul></nav><div class="docs-right"><a class="docs-navbar-link" href="https://github.com/damourChris/WasmtimeRuntime.jl/blob/main/docs/src/21-generic-vectors.md#" title="Edit source on GitHub"><span class="docs-icon fa-solid"></span></a><a class="docs-settings-button docs-navbar-link fa-solid fa-gear" id="documenter-settings-button" href="#" title="Settings"></a><a class="docs-article-toggle-button fa-solid fa-chevron-up" id="documenter-article-toggle-button" href="javascript:;" title="Collapse all docstrings"></a></div></header><article class="content" id="documenter-page"><h1 id="Generic-Vector-Wrapper-(WasmVec)"><a class="docs-heading-anchor" href="#Generic-Vector-Wrapper-(WasmVec)">Generic Vector Wrapper (<code>WasmVec</code>)</a><a id="Generic-Vector-Wrapper-(WasmVec)-1"></a><a class="docs-heading-anchor-permalink" href="#Generic-Vector-Wrapper-(WasmVec)" title="Permalink"></a></h1><p>The <code>WasmVec{T,S}</code> type provides a unified, Julia-idiomatic interface for all Wasmtime vector types (<code>wasm_XXX_vec_t</code>). It implements the <code>AbstractVector</code> interface, allowing seamless integration with Julia&#39;s ecosystem while maintaining automatic memory management.</p><h2 id="Overview"><a class="docs-heading-anchor" href="#Overview">Overview</a><a id="Overview-1"></a><a class="docs-heading-anchor-permalink" href="#Overview" title="Permalink"></a></h2><p>Wasmtime defines numerous vector types such as:</p><ul><li><code>wasm_extern_vec_t</code> - for collections of externals</li><li><code>wasm_importtype_vec_t</code> - for import type collections</li><li><code>wasm_exporttype_vec_t</code> - for export type collections</li><li><code>wasm_valtype_vec_t</code> - for value type collections</li><li><code>wasm_val_vec_t</code> - for value collections</li><li><code>wasm_byte_vec_t</code> - for byte/string data</li><li>And many more...</li></ul><p>Instead of handling each type manually, <code>WasmVec</code> provides a generic wrapper that works with all of them.</p><h2 id="Type-Parameters"><a class="docs-heading-anchor" href="#Type-Parameters">Type Parameters</a><a id="Type-Parameters-1"></a><a class="docs-heading-anchor-permalink" href="#Type-Parameters" title="Permalink"></a></h2><ul><li><code>T</code>: The underlying C vector type (e.g., <code>wasm_extern_vec_t</code>)</li><li><code>S</code>: The element type (e.g., <code>Ptr{wasm_extern_t}</code> or <code>UInt8</code>)</li></ul><h2 id="Basic-Usage"><a class="docs-heading-anchor" href="#Basic-Usage">Basic Usage</a><a id="Basic-Usage-1"></a><a class="docs-heading-anchor-permalink" href="#Basic-Usage" title="Permalink"></a></h2><h3 id="Creating-Vectors"><a class="docs-heading-anchor" href="#Creating-Vectors">Creating Vectors</a><a id="Creating-Vectors-1"></a><a class="docs-heading-anchor-permalink" href="#Creating-Vectors" title="Permalink"></a></h3><pre><code class="language-julia hljs"># From Julia vectors (automatic type detection)
+bytes = UInt8[0x48, 0x65, 0x6c, 0x6c, 0x6f]  # &quot;Hello&quot;
+vec = WasmVec(bytes)
+
+# Explicit type specification
+using Wasmtime.LibWasmtime: wasm_byte_vec_t
+vec = WasmVec{wasm_byte_vec_t, UInt8}(bytes)
+
+# Using type aliases
+vec = WasmByteVec(bytes)
+
+# Empty vectors
+empty_vec = WasmVec(UInt8)</code></pre><h3 id="AbstractVector-Interface"><a class="docs-heading-anchor" href="#AbstractVector-Interface">AbstractVector Interface</a><a id="AbstractVector-Interface-1"></a><a class="docs-heading-anchor-permalink" href="#AbstractVector-Interface" title="Permalink"></a></h3><pre><code class="language-julia hljs">vec = WasmVec(UInt8[1, 2, 3, 4, 5])
+
+# Length and size
+length(vec)  # 5
+size(vec)    # (5,)
+isempty(vec) # false
+
+# Indexing
+vec[1]       # 0x01
+vec[end]     # 0x05
+vec[2:4]     # [0x02, 0x03, 0x04]
+
+# Assignment
+vec[1] = 10  # vec is now [10, 2, 3, 4, 5]
+
+# Iteration
+for x in vec
+    println(x)
+end
+
+# Bounds checking is automatic
+vec[10]  # BoundsError</code></pre><h3 id="Conversion"><a class="docs-heading-anchor" href="#Conversion">Conversion</a><a id="Conversion-1"></a><a class="docs-heading-anchor-permalink" href="#Conversion" title="Permalink"></a></h3><pre><code class="language-julia hljs"># Convert back to Julia vector
+julia_vec = to_julia_vector(wasm_vec)
+# or
+julia_vec = collect(wasm_vec)
+
+# Copy a WasmVec
+copied = copy(wasm_vec)</code></pre><h2 id="Type-Aliases"><a class="docs-heading-anchor" href="#Type-Aliases">Type Aliases</a><a id="Type-Aliases-1"></a><a class="docs-heading-anchor-permalink" href="#Type-Aliases" title="Permalink"></a></h2><p>For convenience, several type aliases are provided:</p><pre><code class="language-julia hljs"># Byte vectors (for strings and binary data)
+const WasmByteVec = WasmVec{wasm_byte_vec_t, UInt8}
+const WasmName = WasmByteVec
+
+# Common vector types
+const WasmExternVec = WasmVec{wasm_extern_vec_t, Ptr{wasm_extern_t}}
+const WasmImportTypeVec = WasmVec{wasm_importtype_vec_t, Ptr{wasm_importtype_t}}
+const WasmExportTypeVec = WasmVec{wasm_exporttype_vec_t, Ptr{wasm_exporttype_t}}
+const WasmValtypeVec = WasmVec{wasm_valtype_vec_t, Ptr{wasm_valtype_t}}
+const WasmValVec = WasmVec{wasm_val_vec_t, wasm_val_t}
+const WasmTableTypeVec = WasmVec{wasm_tabletype_vec_t, Ptr{wasm_tabletype_t}}
+const WasmExternTypeVec = WasmVec{wasm_externtype_vec_t, Ptr{wasm_externtype_t}}
+const WasmFrameVec = WasmVec{wasm_frame_vec_t, Ptr{wasm_frame_t}}</code></pre><h2 id="Memory-Management"><a class="docs-heading-anchor" href="#Memory-Management">Memory Management</a><a id="Memory-Management-1"></a><a class="docs-heading-anchor-permalink" href="#Memory-Management" title="Permalink"></a></h2><p><code>WasmVec</code> handles memory management automatically:</p><ul><li>Memory is allocated when creating the vector</li><li>A finalizer is set up to call the appropriate <code>wasm_XXX_vec_delete</code> function</li><li>Memory is automatically freed when the vector goes out of scope</li><li>No manual cleanup required.</li></ul><pre><code class="language-julia hljs">function create_vector()
+    vec = WasmVec(UInt8[1, 2, 3, 4, 5])
+    return length(vec)
+end  # vec automatically cleaned up here
+
+len = create_vector()  # Memory is properly managed</code></pre><h2 id="C-Interoperability"><a class="docs-heading-anchor" href="#C-Interoperability">C Interoperability</a><a id="C-Interoperability-1"></a><a class="docs-heading-anchor-permalink" href="#C-Interoperability" title="Permalink"></a></h2><p>For interfacing with C functions, <code>WasmVec</code> provides unsafe conversion methods:</p><pre><code class="language-julia hljs">vec = WasmVec(UInt8[1, 2, 3])
+
+# Convert to pointer to the C struct
+struct_ptr = Base.unsafe_convert(Ptr{wasm_byte_vec_t}, vec)
+
+# Convert to pointer to the data
+data_ptr = Base.unsafe_convert(Ptr{UInt8}, vec)
+
+# Use with C functions
+some_c_function(struct_ptr)</code></pre><h2 id="Working-with-Pointers"><a class="docs-heading-anchor" href="#Working-with-Pointers">Working with Pointers</a><a id="Working-with-Pointers-1"></a><a class="docs-heading-anchor-permalink" href="#Working-with-Pointers" title="Permalink"></a></h2><p>For vectors that contain pointers (most Wasmtime types), use <code>WasmPtrVec</code>:</p><pre><code class="language-julia hljs"># Create vector of pointers
+ptrs = [ptr1, ptr2, ptr3]  # Ptr{wasm_extern_t}
+extern_vec = WasmPtrVec(ptrs)
+
+# Or use type-specific aliases
+extern_vec = WasmExternVec(ptrs)</code></pre><h2 id="Type-Safety"><a class="docs-heading-anchor" href="#Type-Safety">Type Safety</a><a id="Type-Safety-1"></a><a class="docs-heading-anchor-permalink" href="#Type-Safety" title="Permalink"></a></h2><p>The wrapper provides compile-time type safety:</p><pre><code class="language-julia hljs">vec = WasmVec(UInt8[1, 2, 3])
+
+# This will cause a compile error
+vec[1] = &quot;wrong type&quot;  # MethodError
+
+# Element types must match
+vec[1] = UInt8(42)  # ✓ Correct</code></pre><p>Assignment and indexing operations ensure that the types are consistent with the underlying C vector type, preventing runtime errors. Meaning,</p><pre><code class="language-julia hljs"># Element types must match
+vec[1] = UInt8(42)  # ✓ Correct
+
+vec[1] = Int32(42)  # ✓ Correct but will convert to UInt8
+
+# This will cause a compile error
+vec[1] = &quot;wrong type&quot;  # MethodError</code></pre><h2 id="Examples"><a class="docs-heading-anchor" href="#Examples">Examples</a><a id="Examples-1"></a><a class="docs-heading-anchor-permalink" href="#Examples" title="Permalink"></a></h2><h3 id="String-Handling"><a class="docs-heading-anchor" href="#String-Handling">String Handling</a><a id="String-Handling-1"></a><a class="docs-heading-anchor-permalink" href="#String-Handling" title="Permalink"></a></h3><pre><code class="language-julia hljs"># Create a string as bytes
+hello = &quot;Hello, World!&quot;
+bytes = Vector{UInt8}(hello)
+name_vec = WasmName(bytes)
+
+# Use in Wasmtime functions
+# module_name = wasmtime_module_name(module, name_vec)
+
+# Convert back to string
+result_string = String(collect(name_vec))</code></pre></article><nav class="docs-footer"><a class="docs-footer-prevpage" href="../">« WasmtimeRuntime</a><a class="docs-footer-nextpage" href="../40-instances/">WebAssembly Instances »</a><div class="flexbox-break"></div><p class="footer-message">Powered by <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> and the <a href="https://julialang.org/">Julia Programming Language</a>.</p></nav></div><div class="modal" id="documenter-settings"><div class="modal-background"></div><div class="modal-card"><header class="modal-card-head"><p class="modal-card-title">Settings</p><button class="delete"></button></header><section class="modal-card-body"><p><label class="label">Theme</label><div class="select"><select id="documenter-themepicker"><option value="auto">Automatic (OS)</option><option value="documenter-light">documenter-light</option><option value="documenter-dark">documenter-dark</option><option value="catppuccin-latte">catppuccin-latte</option><option value="catppuccin-frappe">catppuccin-frappe</option><option value="catppuccin-macchiato">catppuccin-macchiato</option><option value="catppuccin-mocha">catppuccin-mocha</option></select></div></p><hr/><p>This document was generated with <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> version 1.13.0 on <span class="colophon-date" title="Tuesday 1 July 2025 21:51">Tuesday 1 July 2025</span>. Using Julia version 1.11.5.</p></section><footer class="modal-card-foot"></footer></div></div></div></body></html>
