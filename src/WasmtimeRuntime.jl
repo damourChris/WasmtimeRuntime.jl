@@ -67,6 +67,9 @@ export WasmInstance
 include("wasm/externs/function.jl")
 export WasmFunc, WasmFuncType, WasmValType
 
+include("wasm/externs/memory.jl")
+export WasmMemory, WasmMemoryType
+
 # Wasmtime
 include("wasmtime/store.jl")
 export WasmtimeStore
