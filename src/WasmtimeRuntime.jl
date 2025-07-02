@@ -76,6 +76,9 @@ export WasmMemory, WasmMemoryType
 include("wasm/externs/table.jl")
 export WasmTable, WasmTableType
 
+include("wasm/externs/global.jl")
+export WasmGlobal, WasmGlobalType
+
 # Wasmtime
 include("wasmtime/store.jl")
 export WasmtimeStore
