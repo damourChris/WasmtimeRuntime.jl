@@ -120,13 +120,6 @@ function process_wasm()
 end
 ```
 
-## Next Steps
-
-<!-- - Read the [API Reference](@ref) for detailed function documentation
-- Explore [Generic Vectors](@ref) for working with WebAssembly collections
-- Check out [Testing Best Practices](@ref) if you're developing with WebAssembly
-- See the [Developer Documentation](@ref dev_docs) for contributing to the project -->
-
 ## Example: Complete Workflow
 
 Here's a complete example using currently implemented features:
