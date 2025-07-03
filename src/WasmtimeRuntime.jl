@@ -21,6 +21,9 @@ export WasmExternFunc,
 include("errors.jl")
 export WasmtimeError, check_error, @safe_resource
 
+include("traps.jl")
+export WasmTrap
+
 include("utils.jl")
 export WasmLimits
 
