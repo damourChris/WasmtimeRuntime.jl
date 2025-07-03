@@ -1,7 +1,7 @@
 # WasmtimeRuntime
 
 <!-- [![Stable Documentation](https://img.shields.io/badge/docs-stable-blue.svg)](https://damourChris.github.io/WasmtimeRuntime.jl/stable) -->
-<!-- [![Development documentation](https://img.shields.io/badge/docs-dev-blue.svg)](https://damourChris.github.io/WasmtimeRuntime.jl/dev) -->
+[![Development documentation](https://img.shields.io/badge/docs-dev-blue.svg)](https://damourChris.github.io/WasmtimeRuntime.jl/dev)
 [![Test workflow status](https://github.com/damourChris/WasmtimeRuntime.jl/actions/workflows/Test.yml/badge.svg?branch=main)](https://github.com/damourChris/WasmtimeRuntime.jl/actions/workflows/Test.yml?query=branch%3Amain)
 [![Coverage](https://codecov.io/gh/damourChris/WasmtimeRuntime.jl/branch/main/graph/badge.svg)](https://codecov.io/gh/damourChris/WasmtimeRuntime.jl)
 [![Lint workflow Status](https://github.com/damourChris/WasmtimeRuntime.jl/actions/workflows/Lint.yml/badge.svg?branch=main)](https://github.com/damourChris/WasmtimeRuntime.jl/actions/workflows/Lint.yml?query=branch%3Amain)
