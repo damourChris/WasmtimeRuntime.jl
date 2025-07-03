@@ -122,10 +122,10 @@ end
 
 ## Next Steps
 
-- Read the [API Reference](@ref reference) for detailed function documentation
+<!-- - Read the [API Reference](@ref) for detailed function documentation
 - Explore [Generic Vectors](@ref) for working with WebAssembly collections
 - Check out [Testing Best Practices](@ref) if you're developing with WebAssembly
-- See the [Developer Documentation](@ref dev_docs) for contributing to the project
+- See the [Developer Documentation](@ref dev_docs) for contributing to the project -->
 
 ## Example: Complete Workflow
 
