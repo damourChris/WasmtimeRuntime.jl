@@ -85,3 +85,5 @@ end
 Base.unsafe_convert(::Type{Ptr{LibWasmtime.wasm_extern_t}}, extern::WasmExtern) = extern.ptr
 Base.show(io::IO, extern::WasmExtern) = print(io, "WasmExtern()")
 Base.isvalid(extern::WasmExtern) = extern.ptr != C_NULL
+
+externtype(::WasmExtern{E}) where {E<:WasmExternObjectType} = E
