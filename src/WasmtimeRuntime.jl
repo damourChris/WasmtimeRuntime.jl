@@ -82,7 +82,7 @@ export WasmGlobal, WasmGlobalType
 
 
 include("wasm/extern.jl")
-export WasmExtern, WasmExternObjectType
+export WasmExtern, WasmExternObjectType, externtype
 
 
 # Wasmtime
