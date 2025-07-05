@@ -6,7 +6,8 @@ end
 function WasmTrap(ptr::Ptr{LibWasmtime.wasm_trap_t})
     msg = WasmByteVec()
     LibWasmtime.wasm_trap_message(ptr, msg)
-    return WasmTrap(ptr, msg)
+    msg_string = unsafe_string(msg.data, msg.size)
+    return WasmTrap(ptr, msg_string)
 end
 
 function Base.:(==)(a::WasmTrap, b::WasmTrap)
