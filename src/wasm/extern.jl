@@ -82,8 +82,80 @@ function WasmExtern(obj::WasmExternObjectType)
     return wasm_extern
 end
 
+
+function WasmExtern(ptr::Ptr{LibWasmtime.wasm_extern_t})::WasmExtern
+    # Validate the pointer
+    if ptr == C_NULL
+        throw(ArgumentError("Invalid wasm_extern_t pointer"))
+    end
+
+    # Find out what kind of extern this is
+    extern_kind = LibWasmtime.wasm_extern_kind(ptr)
+    if extern_kind == C_NULL
+        throw(ArgumentError("Invalid extern type kind"))
+    end
+
+    # Convert the extern pointer to the appropriate type
+    if extern_kind == LibWasmtime.WASM_EXTERN_FUNC
+        E = WasmFunc
+        wasm_extern_obj = LibWasmtime.wasm_extern_as_func(ptr)
+    elseif extern_kind == LibWasmtime.WASM_EXTERN_GLOBAL
+        E = WasmGlobal
+        wasm_extern_obj = LibWasmtime.wasm_extern_as_global(ptr)
+    elseif extern_kind == LibWasmtime.WASM_EXTERN_TABLE
+        E = WasmTable
+        wasm_extern_obj = LibWasmtime.wasm_extern_as_table(ptr)
+    elseif extern_kind == LibWasmtime.WASM_EXTERN_MEMORY
+        E = WasmMemory
+        wasm_extern_obj = LibWasmtime.wasm_extern_as_memory(ptr)
+    else
+        throw(ArgumentError("Unsupported extern type: $(extern_kind)"))
+    end
+
+    return WasmExtern{E}(wasm_extern_obj)
+end
+
 Base.unsafe_convert(::Type{Ptr{LibWasmtime.wasm_extern_t}}, extern::WasmExtern) = extern.ptr
+Base.unsafe_convert(::Type{Ptr{LibWasmtime.wasm_func_t}}, extern::WasmExtern{WasmFunc}) =
+    LibWasmtime.wasm_extern_as_func(extern)
+Base.unsafe_convert(
+    ::Type{Ptr{LibWasmtime.wasm_global_t}},
+    extern::WasmExtern{WasmGlobal},
+) = LibWasmtime.wasm_extern_as_global(extern)
+Base.unsafe_convert(::Type{Ptr{LibWasmtime.wasm_table_t}}, extern::WasmExtern{WasmTable}) =
+    LibWasmtime.wasm_extern_as_table(extern)
+Base.unsafe_convert(
+    ::Type{Ptr{LibWasmtime.wasm_memory_t}},
+    extern::WasmExtern{WasmMemory},
+) = LibWasmtime.wasm_extern_as_memory(extern)
+
 Base.show(io::IO, extern::WasmExtern) = print(io, "WasmExtern()")
 Base.isvalid(extern::WasmExtern) = extern.ptr != C_NULL
 
 externtype(::WasmExtern{E}) where {E<:WasmExternObjectType} = E
+
+function (extern::WasmExtern{WasmFunc})(args...)
+    # Turn the WasmExtern back into a WasmFunc
+
+    wasm_func = WasmFunc(LibWasmtime.wasm_extern_as_func(extern))
+    if wasm_func == C_NULL
+        throw(ArgumentError("Invalid WasmFunc pointer in WasmExtern"))
+    end
+
+    wasm_func.ptr
+
+    # Call the WasmFunc with the provided arguments
+    return wasm_func(args...)
+end
+
+unwrap_extern(ptr::Ptr{LibWasmtime.wasm_extern_t})::WasmExternObjectType =
+    unwrap_extern(WasmExtern(ptr))
+
+unwrap_extern(extern::WasmExtern{WasmFunc})::WasmFunc =
+    WasmFunc(LibWasmtime.wasm_extern_as_func(extern))
+unwrap_extern(extern::WasmExtern{WasmGlobal})::WasmGlobal =
+    WasmGlobal(LibWasmtime.wasm_extern_as_global(extern))
+unwrap_extern(extern::WasmExtern{WasmTable})::WasmTable =
+    WasmTable(LibWasmtime.wasm_extern_as_table(extern))
+unwrap_extern(extern::WasmExtern{WasmMemory})::WasmMemory =
+    WasmMemory(LibWasmtime.wasm_extern_as_memory(extern))
