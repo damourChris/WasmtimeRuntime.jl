@@ -85,6 +85,10 @@ include("wasm/extern.jl")
 export WasmExtern, WasmExternObjectType, externtype
 
 
+include("wasm/exports.jl")
+export WasmModuleExport, WasmInstanceExport, name, exporttype
+
+
 # Wasmtime
 include("wasmtime/store.jl")
 export WasmtimeStore

@@ -16,6 +16,7 @@ abstract type AbstractStore <: WasmtimeResource end
 abstract type AbstractModule <: WasmtimeResource end
 abstract type AbstractInstance <: WasmtimeResource end
 abstract type AbstractWasmExtern <: WasmtimeObject end
+abstract type AbstractWasmExport <: WasmtimeObject end
 
 # WebAssembly externs
 abstract type AbstractWasmExternType <: WasmtimeType end
