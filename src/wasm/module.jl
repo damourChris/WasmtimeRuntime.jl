@@ -72,12 +72,17 @@ function exports(module_obj::WasmModule)
     isvalid(module_obj) || throw(WasmtimeError("Invalid module"))
 
     # Initialize the vector properly - allocate it on the stack
-    exports_vec = Ref(LibWasmtime.wasm_exporttype_vec_t(C_NULL, 0))
-    LibWasmtime.wasm_module_exports(module_obj.ptr, exports_vec)
+    exports_vec = WasmExportTypeVec()
+    LibWasmtime.wasm_module_exports(module_obj, exports_vec)
 
-    # TODO: Process exports and return structured data
-    # For now, return empty dict as placeholder
-    return Dict{String,Any}()
+    # Create WasmModuleExport objects for each export
+    exports_list = Vector{Tuple{String,WasmModuleExport}}(undef, length(exports_vec))
+    for (i, exporttype_ptr) in enumerate(exports_vec)
+        export_ = WasmModuleExport(exporttype_ptr)
+        export_name = name(export_)
+        exports_list[i] = (export_name, export_)
+    end
+    return exports_list
 end
 
 function imports(module_obj::WasmModule)
