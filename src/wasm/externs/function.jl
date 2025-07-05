@@ -33,7 +33,6 @@ results(func_type::WasmFuncType) = LibWasmtime.wasm_functype_results(func_type)
 
 mutable struct WasmFunc <: Function
     ptr::Ptr{LibWasmtime.wasm_func_t}
-    func_type::WasmFuncType
 end
 
 function WasmFunc(store::WasmStore, func::Function)
@@ -109,7 +108,7 @@ function WasmFunc(store::WasmStore, func::Function)
     add_extern_func!(store, func_ptr)
 
 
-    wasmfunc = WasmFunc(host_func_ptr, functype)
+    wasmfunc = WasmFunc(host_func_ptr)
 
     finalizer(wasmfunc) do f
         if f.ptr != C_NULL
