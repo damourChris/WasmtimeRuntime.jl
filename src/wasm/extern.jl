@@ -51,35 +51,35 @@ memory_extern = WasmExtern(memory)
 """
 mutable struct WasmExtern{E<:WasmExternObjectType} <: AbstractWasmExtern
     ptr::Ptr{LibWasmtime.wasm_extern_t}
+end
 
-    function WasmExtern(obj::WasmExternObjectType)
-        # Validate the input object
-        if !isvalid(obj)
-            throw(ArgumentError("Invalid $(typeof(obj)) object"))
-        end
-
-        # Convert the specific extern object to generic wasm_extern_t
-        # Each extern type has its own _as_extern conversion function
-        if obj isa WasmFunc
-            ptr = LibWasmtime.wasm_func_as_extern(obj.ptr)
-        elseif obj isa WasmGlobal
-            ptr = LibWasmtime.wasm_global_as_extern(obj.ptr)
-        elseif obj isa WasmTable
-            ptr = LibWasmtime.wasm_table_as_extern(obj.ptr)
-        elseif obj isa WasmMemory
-            ptr = LibWasmtime.wasm_memory_as_extern(obj.ptr)
-        else
-            throw(ArgumentError("Unsupported WasmExtern object type: $(typeof(obj))"))
-        end
-
-        # Validate the conversion succeeded
-        if ptr == C_NULL
-            throw(ArgumentError("Failed to convert $(typeof(obj)) to WasmExtern"))
-        end
-
-        wasm_extern = new{typeof(obj)}(ptr)
-        return wasm_extern
+function WasmExtern(obj::WasmExternObjectType)
+    # Validate the input object
+    if !isvalid(obj)
+        throw(ArgumentError("Invalid $(typeof(obj)) object"))
     end
+
+    # Convert the specific extern object to generic wasm_extern_t
+    # Each extern type has its own _as_extern conversion function
+    if obj isa WasmFunc
+        ptr = LibWasmtime.wasm_func_as_extern(obj.ptr)
+    elseif obj isa WasmGlobal
+        ptr = LibWasmtime.wasm_global_as_extern(obj.ptr)
+    elseif obj isa WasmTable
+        ptr = LibWasmtime.wasm_table_as_extern(obj.ptr)
+    elseif obj isa WasmMemory
+        ptr = LibWasmtime.wasm_memory_as_extern(obj.ptr)
+    else
+        throw(ArgumentError("Unsupported WasmExtern object type: $(typeof(obj))"))
+    end
+
+    # Validate the conversion succeeded
+    if ptr == C_NULL
+        throw(ArgumentError("Failed to convert $(typeof(obj)) to WasmExtern"))
+    end
+
+    wasm_extern = new{typeof(obj)}(ptr)
+    return wasm_extern
 end
 
 Base.unsafe_convert(::Type{Ptr{LibWasmtime.wasm_extern_t}}, extern::WasmExtern) = extern.ptr
