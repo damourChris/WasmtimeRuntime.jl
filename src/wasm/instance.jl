@@ -1,5 +1,6 @@
 mutable struct WasmInstance
     ptr::Ptr{wasm_instance_t}
+    module_::WasmModule
 
     function WasmInstance(store::WasmStore, module_::WasmModule)
         # Validate store and module
@@ -24,7 +25,7 @@ mutable struct WasmInstance
 
         @assert wasm_instance_ptr != C_NULL "Failed to create WASM instance"
 
-        instance = new(wasm_instance_ptr)
+        instance = new(wasm_instance_ptr, module_)
 
         finalizer(instance) do wasm_instance
             if wasm_instance.ptr != C_NULL
