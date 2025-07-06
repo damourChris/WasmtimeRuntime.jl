@@ -57,28 +57,29 @@ Implements AbstractVector interface for element access.
 mutable struct WasmTable <: AbstractVector{Union{Nothing,Ptr{LibWasmtime.wasm_ref_t}}}
     ptr::Ptr{LibWasmtime.wasm_table_t}
 
-    function WasmTable(store::WasmStore, table_type::WasmTableType)
-        if !isvalid(store) || !isvalid(table_type)
-            throw(ArgumentError("Invalid store or table type"))
-        end
+end
 
-        table_ptr = LibWasmtime.wasm_table_new(store, table_type, C_NULL)
-
-        if table_ptr == C_NULL
-            throw(ArgumentError("Failed to create WasmTable"))
-        end
-
-        table = new(table_ptr)
-
-        finalizer(table) do t
-            if t.ptr != C_NULL
-                LibWasmtime.wasm_table_delete(t.ptr)
-                t.ptr = C_NULL
-            end
-        end
-
-        return table
+function WasmTable(store::WasmStore, table_type::WasmTableType)
+    if !isvalid(store) || !isvalid(table_type)
+        throw(ArgumentError("Invalid store or table type"))
     end
+
+    table_ptr = LibWasmtime.wasm_table_new(store, table_type, C_NULL)
+
+    if table_ptr == C_NULL
+        throw(ArgumentError("Failed to create WasmTable"))
+    end
+
+    table = WasmTable(table_ptr)
+
+    finalizer(table) do t
+        if t.ptr != C_NULL
+            LibWasmtime.wasm_table_delete(t.ptr)
+            t.ptr = C_NULL
+        end
+    end
+
+    return table
 end
 
 Base.unsafe_convert(::Type{Ptr{LibWasmtime.wasm_table_t}}, table::WasmTable) = table.ptr

@@ -86,38 +86,38 @@ global_var = WasmGlobal(store, global_type, WasmValue(3.14159))
 """
 mutable struct WasmGlobal
     ptr::Ptr{LibWasmtime.wasm_global_t}
+end
 
-    function WasmGlobal(
-        store::WasmStore,
-        global_type::WasmGlobalType,
-        initial_value::wasm_val_t,
-    )
-        if !isvalid(store) || !isvalid(global_type)
-            throw(ArgumentError("Invalid store or global type"))
-        end
-
-        @assert initial_value != C_NULL "Initial value must not be null"
-        # if !isvalid(initial_value)
-        #     throw(ArgumentError("Invalid initial value for global"))
-        # end
-
-        global_ptr = LibWasmtime.wasm_global_new(store, global_type, Ref(initial_value))
-
-        if global_ptr == C_NULL
-            throw(ArgumentError("Failed to create WasmGlobal"))
-        end
-
-        global_ = new(global_ptr)
-
-        finalizer(global_) do g
-            if g.ptr != C_NULL
-                LibWasmtime.wasm_global_delete(g.ptr)
-                g.ptr = C_NULL
-            end
-        end
-
-        return global_
+function WasmGlobal(
+    store::WasmStore,
+    global_type::WasmGlobalType,
+    initial_value::wasm_val_t,
+)
+    if !isvalid(store) || !isvalid(global_type)
+        throw(ArgumentError("Invalid store or global type"))
     end
+
+    @assert initial_value != C_NULL "Initial value must not be null"
+    # if !isvalid(initial_value)
+    #     throw(ArgumentError("Invalid initial value for global"))
+    # end
+
+    global_ptr = LibWasmtime.wasm_global_new(store, global_type, Ref(initial_value))
+
+    if global_ptr == C_NULL
+        throw(ArgumentError("Failed to create WasmGlobal"))
+    end
+
+    global_ = WasmGlobal(global_ptr)
+
+    finalizer(global_) do g
+        if g.ptr != C_NULL
+            LibWasmtime.wasm_global_delete(g.ptr)
+            g.ptr = C_NULL
+        end
+    end
+
+    return global_
 end
 
 Base.unsafe_convert(::Type{Ptr{LibWasmtime.wasm_global_t}}, global_::WasmGlobal) =
