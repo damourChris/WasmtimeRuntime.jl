@@ -78,7 +78,7 @@ function WasmExtern(obj::WasmExternObjectType)
         throw(ArgumentError("Failed to convert $(typeof(obj)) to WasmExtern"))
     end
 
-    wasm_extern = new{typeof(obj)}(ptr)
+    wasm_extern = WasmExtern{typeof(obj)}(ptr)
     return wasm_extern
 end
 
