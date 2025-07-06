@@ -1,0 +1,382 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><title>Error Handling · WasmtimeRuntime.jl</title><meta name="title" content="Error Handling · WasmtimeRuntime.jl"/><meta property="og:title" content="Error Handling · WasmtimeRuntime.jl"/><meta property="twitter:title" content="Error Handling · WasmtimeRuntime.jl"/><meta name="description" content="Documentation for WasmtimeRuntime.jl."/><meta property="og:description" content="Documentation for WasmtimeRuntime.jl."/><meta property="twitter:description" content="Documentation for WasmtimeRuntime.jl."/><meta property="og:url" content="https://damourChris.github.io/WasmtimeRuntime.jl/70-error-handling/"/><meta property="twitter:url" content="https://damourChris.github.io/WasmtimeRuntime.jl/70-error-handling/"/><link rel="canonical" href="https://damourChris.github.io/WasmtimeRuntime.jl/70-error-handling/"/><script data-outdated-warner src="../assets/warner.js"></script><link href="https://cdnjs.cloudflare.com/ajax/libs/lato-font/3.0.0/css/lato-font.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/juliamono/0.050/juliamono.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/fontawesome.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/solid.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/brands.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.8/katex.min.css" rel="stylesheet" type="text/css"/><script>documenterBaseURL=".."</script><script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.6/require.min.js" data-main="../assets/documenter.js"></script><script src="../search_index.js"></script><script src="../siteinfo.js"></script><script src="../../versions.js"></script><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../assets/themes/catppuccin-mocha.css" data-theme-name="catppuccin-mocha"/><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../assets/themes/catppuccin-macchiato.css" data-theme-name="catppuccin-macchiato"/><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../assets/themes/catppuccin-frappe.css" data-theme-name="catppuccin-frappe"/><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../assets/themes/catppuccin-latte.css" data-theme-name="catppuccin-latte"/><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../assets/themes/documenter-dark.css" data-theme-name="documenter-dark" data-theme-primary-dark/><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../assets/themes/documenter-light.css" data-theme-name="documenter-light" data-theme-primary/><script src="../assets/themeswap.js"></script></head><body><div id="documenter"><nav class="docs-sidebar"><div class="docs-package-name"><span class="docs-autofit"><a href="../">WasmtimeRuntime.jl</a></span></div><button class="docs-search-query input is-rounded is-small is-clickable my-2 mx-auto py-1 px-2" id="documenter-search-query">Search docs (Ctrl + /)</button><ul class="docs-menu"><li><a class="tocitem" href="../">WasmtimeRuntime</a></li><li><a class="tocitem" href="../01-getting-started/">Getting Started with WasmtimeRuntime.jl</a></li><li><a class="tocitem" href="../02-core-concepts/">Core Concepts</a></li><li><a class="tocitem" href="../10-configuration/">Configuration Guide</a></li><li><a class="tocitem" href="../20-values-and-types/">Values and Type System</a></li><li><a class="tocitem" href="../21-generic-vectors/">Generic Vector Wrapper (<code>WasmVec</code>)</a></li><li><a class="tocitem" href="../30-modules/">WebAssembly Modules</a></li><li><a class="tocitem" href="../40-instances/">WebAssembly Instances</a></li><li><a class="tocitem" href="../50-functions/">Function Calling and Type Conversion</a></li><li><a class="tocitem" href="../51-memory/">WebAssembly Memory</a></li><li><a class="tocitem" href="../52-tables/">WebAssembly Tables</a></li><li><a class="tocitem" href="../53-global/">WebAssembly Global Variables</a></li><li><a class="tocitem" href="../54-externs/">WebAssembly Externs</a></li><li><a class="tocitem" href="../55-exports/">WebAssembly Exports</a></li><li><a class="tocitem" href="../60-objects/">WebAssembly Objects: Memory, Globals, and Tables</a></li><li class="is-active"><a class="tocitem" href>Error Handling</a><ul class="internal"><li><a class="tocitem" href="#Error-Types"><span>Error Types</span></a></li><li><a class="tocitem" href="#Error-Handling-Patterns"><span>Error Handling Patterns</span></a></li><li><a class="tocitem" href="#Trap-Handling"><span>Trap Handling</span></a></li><li><a class="tocitem" href="#Resource-Management-Errors"><span>Resource Management Errors</span></a></li><li><a class="tocitem" href="#Validation-and-Prevention"><span>Validation and Prevention</span></a></li><li><a class="tocitem" href="#Error-Reporting-and-Debugging"><span>Error Reporting and Debugging</span></a></li><li><a class="tocitem" href="#Best-Practices"><span>Best Practices</span></a></li></ul></li><li><a class="tocitem" href="../71-traps/">WebAssembly Traps</a></li><li><a class="tocitem" href="../80-performance/">Performance Guide</a></li><li><a class="tocitem" href="../81-conversions/">Conversion</a></li><li><a class="tocitem" href="../90-contributing/">Contributing guidelines</a></li><li><a class="tocitem" href="../90-implementation-status/">Implementation Status</a></li><li><a class="tocitem" href="../91-developer/">Developer documentation</a></li><li><a class="tocitem" href="../95-reference/">Reference</a></li></ul><div class="docs-version-selector field has-addons"><div class="control"><span class="docs-label button is-static is-size-7">Version</span></div><div class="docs-selector control is-expanded"><div class="select is-fullwidth is-size-7"><select id="documenter-version-selector"></select></div></div></div></nav><div class="docs-main"><header class="docs-navbar"><a class="docs-sidebar-button docs-navbar-link fa-solid fa-bars is-hidden-desktop" id="documenter-sidebar-button" href="#"></a><nav class="breadcrumb"><ul class="is-hidden-mobile"><li class="is-active"><a href>Error Handling</a></li></ul><ul class="is-hidden-tablet"><li class="is-active"><a href>Error Handling</a></li></ul></nav><div class="docs-right"><a class="docs-navbar-link" href="https://github.com/damourChris/WasmtimeRuntime.jl/blob/main/docs/src/70-error-handling.md#" title="Edit source on GitHub"><span class="docs-icon fa-solid"></span></a><a class="docs-settings-button docs-navbar-link fa-solid fa-gear" id="documenter-settings-button" href="#" title="Settings"></a><a class="docs-article-toggle-button fa-solid fa-chevron-up" id="documenter-article-toggle-button" href="javascript:;" title="Collapse all docstrings"></a></div></header><article class="content" id="documenter-page"><h1 id="Error-Handling"><a class="docs-heading-anchor" href="#Error-Handling">Error Handling</a><a id="Error-Handling-1"></a><a class="docs-heading-anchor-permalink" href="#Error-Handling" title="Permalink"></a></h1><p>WasmtimeRuntime.jl provides comprehensive error handling for WebAssembly operations. This guide covers error types, handling patterns, and debugging strategies.</p><h2 id="Error-Types"><a class="docs-heading-anchor" href="#Error-Types">Error Types</a><a id="Error-Types-1"></a><a class="docs-heading-anchor-permalink" href="#Error-Types" title="Permalink"></a></h2><h3 id="WasmtimeError"><a class="docs-heading-anchor" href="#WasmtimeError">WasmtimeError</a><a id="WasmtimeError-1"></a><a class="docs-heading-anchor-permalink" href="#WasmtimeError" title="Permalink"></a></h3><p>The primary exception type for WebAssembly-related errors:</p><pre><code class="language-julia hljs">struct WasmtimeError &lt;: Exception
+    message::String
+end</code></pre><p>All WebAssembly operations that can fail throw <code>WasmtimeError</code> with descriptive messages.</p><h3 id="Common-Error-Categories"><a class="docs-heading-anchor" href="#Common-Error-Categories">Common Error Categories</a><a id="Common-Error-Categories-1"></a><a class="docs-heading-anchor-permalink" href="#Common-Error-Categories" title="Permalink"></a></h3><h4 id="Configuration-Errors"><a class="docs-heading-anchor" href="#Configuration-Errors">Configuration Errors</a><a id="Configuration-Errors-1"></a><a class="docs-heading-anchor-permalink" href="#Configuration-Errors" title="Permalink"></a></h4><pre><code class="language-julia hljs">try
+    config = Config()
+    config.ptr = C_NULL  # Simulate invalid config
+    engine = Engine(config)
+catch e::WasmtimeError
+    println(&quot;Configuration error: $(e.message)&quot;)
+end</code></pre><h4 id="Module-Errors"><a class="docs-heading-anchor" href="#Module-Errors">Module Errors</a><a id="Module-Errors-1"></a><a class="docs-heading-anchor-permalink" href="#Module-Errors" title="Permalink"></a></h4><pre><code class="language-julia hljs">try
+    # Invalid WebAssembly bytes
+    invalid_bytes = UInt8[0x00, 0x00, 0x00, 0x00]
+    module_obj = WasmModule(engine, invalid_bytes)
+catch e::WasmtimeError
+    println(&quot;Module compilation error: $(e.message)&quot;)
+end</code></pre><h4 id="Instance-Errors"><a class="docs-heading-anchor" href="#Instance-Errors">Instance Errors</a><a id="Instance-Errors-1"></a><a class="docs-heading-anchor-permalink" href="#Instance-Errors" title="Permalink"></a></h4><pre><code class="language-julia hljs">try
+    # Invalid store
+    store.ptr = C_NULL
+    instance = Instance(store, module_obj)
+catch e::WasmtimeError
+    println(&quot;Instantiation error: $(e.message)&quot;)
+end</code></pre><h4 id="Function-Call-Errors"><a class="docs-heading-anchor" href="#Function-Call-Errors">Function Call Errors</a><a id="Function-Call-Errors-1"></a><a class="docs-heading-anchor-permalink" href="#Function-Call-Errors" title="Permalink"></a></h4><pre><code class="language-julia hljs">try
+    # Wrong parameter count or type
+    result = call(instance, &quot;add&quot;, [42, 24, 33])  # Function expects 2 params
+catch e::WasmtimeError
+    println(&quot;Function call error: $(e.message)&quot;)
+end</code></pre><h2 id="Error-Handling-Patterns"><a class="docs-heading-anchor" href="#Error-Handling-Patterns">Error Handling Patterns</a><a id="Error-Handling-Patterns-1"></a><a class="docs-heading-anchor-permalink" href="#Error-Handling-Patterns" title="Permalink"></a></h2><h3 id="Basic-Try-Catch"><a class="docs-heading-anchor" href="#Basic-Try-Catch">Basic Try-Catch</a><a id="Basic-Try-Catch-1"></a><a class="docs-heading-anchor-permalink" href="#Basic-Try-Catch" title="Permalink"></a></h3><pre><code class="language-julia hljs">function safe_wasm_operation()
+    try
+        engine = Engine()
+        store = Store(engine)
+        module_obj = WasmModule(engine, wasm_bytes)
+        instance = Instance(store, module_obj)
+        result = call(instance, &quot;main&quot;, [])
+        return result
+    catch e::WasmtimeError
+        @error &quot;WebAssembly operation failed&quot; exception=e
+        return nothing
+    end
+end</code></pre><h3 id="Specific-Error-Handling"><a class="docs-heading-anchor" href="#Specific-Error-Handling">Specific Error Handling</a><a id="Specific-Error-Handling-1"></a><a class="docs-heading-anchor-permalink" href="#Specific-Error-Handling" title="Permalink"></a></h3><pre><code class="language-julia hljs">function handle_specific_errors()
+    try
+        result = call(instance, &quot;divide&quot;, [10, 0])
+        return result
+    catch e::WasmtimeError
+        if occursin(&quot;trap&quot;, lowercase(e.message))
+            @warn &quot;Division by zero trapped&quot;
+            return 0
+        elseif occursin(&quot;type&quot;, lowercase(e.message))
+            @error &quot;Type mismatch in function call&quot;
+            rethrow(e)
+        else
+            @error &quot;Unknown WebAssembly error&quot; exception=e
+            rethrow(e)
+        end
+    end
+end</code></pre><h3 id="Error-Recovery-Patterns"><a class="docs-heading-anchor" href="#Error-Recovery-Patterns">Error Recovery Patterns</a><a id="Error-Recovery-Patterns-1"></a><a class="docs-heading-anchor-permalink" href="#Error-Recovery-Patterns" title="Permalink"></a></h3><pre><code class="language-julia hljs">function retry_with_fallback(primary_func, fallback_func, max_retries=3)
+    for attempt in 1:max_retries
+        try
+            return primary_func()
+        catch e::WasmtimeError
+            @warn &quot;Attempt $attempt failed&quot; exception=e
+
+            if attempt == max_retries
+                @info &quot;Trying fallback function&quot;
+                try
+                    return fallback_func()
+                catch fallback_error::WasmtimeError
+                    @error &quot;Both primary and fallback failed&quot;
+                           primary=e fallback=fallback_error
+                    rethrow(e)  # Rethrow original error
+                end
+            end
+
+            sleep(0.1 * attempt)  # Exponential backoff
+        end
+    end
+end</code></pre><h2 id="Trap-Handling"><a class="docs-heading-anchor" href="#Trap-Handling">Trap Handling</a><a id="Trap-Handling-1"></a><a class="docs-heading-anchor-permalink" href="#Trap-Handling" title="Permalink"></a></h2><p>WebAssembly traps are runtime errors that occur during execution:</p><h3 id="Common-Trap-Scenarios"><a class="docs-heading-anchor" href="#Common-Trap-Scenarios">Common Trap Scenarios</a><a id="Common-Trap-Scenarios-1"></a><a class="docs-heading-anchor-permalink" href="#Common-Trap-Scenarios" title="Permalink"></a></h3><pre><code class="language-julia hljs"># Division by zero
+try
+    result = call(instance, &quot;divide&quot;, [10, 0])
+catch e::WasmtimeError
+    if occursin(&quot;trap&quot;, lowercase(e.message))
+        println(&quot;Trapped: Division by zero&quot;)
+    end
+end
+
+# Out of bounds memory access
+try
+    result = call(instance, &quot;read_memory&quot;, [1000000])  # Large offset
+catch e::WasmtimeError
+    if occursin(&quot;trap&quot;, lowercase(e.message)) &amp;&amp; occursin(&quot;bounds&quot;, lowercase(e.message))
+        println(&quot;Trapped: Memory access out of bounds&quot;)
+    end
+end
+
+# Stack overflow
+try
+    result = call(instance, &quot;recursive_function&quot;, [10000])  # Deep recursion
+catch e::WasmtimeError
+    if occursin(&quot;trap&quot;, lowercase(e.message)) &amp;&amp; occursin(&quot;stack&quot;, lowercase(e.message))
+        println(&quot;Trapped: Stack overflow&quot;)
+    end
+end</code></pre><h3 id="Trap-Recovery"><a class="docs-heading-anchor" href="#Trap-Recovery">Trap Recovery</a><a id="Trap-Recovery-1"></a><a class="docs-heading-anchor-permalink" href="#Trap-Recovery" title="Permalink"></a></h3><pre><code class="language-julia hljs">function safe_wasm_call_with_trap_recovery(instance, func_name, params, default_value=nothing)
+    try
+        return call(instance, func_name, params)
+    catch e::WasmtimeError
+        if occursin(&quot;trap&quot;, lowercase(e.message))
+            @warn &quot;Function trapped, returning default value&quot;
+                  function=func_name params=params exception=e
+            return default_value
+        else
+            # Re-throw non-trap errors
+            rethrow(e)
+        end
+    end
+end</code></pre><h2 id="Resource-Management-Errors"><a class="docs-heading-anchor" href="#Resource-Management-Errors">Resource Management Errors</a><a id="Resource-Management-Errors-1"></a><a class="docs-heading-anchor-permalink" href="#Resource-Management-Errors" title="Permalink"></a></h2><h3 id="Store-Lifecycle-Errors"><a class="docs-heading-anchor" href="#Store-Lifecycle-Errors">Store Lifecycle Errors</a><a id="Store-Lifecycle-Errors-1"></a><a class="docs-heading-anchor-permalink" href="#Store-Lifecycle-Errors" title="Permalink"></a></h3><pre><code class="language-julia hljs">function handle_store_lifecycle()
+    local store, instance
+
+    try
+        engine = Engine()
+        store = Store(engine)
+        module_obj = WasmModule(engine, wasm_bytes)
+        instance = Instance(store, module_obj)
+
+        # Use instance...
+        result = call(instance, &quot;main&quot;, [])
+
+    catch e::WasmtimeError
+        @error &quot;Store operation failed&quot; exception=e
+
+        # Check if store is still valid
+        if isdefined(@__MODULE__, :store) &amp;&amp; !isvalid(store)
+            @warn &quot;Store became invalid during operation&quot;
+        end
+
+        rethrow(e)
+    finally
+        # Cleanup is automatic via finalizers
+        # Manual cleanup if needed
+    end
+end</code></pre><h3 id="Memory-Management-Errors"><a class="docs-heading-anchor" href="#Memory-Management-Errors">Memory Management Errors</a><a id="Memory-Management-Errors-1"></a><a class="docs-heading-anchor-permalink" href="#Memory-Management-Errors" title="Permalink"></a></h3><pre><code class="language-julia hljs">function handle_memory_errors(instance)
+    try
+        # Attempt to access memory export
+        memory_export = get_export(instance, &quot;memory&quot;)
+
+        # Future: Memory operations
+        # data = read_memory(memory, offset, length)
+
+    catch e::WasmtimeError
+        if occursin(&quot;not found&quot;, e.message)
+            @warn &quot;Memory export not found, module may not export memory&quot;
+            return nothing
+        elseif occursin(&quot;bounds&quot;, e.message)
+            @error &quot;Memory access out of bounds&quot; exception=e
+            return nothing
+        else
+            rethrow(e)
+        end
+    end
+end</code></pre><h2 id="Validation-and-Prevention"><a class="docs-heading-anchor" href="#Validation-and-Prevention">Validation and Prevention</a><a id="Validation-and-Prevention-1"></a><a class="docs-heading-anchor-permalink" href="#Validation-and-Prevention" title="Permalink"></a></h2><h3 id="Input-Validation"><a class="docs-heading-anchor" href="#Input-Validation">Input Validation</a><a id="Input-Validation-1"></a><a class="docs-heading-anchor-permalink" href="#Input-Validation" title="Permalink"></a></h3><pre><code class="language-julia hljs">function validate_inputs(engine, wasm_bytes, func_name, params)
+    # Validate engine
+    if !isvalid(engine)
+        throw(ArgumentError(&quot;Invalid engine&quot;))
+    end
+
+    # Validate WebAssembly bytes
+    if isempty(wasm_bytes)
+        throw(ArgumentError(&quot;Empty WebAssembly bytes&quot;))
+    end
+
+    if !validate(engine, wasm_bytes)
+        throw(ArgumentError(&quot;Invalid WebAssembly module&quot;))
+    end
+
+    # Validate function name
+    if isempty(func_name)
+        throw(ArgumentError(&quot;Empty function name&quot;))
+    end
+
+    # Validate parameters
+    for (i, param) in enumerate(params)
+        if !is_wasm_convertible(typeof(param))
+            @warn &quot;Parameter $i of type $(typeof(param)) may not be convertible to WebAssembly&quot;
+        end
+    end
+
+    return true
+end</code></pre><h3 id="Defensive-Programming"><a class="docs-heading-anchor" href="#Defensive-Programming">Defensive Programming</a><a id="Defensive-Programming-1"></a><a class="docs-heading-anchor-permalink" href="#Defensive-Programming" title="Permalink"></a></h3><pre><code class="language-julia hljs">function defensive_wasm_call(instance, func_name, params; timeout=5.0, max_fuel=10000)
+    # Input validation
+    if !isvalid(instance)
+        throw(ArgumentError(&quot;Invalid instance&quot;))
+    end
+
+    if !isvalid(instance.store)
+        throw(ArgumentError(&quot;Invalid store&quot;))
+    end
+
+    # Set up fuel limiting if available
+    try
+        add_fuel!(instance.store, max_fuel)
+    catch e::WasmtimeError
+        # Fuel not enabled, continue without it
+        @debug &quot;Fuel consumption not enabled&quot;
+    end
+
+    # Timeout handling (conceptual - actual implementation would need threading)
+    try
+        # Future: Implement timeout via epoch interruption
+        result = call(instance, func_name, params)
+        return result
+    catch e::WasmtimeError
+        if occursin(&quot;fuel&quot;, lowercase(e.message))
+            @error &quot;Function execution exhausted fuel limit&quot; limit=max_fuel
+        elseif occursin(&quot;epoch&quot;, lowercase(e.message))
+            @error &quot;Function execution timed out&quot; timeout=timeout
+        end
+        rethrow(e)
+    end
+end</code></pre><h2 id="Error-Reporting-and-Debugging"><a class="docs-heading-anchor" href="#Error-Reporting-and-Debugging">Error Reporting and Debugging</a><a id="Error-Reporting-and-Debugging-1"></a><a class="docs-heading-anchor-permalink" href="#Error-Reporting-and-Debugging" title="Permalink"></a></h2><h3 id="Detailed-Error-Context"><a class="docs-heading-anchor" href="#Detailed-Error-Context">Detailed Error Context</a><a id="Detailed-Error-Context-1"></a><a class="docs-heading-anchor-permalink" href="#Detailed-Error-Context" title="Permalink"></a></h3><pre><code class="language-julia hljs">function detailed_error_report(e::WasmtimeError, context...)
+    @error &quot;&quot;&quot;
+    WebAssembly Error Details:
+    Message: $(e.message)
+    Context: $(join(string.(context), &quot;, &quot;))
+    Stack trace follows:
+    &quot;&quot;&quot; exception=(e, catch_backtrace())
+end
+
+# Usage
+try
+    result = call(instance, &quot;complex_function&quot;, [1, 2, 3])
+catch e::WasmtimeError
+    detailed_error_report(e, &quot;complex_function&quot;, &quot;params=[1,2,3]&quot;, &quot;instance=$(instance)&quot;)
+    rethrow(e)
+end</code></pre><h3 id="Error-Aggregation"><a class="docs-heading-anchor" href="#Error-Aggregation">Error Aggregation</a><a id="Error-Aggregation-1"></a><a class="docs-heading-anchor-permalink" href="#Error-Aggregation" title="Permalink"></a></h3><pre><code class="language-julia hljs">struct WasmtimeErrorCollector
+    errors::Vector{Tuple{String, WasmtimeError}}
+end
+
+function collect_errors()
+    return WasmtimeErrorCollector([])
+end
+
+function try_operation!(collector::WasmtimeErrorCollector, operation_name::String, f)
+    try
+        return f()
+    catch e::WasmtimeError
+        push!(collector.errors, (operation_name, e))
+        return nothing
+    end
+end
+
+function report_collected_errors(collector::WasmtimeErrorCollector)
+    if !isempty(collector.errors)
+        @error &quot;Multiple WebAssembly errors occurred:&quot;
+        for (name, error) in collector.errors
+            @error &quot;  $name: $(error.message)&quot;
+        end
+    end
+end
+
+# Usage
+collector = collect_errors()
+result1 = try_operation!(collector, &quot;function1&quot;, () -&gt; call(instance, &quot;func1&quot;, []))
+result2 = try_operation!(collector, &quot;function2&quot;, () -&gt; call(instance, &quot;func2&quot;, []))
+report_collected_errors(collector)</code></pre><h3 id="Error-Context-Stack"><a class="docs-heading-anchor" href="#Error-Context-Stack">Error Context Stack</a><a id="Error-Context-Stack-1"></a><a class="docs-heading-anchor-permalink" href="#Error-Context-Stack" title="Permalink"></a></h3><pre><code class="language-julia hljs">mutable struct ErrorContext
+    stack::Vector{String}
+end
+
+function push_context!(ctx::ErrorContext, description::String)
+    push!(ctx.stack, description)
+end
+
+function pop_context!(ctx::ErrorContext)
+    if !isempty(ctx.stack)
+        pop!(ctx.stack)
+    end
+end
+
+function with_error_context(f, ctx::ErrorContext, description::String)
+    push_context!(ctx, description)
+    try
+        return f()
+    catch e::WasmtimeError
+        error_msg = &quot;$(e.message)\nContext: $(join(reverse(ctx.stack), &quot; → &quot;))&quot;
+        rethrow(WasmtimeError(error_msg))
+    finally
+        pop_context!(ctx)
+    end
+end
+
+# Usage
+ctx = ErrorContext([])
+try
+    with_error_context(ctx, &quot;Loading module&quot;) do
+        module_obj = WasmModule(engine, wasm_bytes)
+
+        with_error_context(ctx, &quot;Creating instance&quot;) do
+            instance = Instance(store, module_obj)
+
+            with_error_context(ctx, &quot;Calling main function&quot;) do
+                call(instance, &quot;main&quot;, [])
+            end
+        end
+    end
+catch e::WasmtimeError
+    println(&quot;Error with context: $(e.message)&quot;)
+end</code></pre><h2 id="Best-Practices"><a class="docs-heading-anchor" href="#Best-Practices">Best Practices</a><a id="Best-Practices-1"></a><a class="docs-heading-anchor-permalink" href="#Best-Practices" title="Permalink"></a></h2><h3 id="Error-Handling-Strategy"><a class="docs-heading-anchor" href="#Error-Handling-Strategy">Error Handling Strategy</a><a id="Error-Handling-Strategy-1"></a><a class="docs-heading-anchor-permalink" href="#Error-Handling-Strategy" title="Permalink"></a></h3><ol><li><strong>Be Specific</strong>: Handle different error types appropriately</li><li><strong>Fail Fast</strong>: Validate inputs early to catch errors sooner</li><li><strong>Provide Context</strong>: Include relevant information in error messages</li><li><strong>Log Appropriately</strong>: Use different log levels for different error severities</li><li><strong>Clean Recovery</strong>: Ensure resources are cleaned up after errors</li></ol><h3 id="Error-Prevention"><a class="docs-heading-anchor" href="#Error-Prevention">Error Prevention</a><a id="Error-Prevention-1"></a><a class="docs-heading-anchor-permalink" href="#Error-Prevention" title="Permalink"></a></h3><pre><code class="language-julia hljs"># Comprehensive safety wrapper
+function safe_wasm_execution(;
+    engine_config = nothing,
+    wasm_source,
+    function_name,
+    parameters = [],
+    fuel_limit = 10000,
+    validate_inputs = true
+)
+    local engine, store, module_obj, instance
+
+    try
+        # Create engine with error handling
+        engine = if engine_config === nothing
+            Engine()
+        else
+            Engine(engine_config)
+        end
+
+        # Validate WebAssembly source
+        wasm_bytes = if isa(wasm_source, String)
+            if !isfile(wasm_source)
+                throw(ArgumentError(&quot;WebAssembly file not found: $wasm_source&quot;))
+            end
+            read(wasm_source)
+        else
+            wasm_source
+        end
+
+        if validate_inputs &amp;&amp; !validate(engine, wasm_bytes)
+            throw(ArgumentError(&quot;Invalid WebAssembly module&quot;))
+        end
+
+        # Create store with fuel limiting
+        store = Store(engine)
+        try
+            add_fuel!(store, fuel_limit)
+        catch e::WasmtimeError
+            @debug &quot;Fuel limiting not available&quot;
+        end
+
+        # Create module and instance
+        module_obj = WasmModule(engine, wasm_bytes)
+        instance = Instance(store, module_obj)
+
+        # Execute function
+        result = call(instance, function_name, parameters)
+
+        return (result = result, success = true, error = nothing)
+
+    catch e::Exception
+        error_msg = if e isa WasmtimeError
+            &quot;WebAssembly error: $(e.message)&quot;
+        else
+            &quot;System error: $(string(e))&quot;
+        end
+
+        @error error_msg exception=e
+        return (result = nothing, success = false, error = e)
+    end
+end</code></pre><h3 id="Testing-Error-Conditions"><a class="docs-heading-anchor" href="#Testing-Error-Conditions">Testing Error Conditions</a><a id="Testing-Error-Conditions-1"></a><a class="docs-heading-anchor-permalink" href="#Testing-Error-Conditions" title="Permalink"></a></h3><pre><code class="language-julia hljs"># Test error handling in your code
+function test_error_handling()
+    # Test invalid engine
+    @test_throws WasmtimeError begin
+        config = Config()
+        config.ptr = C_NULL
+        Engine(config)
+    end
+
+    # Test invalid module
+    @test_throws WasmtimeError begin
+        WasmModule(engine, UInt8[0x00, 0x00, 0x00, 0x00])
+    end
+
+    # Test function call with wrong parameters
+    @test_throws WasmtimeError begin
+        call(instance, &quot;add&quot;, [])  # Missing parameters
+    end
+end</code></pre><p>Robust error handling is essential for production WebAssembly applications. By following these patterns, you can build resilient systems that gracefully handle errors and provide meaningful feedback to users and developers.</p></article><nav class="docs-footer"><a class="docs-footer-prevpage" href="../60-objects/">« WebAssembly Objects: Memory, Globals, and Tables</a><a class="docs-footer-nextpage" href="../71-traps/">WebAssembly Traps »</a><div class="flexbox-break"></div><p class="footer-message">Powered by <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> and the <a href="https://julialang.org/">Julia Programming Language</a>.</p></nav></div><div class="modal" id="documenter-settings"><div class="modal-background"></div><div class="modal-card"><header class="modal-card-head"><p class="modal-card-title">Settings</p><button class="delete"></button></header><section class="modal-card-body"><p><label class="label">Theme</label><div class="select"><select id="documenter-themepicker"><option value="auto">Automatic (OS)</option><option value="documenter-light">documenter-light</option><option value="documenter-dark">documenter-dark</option><option value="catppuccin-latte">catppuccin-latte</option><option value="catppuccin-frappe">catppuccin-frappe</option><option value="catppuccin-macchiato">catppuccin-macchiato</option><option value="catppuccin-mocha">catppuccin-mocha</option></select></div></p><hr/><p>This document was generated with <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> version 1.13.0 on <span class="colophon-date" title="Sunday 6 July 2025 21:28">Sunday 6 July 2025</span>. Using Julia version 1.11.5.</p></section><footer class="modal-card-foot"></footer></div></div></div></body></html>

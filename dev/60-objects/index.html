@@ -1,0 +1,404 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><title>WebAssembly Objects: Memory, Globals, and Tables · WasmtimeRuntime.jl</title><meta name="title" content="WebAssembly Objects: Memory, Globals, and Tables · WasmtimeRuntime.jl"/><meta property="og:title" content="WebAssembly Objects: Memory, Globals, and Tables · WasmtimeRuntime.jl"/><meta property="twitter:title" content="WebAssembly Objects: Memory, Globals, and Tables · WasmtimeRuntime.jl"/><meta name="description" content="Documentation for WasmtimeRuntime.jl."/><meta property="og:description" content="Documentation for WasmtimeRuntime.jl."/><meta property="twitter:description" content="Documentation for WasmtimeRuntime.jl."/><meta property="og:url" content="https://damourChris.github.io/WasmtimeRuntime.jl/60-objects/"/><meta property="twitter:url" content="https://damourChris.github.io/WasmtimeRuntime.jl/60-objects/"/><link rel="canonical" href="https://damourChris.github.io/WasmtimeRuntime.jl/60-objects/"/><script data-outdated-warner src="../assets/warner.js"></script><link href="https://cdnjs.cloudflare.com/ajax/libs/lato-font/3.0.0/css/lato-font.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/juliamono/0.050/juliamono.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/fontawesome.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/solid.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/brands.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.8/katex.min.css" rel="stylesheet" type="text/css"/><script>documenterBaseURL=".."</script><script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.6/require.min.js" data-main="../assets/documenter.js"></script><script src="../search_index.js"></script><script src="../siteinfo.js"></script><script src="../../versions.js"></script><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../assets/themes/catppuccin-mocha.css" data-theme-name="catppuccin-mocha"/><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../assets/themes/catppuccin-macchiato.css" data-theme-name="catppuccin-macchiato"/><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../assets/themes/catppuccin-frappe.css" data-theme-name="catppuccin-frappe"/><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../assets/themes/catppuccin-latte.css" data-theme-name="catppuccin-latte"/><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../assets/themes/documenter-dark.css" data-theme-name="documenter-dark" data-theme-primary-dark/><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../assets/themes/documenter-light.css" data-theme-name="documenter-light" data-theme-primary/><script src="../assets/themeswap.js"></script></head><body><div id="documenter"><nav class="docs-sidebar"><div class="docs-package-name"><span class="docs-autofit"><a href="../">WasmtimeRuntime.jl</a></span></div><button class="docs-search-query input is-rounded is-small is-clickable my-2 mx-auto py-1 px-2" id="documenter-search-query">Search docs (Ctrl + /)</button><ul class="docs-menu"><li><a class="tocitem" href="../">WasmtimeRuntime</a></li><li><a class="tocitem" href="../01-getting-started/">Getting Started with WasmtimeRuntime.jl</a></li><li><a class="tocitem" href="../02-core-concepts/">Core Concepts</a></li><li><a class="tocitem" href="../10-configuration/">Configuration Guide</a></li><li><a class="tocitem" href="../20-values-and-types/">Values and Type System</a></li><li><a class="tocitem" href="../21-generic-vectors/">Generic Vector Wrapper (<code>WasmVec</code>)</a></li><li><a class="tocitem" href="../30-modules/">WebAssembly Modules</a></li><li><a class="tocitem" href="../40-instances/">WebAssembly Instances</a></li><li><a class="tocitem" href="../50-functions/">Function Calling and Type Conversion</a></li><li><a class="tocitem" href="../51-memory/">WebAssembly Memory</a></li><li><a class="tocitem" href="../52-tables/">WebAssembly Tables</a></li><li><a class="tocitem" href="../53-global/">WebAssembly Global Variables</a></li><li><a class="tocitem" href="../54-externs/">WebAssembly Externs</a></li><li><a class="tocitem" href="../55-exports/">WebAssembly Exports</a></li><li class="is-active"><a class="tocitem" href>WebAssembly Objects: Memory, Globals, and Tables</a><ul class="internal"><li><a class="tocitem" href="#Current-Limitations"><span>Current Limitations</span></a></li><li><a class="tocitem" href="#Basic-Export-Access-(-Partial)"><span>Basic Export Access (🚧 Partial)</span></a></li><li><a class="tocitem" href="#Planned-Features-(-Future-Release)"><span>Planned Features (📋 Future Release)</span></a></li><li><a class="tocitem" href="#Tables"><span>Tables</span></a></li><li><a class="tocitem" href="#Export-Management"><span>Export Management</span></a></li><li><a class="tocitem" href="#Working-with-Object-Types"><span>Working with Object Types</span></a></li><li><a class="tocitem" href="#Advanced-Object-Operations"><span>Advanced Object Operations</span></a></li><li><a class="tocitem" href="#Error-Handling"><span>Error Handling</span></a></li><li><a class="tocitem" href="#Best-Practices"><span>Best Practices</span></a></li></ul></li><li><a class="tocitem" href="../70-error-handling/">Error Handling</a></li><li><a class="tocitem" href="../71-traps/">WebAssembly Traps</a></li><li><a class="tocitem" href="../80-performance/">Performance Guide</a></li><li><a class="tocitem" href="../81-conversions/">Conversion</a></li><li><a class="tocitem" href="../90-contributing/">Contributing guidelines</a></li><li><a class="tocitem" href="../90-implementation-status/">Implementation Status</a></li><li><a class="tocitem" href="../91-developer/">Developer documentation</a></li><li><a class="tocitem" href="../95-reference/">Reference</a></li></ul><div class="docs-version-selector field has-addons"><div class="control"><span class="docs-label button is-static is-size-7">Version</span></div><div class="docs-selector control is-expanded"><div class="select is-fullwidth is-size-7"><select id="documenter-version-selector"></select></div></div></div></nav><div class="docs-main"><header class="docs-navbar"><a class="docs-sidebar-button docs-navbar-link fa-solid fa-bars is-hidden-desktop" id="documenter-sidebar-button" href="#"></a><nav class="breadcrumb"><ul class="is-hidden-mobile"><li class="is-active"><a href>WebAssembly Objects: Memory, Globals, and Tables</a></li></ul><ul class="is-hidden-tablet"><li class="is-active"><a href>WebAssembly Objects: Memory, Globals, and Tables</a></li></ul></nav><div class="docs-right"><a class="docs-navbar-link" href="https://github.com/damourChris/WasmtimeRuntime.jl/blob/main/docs/src/60-objects.md#" title="Edit source on GitHub"><span class="docs-icon fa-solid"></span></a><a class="docs-settings-button docs-navbar-link fa-solid fa-gear" id="documenter-settings-button" href="#" title="Settings"></a><a class="docs-article-toggle-button fa-solid fa-chevron-up" id="documenter-article-toggle-button" href="javascript:;" title="Collapse all docstrings"></a></div></header><article class="content" id="documenter-page"><h1 id="WebAssembly-Objects:-Memory,-Globals,-and-Tables"><a class="docs-heading-anchor" href="#WebAssembly-Objects:-Memory,-Globals,-and-Tables">WebAssembly Objects: Memory, Globals, and Tables</a><a id="WebAssembly-Objects:-Memory,-Globals,-and-Tables-1"></a><a class="docs-heading-anchor-permalink" href="#WebAssembly-Objects:-Memory,-Globals,-and-Tables" title="Permalink"></a></h1><p><strong>⚠️ Implementation Status:</strong> Object access functionality is currently under development. This page documents the planned API.</p><h2 id="Current-Limitations"><a class="docs-heading-anchor" href="#Current-Limitations">Current Limitations</a><a id="Current-Limitations-1"></a><a class="docs-heading-anchor-permalink" href="#Current-Limitations" title="Permalink"></a></h2><p>The following WebAssembly object types are not yet fully implemented:</p><ul><li>Memory object access and manipulation</li><li>Global variable access and modification</li><li>Table operations and function references</li><li>Complete export resolution</li></ul><h2 id="Basic-Export-Access-(-Partial)"><a class="docs-heading-anchor" href="#Basic-Export-Access-(-Partial)">Basic Export Access (🚧 Partial)</a><a id="Basic-Export-Access-(-Partial)-1"></a><a class="docs-heading-anchor-permalink" href="#Basic-Export-Access-(-Partial)" title="Permalink"></a></h2><pre><code class="language-julia hljs"># Currently available (limited functionality)
+engine = WasmEngine()
+store = WasmStore(engine)
+
+# Create instance
+wat_content = &quot;&quot;&quot;
+(module
+  (memory $mem 1)
+  (global $counter (mut i32) (i32.const 0))
+  (table $table 10 funcref)
+  (export &quot;memory&quot; (memory $mem))
+  (export &quot;counter&quot; (global $counter))
+  (export &quot;table&quot; (table $table)))
+&quot;&quot;&quot;
+
+wasm_bytes = wat2wasm(wat_content)
+module_obj = WasmModule(engine, wasm_bytes)
+instance = WasmInstance(store, module_obj)
+
+# Export enumeration currently returns placeholder data
+exports_info = exports(module_obj)  # Dict{String,Any}()</code></pre><h2 id="Planned-Features-(-Future-Release)"><a class="docs-heading-anchor" href="#Planned-Features-(-Future-Release)">Planned Features (📋 Future Release)</a><a id="Planned-Features-(-Future-Release)-1"></a><a class="docs-heading-anchor-permalink" href="#Planned-Features-(-Future-Release)" title="Permalink"></a></h2><h3 id="Memory-Objects-(Future-API)"><a class="docs-heading-anchor" href="#Memory-Objects-(Future-API)">Memory Objects (Future API)</a><a id="Memory-Objects-(Future-API)-1"></a><a class="docs-heading-anchor-permalink" href="#Memory-Objects-(Future-API)" title="Permalink"></a></h3><p>WebAssembly linear memory will be accessible through:</p><pre><code class="language-julia hljs"># Planned API for memory operations
+struct Memory &lt;: AbstractMemory
+    ptr::Ptr{LibWasmtime.wasmtime_memory_t}
+    store::Store
+end
+
+# Memory size operations
+function memory_size(memory::Memory)::Int32
+    # Get current size in pages (64KB each)
+    return LibWasmtime.wasmtime_memory_size(memory.store.context, memory.ptr)
+end
+
+function memory_grow!(memory::Memory, delta_pages::Int32)::Int32
+    # Grow memory by delta pages, return previous size
+    prev_size_ref = Ref{Int32}()
+    error_ptr = LibWasmtime.wasmtime_memory_grow(
+        memory.store.context,
+        memory.ptr,
+        delta_pages,
+        prev_size_ref
+    )
+    check_error(error_ptr)
+    return prev_size_ref[]
+end</code></pre><h3 id="Memory-Data-Access-(Future-API)"><a class="docs-heading-anchor" href="#Memory-Data-Access-(Future-API)">Memory Data Access (Future API)</a><a id="Memory-Data-Access-(Future-API)-1"></a><a class="docs-heading-anchor-permalink" href="#Memory-Data-Access-(Future-API)" title="Permalink"></a></h3><pre><code class="language-julia hljs"># Read/write memory data
+function read_memory(memory::Memory, offset::Int32, length::Int32)::Vector{UInt8}
+    # Get raw memory pointer
+    data_ptr = LibWasmtime.wasmtime_memory_data(memory.store.context, memory.ptr)
+    data_size = LibWasmtime.wasmtime_memory_data_size(memory.store.context, memory.ptr)
+
+    # Bounds checking
+    if offset + length &gt; data_size
+        throw(BoundsError(&quot;Memory access out of bounds&quot;))
+    end
+
+    # Copy data safely
+    result = Vector{UInt8}(undef, length)
+    unsafe_copyto!(pointer(result), data_ptr + offset, length)
+    return result
+end
+
+function write_memory!(memory::Memory, offset::Int32, data::Vector{UInt8})
+    data_ptr = LibWasmtime.wasmtime_memory_data(memory.store.context, memory.ptr)
+    data_size = LibWasmtime.wasmtime_memory_data_size(memory.store.context, memory.ptr)
+
+    if offset + length(data) &gt; data_size
+        throw(BoundsError(&quot;Memory write out of bounds&quot;))
+    end
+
+    unsafe_copyto!(data_ptr + offset, pointer(data), length(data))
+end</code></pre><h3 id="Global-Basics"><a class="docs-heading-anchor" href="#Global-Basics">Global Basics</a><a id="Global-Basics-1"></a><a class="docs-heading-anchor-permalink" href="#Global-Basics" title="Permalink"></a></h3><p>WebAssembly globals are typed values that can be either mutable or immutable:</p><pre><code class="language-julia hljs"># Globals are retrieved from exports
+global_export = get_export(instance, &quot;global_var&quot;)
+
+# TODO: Convert to Global type
+# global_var = Global(export_ptr, store)</code></pre><h3 id="Global-Operations-(Future-API)"><a class="docs-heading-anchor" href="#Global-Operations-(Future-API)">Global Operations (Future API)</a><a id="Global-Operations-(Future-API)-1"></a><a class="docs-heading-anchor-permalink" href="#Global-Operations-(Future-API)" title="Permalink"></a></h3><pre><code class="language-julia hljs">struct Global &lt;: AbstractGlobal
+    ptr::Ptr{LibWasmtime.wasmtime_global_t}
+    store::Store
+end
+
+# Read global value
+function get_global(global_var::Global)::WasmValue
+    val_ref = Ref{LibWasmtime.wasmtime_val_t}()
+    LibWasmtime.wasmtime_global_get(
+        global_var.store.context,
+        global_var.ptr,
+        val_ref
+    )
+    return convert_wasmtime_val_to_julia(val_ref[])
+end
+
+# Write global value (if mutable)
+function set_global!(global_var::Global, value::WasmValue)
+    val = convert_julia_to_wasmtime_val(value)
+    error_ptr = LibWasmtime.wasmtime_global_set(
+        global_var.store.context,
+        global_var.ptr,
+        Ref(val)
+    )
+    check_error(error_ptr)
+end</code></pre><h3 id="Global-Type-Information-(Future-API)"><a class="docs-heading-anchor" href="#Global-Type-Information-(Future-API)">Global Type Information (Future API)</a><a id="Global-Type-Information-(Future-API)-1"></a><a class="docs-heading-anchor-permalink" href="#Global-Type-Information-(Future-API)" title="Permalink"></a></h3><pre><code class="language-julia hljs"># Get global type information
+function global_type(global_var::Global)
+    type_ptr = LibWasmtime.wasmtime_global_type(
+        global_var.store.context,
+        global_var.ptr
+    )
+
+    # Extract type information
+    return (
+        value_type = get_global_value_type(type_ptr),
+        is_mutable = get_global_mutability(type_ptr)
+    )
+end</code></pre><h2 id="Tables"><a class="docs-heading-anchor" href="#Tables">Tables</a><a id="Tables-1"></a><a class="docs-heading-anchor-permalink" href="#Tables" title="Permalink"></a></h2><h3 id="Table-Basics"><a class="docs-heading-anchor" href="#Table-Basics">Table Basics</a><a id="Table-Basics-1"></a><a class="docs-heading-anchor-permalink" href="#Table-Basics" title="Permalink"></a></h3><p>WebAssembly tables are arrays of opaque values (typically function references):</p><pre><code class="language-julia hljs"># Tables are retrieved from exports
+table_export = get_export(instance, &quot;table&quot;)
+
+# TODO: Convert to Table type
+# table = Table(export_ptr, store)</code></pre><h3 id="Table-Operations-(Future-API)"><a class="docs-heading-anchor" href="#Table-Operations-(Future-API)">Table Operations (Future API)</a><a id="Table-Operations-(Future-API)-1"></a><a class="docs-heading-anchor-permalink" href="#Table-Operations-(Future-API)" title="Permalink"></a></h3><pre><code class="language-julia hljs">struct Table &lt;: AbstractTable
+    ptr::Ptr{LibWasmtime.wasmtime_table_t}
+    store::Store
+end
+
+# Get table size
+function table_size(table::Table)::Int32
+    return LibWasmtime.wasmtime_table_size(table.store.context, table.ptr)
+end
+
+# Get table element
+function get_table_element(table::Table, index::Int32)::Union{WasmValue, Nothing}
+    val_ref = Ref{LibWasmtime.wasmtime_val_t}()
+    found = LibWasmtime.wasmtime_table_get(
+        table.store.context,
+        table.ptr,
+        index,
+        val_ref
+    )
+
+    if found != 0
+        return convert_wasmtime_val_to_julia(val_ref[])
+    else
+        return nothing
+    end
+end
+
+# Set table element
+function set_table_element!(table::Table, index::Int32, value::WasmValue)
+    val = convert_julia_to_wasmtime_val(value)
+    error_ptr = LibWasmtime.wasmtime_table_set(
+        table.store.context,
+        table.ptr,
+        index,
+        Ref(val)
+    )
+    check_error(error_ptr)
+end
+
+# Grow table
+function table_grow!(table::Table, delta::Int32, init_value::WasmValue)::Int32
+    init_val = convert_julia_to_wasmtime_val(init_value)
+    prev_size_ref = Ref{Int32}()
+
+    error_ptr = LibWasmtime.wasmtime_table_grow(
+        table.store.context,
+        table.ptr,
+        delta,
+        Ref(init_val),
+        prev_size_ref
+    )
+
+    check_error(error_ptr)
+    return prev_size_ref[]
+end</code></pre><h2 id="Export-Management"><a class="docs-heading-anchor" href="#Export-Management">Export Management</a><a id="Export-Management-1"></a><a class="docs-heading-anchor-permalink" href="#Export-Management" title="Permalink"></a></h2><h3 id="Current-Export-Retrieval"><a class="docs-heading-anchor" href="#Current-Export-Retrieval">Current Export Retrieval</a><a id="Current-Export-Retrieval-1"></a><a class="docs-heading-anchor-permalink" href="#Current-Export-Retrieval" title="Permalink"></a></h3><pre><code class="language-julia hljs"># Current implementation returns raw wasmtime_extern_t
+function get_memory_export(instance::Instance, name::String)
+    export_item = get_export(instance, name)
+    # TODO: Type checking and conversion
+    return export_item
+end
+
+function get_global_export(instance::Instance, name::String)
+    export_item = get_export(instance, name)
+    # TODO: Type checking and conversion
+    return export_item
+end
+
+function get_table_export(instance::Instance, name::String)
+    export_item = get_export(instance, name)
+    # TODO: Type checking and conversion
+    return export_item
+end</code></pre><h3 id="Future-Export-Management"><a class="docs-heading-anchor" href="#Future-Export-Management">Future Export Management</a><a id="Future-Export-Management-1"></a><a class="docs-heading-anchor-permalink" href="#Future-Export-Management" title="Permalink"></a></h3><pre><code class="language-julia hljs"># Future type-safe export retrieval
+function get_export_typed(instance::Instance, name::String, ::Type{T}) where T
+    export_item = get_export(instance, name)
+
+    if T == Memory
+        return convert_to_memory(export_item, instance.store)
+    elseif T == Global
+        return convert_to_global(export_item, instance.store)
+    elseif T == Table
+        return convert_to_table(export_item, instance.store)
+    elseif T == Func
+        return convert_to_func(export_item, instance.store)
+    else
+        throw(ArgumentError(&quot;Unsupported export type: $T&quot;))
+    end
+end
+
+# Convenience methods
+get_memory(instance, name) = get_export_typed(instance, name, Memory)
+get_global(instance, name) = get_export_typed(instance, name, Global)
+get_table(instance, name) = get_export_typed(instance, name, Table)</code></pre><h2 id="Working-with-Object-Types"><a class="docs-heading-anchor" href="#Working-with-Object-Types">Working with Object Types</a><a id="Working-with-Object-Types-1"></a><a class="docs-heading-anchor-permalink" href="#Working-with-Object-Types" title="Permalink"></a></h2><h3 id="Type-Identification-(Future-API)"><a class="docs-heading-anchor" href="#Type-Identification-(Future-API)">Type Identification (Future API)</a><a id="Type-Identification-(Future-API)-1"></a><a class="docs-heading-anchor-permalink" href="#Type-Identification-(Future-API)" title="Permalink"></a></h3><pre><code class="language-julia hljs"># Identify export types
+function identify_export_type(export_item)
+    extern_type = LibWasmtime.wasmtime_extern_type(context, export_item)
+    kind = LibWasmtime.wasm_externtype_kind(extern_type)
+
+    if kind == LibWasmtime.WASMTIME_EXTERN_FUNC
+        return Func
+    elseif kind == LibWasmtime.WASMTIME_EXTERN_MEMORY
+        return Memory
+    elseif kind == LibWasmtime.WASMTIME_EXTERN_GLOBAL
+        return Global
+    elseif kind == LibWasmtime.WASMTIME_EXTERN_TABLE
+        return Table
+    else
+        throw(ArgumentError(&quot;Unknown export type&quot;))
+    end
+end</code></pre><h3 id="Generic-Export-Processing"><a class="docs-heading-anchor" href="#Generic-Export-Processing">Generic Export Processing</a><a id="Generic-Export-Processing-1"></a><a class="docs-heading-anchor-permalink" href="#Generic-Export-Processing" title="Permalink"></a></h3><pre><code class="language-julia hljs"># Process all exports generically
+function process_all_exports(instance::Instance)
+    # This would work when export enumeration is implemented
+    for (name, export_item) in exports(instance)
+        export_type = identify_export_type(export_item)
+
+        if export_type == Memory
+            memory = convert_to_memory(export_item, instance.store)
+            println(&quot;Memory &#39;$name&#39;: $(memory_size(memory)) pages&quot;)
+
+        elseif export_type == Global
+            global_var = convert_to_global(export_item, instance.store)
+            value = get_global(global_var)
+            println(&quot;Global &#39;$name&#39;: $value&quot;)
+
+        elseif export_type == Table
+            table = convert_to_table(export_item, instance.store)
+            size = table_size(table)
+            println(&quot;Table &#39;$name&#39;: $size elements&quot;)
+
+        elseif export_type == Func
+            func = convert_to_func(export_item, instance.store)
+            println(&quot;Function &#39;$name&#39;: callable&quot;)
+        end
+    end
+end</code></pre><h2 id="Advanced-Object-Operations"><a class="docs-heading-anchor" href="#Advanced-Object-Operations">Advanced Object Operations</a><a id="Advanced-Object-Operations-1"></a><a class="docs-heading-anchor-permalink" href="#Advanced-Object-Operations" title="Permalink"></a></h2><h3 id="Memory-Mapping-Patterns-(Future-API)"><a class="docs-heading-anchor" href="#Memory-Mapping-Patterns-(Future-API)">Memory Mapping Patterns (Future API)</a><a id="Memory-Mapping-Patterns-(Future-API)-1"></a><a class="docs-heading-anchor-permalink" href="#Memory-Mapping-Patterns-(Future-API)" title="Permalink"></a></h3><pre><code class="language-julia hljs"># Safe memory mapping
+function with_memory_view(f, memory::Memory, offset::Int32, length::Int32)
+    # Bounds checking
+    current_size = memory_size(memory) * 65536  # Convert pages to bytes
+    if offset + length &gt; current_size
+        throw(BoundsError(&quot;Memory view out of bounds&quot;))
+    end
+
+    # Get raw memory pointer
+    data_ptr = LibWasmtime.wasmtime_memory_data(memory.store.context, memory.ptr)
+
+    # Create a view (be careful with GC)
+    try
+        # Create unsafe array view
+        view = unsafe_wrap(Array{UInt8}, data_ptr + offset, length, own=false)
+        return f(view)
+    catch e
+        rethrow(e)
+    end
+end
+
+# Usage
+result = with_memory_view(memory, 0, 1024) do view
+    # Work with memory as Julia array
+    sum(view)
+end</code></pre><h3 id="Global-Variable-Patterns"><a class="docs-heading-anchor" href="#Global-Variable-Patterns">Global Variable Patterns</a><a id="Global-Variable-Patterns-1"></a><a class="docs-heading-anchor-permalink" href="#Global-Variable-Patterns" title="Permalink"></a></h3><pre><code class="language-julia hljs"># Type-safe global access
+function typed_global_get(global_var::Global, ::Type{T}) where T
+    value = get_global(global_var)
+    if value isa WasmValue{T}
+        return value.value
+    else
+        throw(TypeError(&quot;Global value is not of type $T&quot;))
+    end
+end
+
+function typed_global_set!(global_var::Global, value::T) where T
+    wasm_value = to_wasm(value)
+    set_global!(global_var, wasm_value)
+end
+
+# Usage
+counter = get_global(instance, &quot;counter&quot;)
+current_value = typed_global_get(counter, Int32)
+typed_global_set!(counter, current_value + 1)</code></pre><h3 id="Table-Management-Patterns"><a class="docs-heading-anchor" href="#Table-Management-Patterns">Table Management Patterns</a><a id="Table-Management-Patterns-1"></a><a class="docs-heading-anchor-permalink" href="#Table-Management-Patterns" title="Permalink"></a></h3><pre><code class="language-julia hljs"># Function table management
+function add_function_to_table(table::Table, func::Func)::Int32
+    current_size = table_size(table)
+
+    # Grow table by one element
+    prev_size = table_grow!(table, 1, WasmFuncRef(nothing))
+
+    # Set the new function
+    func_ref = WasmFuncRef(func)
+    set_table_element!(table, prev_size, func_ref)
+
+    return prev_size  # Return index of added function
+end
+
+# Call function from table
+function call_table_function(table::Table, index::Int32, params...)
+    func_ref = get_table_element(table, index)
+
+    if func_ref isa WasmFuncRef &amp;&amp; func_ref.func !== nothing
+        return call(func_ref.func, collect(params))
+    else
+        throw(ArgumentError(&quot;No function at table index $index&quot;))
+    end
+end</code></pre><h2 id="Error-Handling"><a class="docs-heading-anchor" href="#Error-Handling">Error Handling</a><a id="Error-Handling-1"></a><a class="docs-heading-anchor-permalink" href="#Error-Handling" title="Permalink"></a></h2><h3 id="Object-Access-Errors"><a class="docs-heading-anchor" href="#Object-Access-Errors">Object Access Errors</a><a id="Object-Access-Errors-1"></a><a class="docs-heading-anchor-permalink" href="#Object-Access-Errors" title="Permalink"></a></h3><pre><code class="language-julia hljs">function safe_object_access(instance::Instance, name::String, expected_type::Type)
+    try
+        export_item = get_export(instance, name)
+        actual_type = identify_export_type(export_item)
+
+        if actual_type != expected_type
+            throw(TypeError(&quot;Export &#39;$name&#39; is $actual_type, expected $expected_type&quot;))
+        end
+
+        return export_item
+    catch e::WasmtimeError
+        if occursin(&quot;not found&quot;, e.message)
+            throw(KeyError(&quot;Export &#39;$name&#39; not found&quot;))
+        else
+            rethrow(e)
+        end
+    end
+end</code></pre><h3 id="Memory-Safety"><a class="docs-heading-anchor" href="#Memory-Safety">Memory Safety</a><a id="Memory-Safety-1"></a><a class="docs-heading-anchor-permalink" href="#Memory-Safety" title="Permalink"></a></h3><pre><code class="language-julia hljs">function safe_memory_operation(f, memory::Memory, offset::Int32, length::Int32)
+    current_size_bytes = memory_size(memory) * 65536
+
+    if offset &lt; 0
+        throw(BoundsError(&quot;Negative offset&quot;))
+    end
+
+    if length &lt; 0
+        throw(BoundsError(&quot;Negative length&quot;))
+    end
+
+    if offset + length &gt; current_size_bytes
+        throw(BoundsError(&quot;Access beyond memory bounds&quot;))
+    end
+
+    try
+        return f()
+    catch e
+        @error &quot;Memory operation failed&quot; offset=offset length=length exception=e
+        rethrow(e)
+    end
+end</code></pre><h2 id="Best-Practices"><a class="docs-heading-anchor" href="#Best-Practices">Best Practices</a><a id="Best-Practices-1"></a><a class="docs-heading-anchor-permalink" href="#Best-Practices" title="Permalink"></a></h2><h3 id="Object-Lifecycle-Management"><a class="docs-heading-anchor" href="#Object-Lifecycle-Management">Object Lifecycle Management</a><a id="Object-Lifecycle-Management-1"></a><a class="docs-heading-anchor-permalink" href="#Object-Lifecycle-Management" title="Permalink"></a></h3><pre><code class="language-julia hljs"># Objects are tied to their store&#39;s lifetime
+function manage_object_lifecycle()
+    engine = Engine()
+    store = Store(engine)
+    instance = Instance(store, module_obj)
+
+    # Get objects
+    memory = get_memory(instance, &quot;memory&quot;)
+    global_var = get_global(instance, &quot;counter&quot;)
+    table = get_table(instance, &quot;func_table&quot;)
+
+    # Objects remain valid as long as store is valid
+    # No manual cleanup needed
+
+    return (memory, global_var, table)
+end</code></pre><h3 id="Type-Safety"><a class="docs-heading-anchor" href="#Type-Safety">Type Safety</a><a id="Type-Safety-1"></a><a class="docs-heading-anchor-permalink" href="#Type-Safety" title="Permalink"></a></h3><pre><code class="language-julia hljs"># Always check types before operations
+function ensure_mutable_global(global_var::Global)
+    type_info = global_type(global_var)
+
+    if !type_info.is_mutable
+        throw(ArgumentError(&quot;Global is immutable&quot;))
+    end
+
+    return global_var
+end</code></pre><h3 id="Performance-Optimization"><a class="docs-heading-anchor" href="#Performance-Optimization">Performance Optimization</a><a id="Performance-Optimization-1"></a><a class="docs-heading-anchor-permalink" href="#Performance-Optimization" title="Permalink"></a></h3><pre><code class="language-julia hljs"># Cache frequently accessed objects
+struct CachedObjects
+    memory::Union{Memory, Nothing}
+    globals::Dict{String, Global}
+    tables::Dict{String, Table}
+end
+
+function cache_objects(instance::Instance, names...)
+    cache = CachedObjects(nothing, Dict(), Dict())
+
+    for name in names
+        try
+            export_item = get_export(instance, name)
+            export_type = identify_export_type(export_item)
+
+            if export_type == Memory
+                cache.memory = convert_to_memory(export_item, instance.store)
+            elseif export_type == Global
+                cache.globals[name] = convert_to_global(export_item, instance.store)
+            elseif export_type == Table
+                cache.tables[name] = convert_to_table(export_item, instance.store)
+            end
+        catch e
+            @warn &quot;Failed to cache object: $name&quot; exception=e
+        end
+    end
+
+    return cache
+end</code></pre><p>WebAssembly objects provide powerful capabilities for data sharing and state management between Julia and WebAssembly code. The type-safe wrappers ensure memory safety while maintaining performance.</p></article><nav class="docs-footer"><a class="docs-footer-prevpage" href="../55-exports/">« WebAssembly Exports</a><a class="docs-footer-nextpage" href="../70-error-handling/">Error Handling »</a><div class="flexbox-break"></div><p class="footer-message">Powered by <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> and the <a href="https://julialang.org/">Julia Programming Language</a>.</p></nav></div><div class="modal" id="documenter-settings"><div class="modal-background"></div><div class="modal-card"><header class="modal-card-head"><p class="modal-card-title">Settings</p><button class="delete"></button></header><section class="modal-card-body"><p><label class="label">Theme</label><div class="select"><select id="documenter-themepicker"><option value="auto">Automatic (OS)</option><option value="documenter-light">documenter-light</option><option value="documenter-dark">documenter-dark</option><option value="catppuccin-latte">catppuccin-latte</option><option value="catppuccin-frappe">catppuccin-frappe</option><option value="catppuccin-macchiato">catppuccin-macchiato</option><option value="catppuccin-mocha">catppuccin-mocha</option></select></div></p><hr/><p>This document was generated with <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> version 1.13.0 on <span class="colophon-date" title="Sunday 6 July 2025 21:28">Sunday 6 July 2025</span>. Using Julia version 1.11.5.</p></section><footer class="modal-card-foot"></footer></div></div></div></body></html>
