@@ -57,33 +57,34 @@ end
 
 mutable struct WasmMemory
     ptr::Ptr{LibWasmtime.wasm_memory_t}
-    store::WasmStore
+    # store::WasmStore
 
-    function WasmMemory(store::WasmStore, limits::Pair{Int,Int} = (0 => 0))
-        isvalid(store) || throw(WasmtimeError("Invalid store"))
+end
 
-        # Convert limits to wasm_limits_t
-        wasm_limits = WasmLimits(limits.first, limits.second)
-        memory_type = WasmMemoryType(wasm_limits)
+function WasmMemory(store::WasmStore, limits::Pair{Int,Int} = (0 => 0))
+    isvalid(store) || throw(WasmtimeError("Invalid store"))
 
-        # Create the memory using the wasm C API
-        memory_ptr = LibWasmtime.wasm_memory_new(store, memory_type)
+    # Convert limits to wasm_limits_t
+    wasm_limits = WasmLimits(limits.first, limits.second)
+    memory_type = WasmMemoryType(wasm_limits)
 
-        if memory_ptr == C_NULL
-            throw(WasmtimeError("Failed to create WasmMemory"))
-        end
+    # Create the memory using the wasm C API
+    memory_ptr = LibWasmtime.wasm_memory_new(store, memory_type)
 
-        memory = new(memory_ptr, store)
-
-        finalizer(memory) do m
-            if m.ptr != C_NULL
-                LibWasmtime.wasm_memory_delete(m.ptr)
-                m.ptr = C_NULL
-            end
-        end
-
-        return memory
+    if memory_ptr == C_NULL
+        throw(WasmtimeError("Failed to create WasmMemory"))
     end
+
+    memory = WasmMemory(memory_ptr)
+
+    finalizer(memory) do m
+        if m.ptr != C_NULL
+            LibWasmtime.wasm_memory_delete(m.ptr)
+            m.ptr = C_NULL
+        end
+    end
+
+    return memory
 end
 
 map_to_extern(memory::WasmMemory) = LibWasmtime.wasm_memory_as_extern(memory.ptr)
