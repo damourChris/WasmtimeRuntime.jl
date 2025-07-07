@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><title>WebAssembly Traps · WasmtimeRuntime.jl</title><meta name="title" content="WebAssembly Traps · WasmtimeRuntime.jl"/><meta property="og:title" content="WebAssembly Traps · WasmtimeRuntime.jl"/><meta property="twitter:title" content="WebAssembly Traps · WasmtimeRuntime.jl"/><meta name="description" content="Documentation for WasmtimeRuntime.jl."/><meta property="og:description" content="Documentation for WasmtimeRuntime.jl."/><meta property="twitter:description" content="Documentation for WasmtimeRuntime.jl."/><meta property="og:url" content="https://damourChris.github.io/WasmtimeRuntime.jl/71-traps/"/><meta property="twitter:url" content="https://damourChris.github.io/WasmtimeRuntime.jl/71-traps/"/><link rel="canonical" href="https://damourChris.github.io/WasmtimeRuntime.jl/71-traps/"/><script data-outdated-warner src="../assets/warner.js"></script><link href="https://cdnjs.cloudflare.com/ajax/libs/lato-font/3.0.0/css/lato-font.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/juliamono/0.050/juliamono.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/fontawesome.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/solid.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/brands.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.8/katex.min.css" rel="stylesheet" type="text/css"/><script>documenterBaseURL=".."</script><script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.6/require.min.js" data-main="../assets/documenter.js"></script><script src="../search_index.js"></script><script src="../siteinfo.js"></script><script src="../../versions.js"></script><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../assets/themes/catppuccin-mocha.css" data-theme-name="catppuccin-mocha"/><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../assets/themes/catppuccin-macchiato.css" data-theme-name="catppuccin-macchiato"/><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../assets/themes/catppuccin-frappe.css" data-theme-name="catppuccin-frappe"/><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../assets/themes/catppuccin-latte.css" data-theme-name="catppuccin-latte"/><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../assets/themes/documenter-dark.css" data-theme-name="documenter-dark" data-theme-primary-dark/><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../assets/themes/documenter-light.css" data-theme-name="documenter-light" data-theme-primary/><script src="../assets/themeswap.js"></script></head><body><div id="documenter"><nav class="docs-sidebar"><div class="docs-package-name"><span class="docs-autofit"><a href="../">WasmtimeRuntime.jl</a></span></div><button class="docs-search-query input is-rounded is-small is-clickable my-2 mx-auto py-1 px-2" id="documenter-search-query">Search docs (Ctrl + /)</button><ul class="docs-menu"><li><a class="tocitem" href="../">WasmtimeRuntime</a></li><li><a class="tocitem" href="../01-getting-started/">Getting Started with WasmtimeRuntime.jl</a></li><li><a class="tocitem" href="../02-core-concepts/">Core Concepts</a></li><li><a class="tocitem" href="../10-configuration/">Configuration Guide</a></li><li><a class="tocitem" href="../20-values-and-types/">Values and Type System</a></li><li><a class="tocitem" href="../21-generic-vectors/">Generic Vector Wrapper (<code>WasmVec</code>)</a></li><li><a class="tocitem" href="../30-modules/">WebAssembly Modules</a></li><li><a class="tocitem" href="../40-instances/">WebAssembly Instances</a></li><li><a class="tocitem" href="../50-functions/">Function Calling and Type Conversion</a></li><li><a class="tocitem" href="../51-memory/">WebAssembly Memory</a></li><li><a class="tocitem" href="../52-tables/">WebAssembly Tables</a></li><li><a class="tocitem" href="../53-global/">WebAssembly Global Variables</a></li><li><a class="tocitem" href="../54-externs/">WebAssembly Externs</a></li><li><a class="tocitem" href="../55-exports/">WebAssembly Exports</a></li><li><a class="tocitem" href="../56-imports/">WebAssembly Import Types</a></li><li><a class="tocitem" href="../60-objects/">WebAssembly Objects: Memory, Globals, and Tables</a></li><li><a class="tocitem" href="../70-error-handling/">Error Handling</a></li><li class="is-active"><a class="tocitem" href>WebAssembly Traps</a><ul class="internal"><li><a class="tocitem" href="#WasmTrap-Overview"><span>WasmTrap Overview</span></a></li><li><a class="tocitem" href="#Creating-WasmTrap-Instances"><span>Creating WasmTrap Instances</span></a></li><li><a class="tocitem" href="#Common-Trap-Scenarios"><span>Common Trap Scenarios</span></a></li><li><a class="tocitem" href="#Trap-Handling-Patterns"><span>Trap Handling Patterns</span></a></li><li><a class="tocitem" href="#WasmTrap-API-Reference"><span>WasmTrap API Reference</span></a></li><li><a class="tocitem" href="#Best-Practices"><span>Best Practices</span></a></li><li><a class="tocitem" href="#Performance-Considerations"><span>Performance Considerations</span></a></li><li><a class="tocitem" href="#Common-Pitfalls"><span>Common Pitfalls</span></a></li><li><a class="tocitem" href="#Summary"><span>Summary</span></a></li></ul></li><li><a class="tocitem" href="../80-performance/">Performance Guide</a></li><li><a class="tocitem" href="../81-conversions/">Conversion</a></li><li><a class="tocitem" href="../90-contributing/">Contributing guidelines</a></li><li><a class="tocitem" href="../90-implementation-status/">Implementation Status</a></li><li><a class="tocitem" href="../91-developer/">Developer documentation</a></li><li><a class="tocitem" href="../94-api-reference/">API Reference</a></li><li><a class="tocitem" href="../95-reference/">Reference</a></li></ul><div class="docs-version-selector field has-addons"><div class="control"><span class="docs-label button is-static is-size-7">Version</span></div><div class="docs-selector control is-expanded"><div class="select is-fullwidth is-size-7"><select id="documenter-version-selector"></select></div></div></div></nav><div class="docs-main"><header class="docs-navbar"><a class="docs-sidebar-button docs-navbar-link fa-solid fa-bars is-hidden-desktop" id="documenter-sidebar-button" href="#"></a><nav class="breadcrumb"><ul class="is-hidden-mobile"><li class="is-active"><a href>WebAssembly Traps</a></li></ul><ul class="is-hidden-tablet"><li class="is-active"><a href>WebAssembly Traps</a></li></ul></nav><div class="docs-right"><a class="docs-navbar-link" href="https://github.com/damourChris/WasmtimeRuntime.jl/blob/main/docs/src/71-traps.md#" title="Edit source on GitHub"><span class="docs-icon fa-solid"></span></a><a class="docs-settings-button docs-navbar-link fa-solid fa-gear" id="documenter-settings-button" href="#" title="Settings"></a><a class="docs-article-toggle-button fa-solid fa-chevron-up" id="documenter-article-toggle-button" href="javascript:;" title="Collapse all docstrings"></a></div></header><article class="content" id="documenter-page"><h1 id="WebAssembly-Traps"><a class="docs-heading-anchor" href="#WebAssembly-Traps">WebAssembly Traps</a><a id="WebAssembly-Traps-1"></a><a class="docs-heading-anchor-permalink" href="#WebAssembly-Traps" title="Permalink"></a></h1><p>WebAssembly traps are runtime exceptions that occur during WebAssembly execution when the program encounters an unrecoverable error. WasmtimeRuntime.jl provides the <code>WasmTrap</code> type to handle these exceptional conditions.</p><h2 id="WasmTrap-Overview"><a class="docs-heading-anchor" href="#WasmTrap-Overview">WasmTrap Overview</a><a id="WasmTrap-Overview-1"></a><a class="docs-heading-anchor-permalink" href="#WasmTrap-Overview" title="Permalink"></a></h2><p><code>WasmTrap</code> represents a WebAssembly trap - a runtime error that immediately terminates execution of the WebAssembly program. Traps are distinct from regular Julia exceptions in that they originate from the WebAssembly runtime itself.</p><pre><code class="language-julia hljs">struct WasmTrap &lt;: Exception
+    ptr::Ptr{LibWasmtime.wasm_trap_t}
+    msg::AbstractString
+end</code></pre><h2 id="Creating-WasmTrap-Instances"><a class="docs-heading-anchor" href="#Creating-WasmTrap-Instances">Creating WasmTrap Instances</a><a id="Creating-WasmTrap-Instances-1"></a><a class="docs-heading-anchor-permalink" href="#Creating-WasmTrap-Instances" title="Permalink"></a></h2><p>Traps are typically created automatically by the WebAssembly runtime, but you can also create them from existing trap pointers:</p><pre><code class="language-julia hljs"># From a C pointer (internal use)
+# trap_ptr  &lt;--- Assume this is a valid pointer to a wasm_trap_t object
+trap = WasmTrap(trap_ptr)
+
+# The trap message is automatically extracted
+println(trap.msg)  # &quot;integer divide by zero&quot;</code></pre><h2 id="Common-Trap-Scenarios"><a class="docs-heading-anchor" href="#Common-Trap-Scenarios">Common Trap Scenarios</a><a id="Common-Trap-Scenarios-1"></a><a class="docs-heading-anchor-permalink" href="#Common-Trap-Scenarios" title="Permalink"></a></h2><h3 id="Division-by-Zero"><a class="docs-heading-anchor" href="#Division-by-Zero">Division by Zero</a><a id="Division-by-Zero-1"></a><a class="docs-heading-anchor-permalink" href="#Division-by-Zero" title="Permalink"></a></h3><pre><code class="language-julia hljs">wasm_code = wat&quot;&quot;&quot;
+(module
+  (func (export &quot;divide&quot;) (param i32 i32) (result i32)
+    local.get 0
+    local.get 1
+    i32.div_s))
+&quot;&quot;&quot;
+
+engine = Engine()
+store = Store(engine)
+module_obj = WasmModule(engine, wat2wasm(wasm_code))
+instance = Instance(store, module_obj)
+
+try
+    # This will trap due to division by zero
+    result = call(instance, &quot;divide&quot;, [10, 0])
+catch trap::WasmTrap
+    println(&quot;Caught trap: $(trap.msg)&quot;)
+    # Output: &quot;Caught trap: integer divide by zero&quot;
+end</code></pre><h3 id="Memory-Access-Out-of-Bounds"><a class="docs-heading-anchor" href="#Memory-Access-Out-of-Bounds">Memory Access Out of Bounds</a><a id="Memory-Access-Out-of-Bounds-1"></a><a class="docs-heading-anchor-permalink" href="#Memory-Access-Out-of-Bounds" title="Permalink"></a></h3><pre><code class="language-julia hljs">wasm_code = wat&quot;&quot;&quot;
+(module
+  (memory (export &quot;memory&quot;) 1)
+  (func (export &quot;load&quot;) (param i32) (result i32)
+    local.get 0
+    i32.load))
+&quot;&quot;&quot;
+
+engine = Engine()
+store = Store(engine)
+module_obj = WasmModule(engine, wat2wasm(wasm_code))
+instance = Instance(store, module_obj)
+
+try
+    # This will trap due to out-of-bounds memory access
+    result = call(instance, &quot;load&quot;, [100000])  # Beyond memory bounds
+catch trap::WasmTrap
+    println(&quot;Memory access trap: $(trap.msg)&quot;)
+    # Output: &quot;Memory access trap: out of bounds memory access&quot;
+end</code></pre><h3 id="Stack-Overflow"><a class="docs-heading-anchor" href="#Stack-Overflow">Stack Overflow</a><a id="Stack-Overflow-1"></a><a class="docs-heading-anchor-permalink" href="#Stack-Overflow" title="Permalink"></a></h3><pre><code class="language-julia hljs">wasm_code = wat&quot;&quot;&quot;
+(module
+  (func (export &quot;recurse&quot;) (param i32) (result i32)
+    local.get 0
+    i32.const 1
+    i32.sub
+    local.tee 0
+    i32.const 0
+    i32.gt_s
+    if (result i32)
+      local.get 0
+      call 0  ; recursive call
+    else
+      local.get 0
+    end))
+&quot;&quot;&quot;
+
+engine = Engine()
+store = Store(engine)
+module_obj = WasmModule(engine, wat2wasm(wasm_code))
+instance = Instance(store, module_obj)
+
+try
+    # This will trap due to stack overflow
+    result = call(instance, &quot;recurse&quot;, [10000])
+catch trap::WasmTrap
+    println(&quot;Stack overflow trap: $(trap.msg)&quot;)
+    # Output: &quot;Stack overflow trap: call stack exhausted&quot;
+end</code></pre><h3 id="Integer-Overflow"><a class="docs-heading-anchor" href="#Integer-Overflow">Integer Overflow</a><a id="Integer-Overflow-1"></a><a class="docs-heading-anchor-permalink" href="#Integer-Overflow" title="Permalink"></a></h3><pre><code class="language-julia hljs">wasm_code = wat&quot;&quot;&quot;
+(module
+  (func (export &quot;overflow&quot;) (param i32) (result i32)
+    local.get 0
+    i32.const -1
+    i32.div_s))
+&quot;&quot;&quot;
+
+engine = Engine()
+store = Store(engine)
+module_obj = WasmModule(engine, wat2wasm(wasm_code))
+instance = Instance(store, module_obj)
+
+try
+    # This will trap due to integer overflow
+    result = call(instance, &quot;overflow&quot;, [typemin(Int32)])
+catch trap::WasmTrap
+    println(&quot;Overflow trap: $(trap.msg)&quot;)
+    # Output: &quot;Overflow trap: integer overflow&quot;
+end</code></pre><h2 id="Trap-Handling-Patterns"><a class="docs-heading-anchor" href="#Trap-Handling-Patterns">Trap Handling Patterns</a><a id="Trap-Handling-Patterns-1"></a><a class="docs-heading-anchor-permalink" href="#Trap-Handling-Patterns" title="Permalink"></a></h2><h3 id="Basic-Trap-Handling"><a class="docs-heading-anchor" href="#Basic-Trap-Handling">Basic Trap Handling</a><a id="Basic-Trap-Handling-1"></a><a class="docs-heading-anchor-permalink" href="#Basic-Trap-Handling" title="Permalink"></a></h3><pre><code class="language-julia hljs">function safe_wasm_call(instance, func_name, params)
+    try
+        return call(instance, func_name, params)
+    catch trap::WasmTrap
+        @warn &quot;WebAssembly trap occurred&quot; function=func_name message=trap.msg
+        return nothing
+    end
+end</code></pre><h3 id="Specific-Trap-Type-Handling"><a class="docs-heading-anchor" href="#Specific-Trap-Type-Handling">Specific Trap Type Handling</a><a id="Specific-Trap-Type-Handling-1"></a><a class="docs-heading-anchor-permalink" href="#Specific-Trap-Type-Handling" title="Permalink"></a></h3><pre><code class="language-julia hljs">function handle_specific_traps(instance, func_name, params)
+    try
+        return call(instance, func_name, params)
+    catch trap::WasmTrap
+        msg = lowercase(trap.msg)
+
+        if occursin(&quot;divide by zero&quot;, msg)
+            @warn &quot;Division by zero detected, returning zero&quot;
+            return 0
+        elseif occursin(&quot;out of bounds&quot;, msg)
+            @error &quot;Memory access violation&quot; function=func_name params=params
+            rethrow(trap)
+        elseif occursin(&quot;stack exhausted&quot;, msg)
+            @error &quot;Stack overflow detected&quot; function=func_name
+            rethrow(trap)
+        else
+            @error &quot;Unknown trap type&quot; message=trap.msg
+            rethrow(trap)
+        end
+    end
+end</code></pre><h3 id="Trap-Recovery-with-Fallback"><a class="docs-heading-anchor" href="#Trap-Recovery-with-Fallback">Trap Recovery with Fallback</a><a id="Trap-Recovery-with-Fallback-1"></a><a class="docs-heading-anchor-permalink" href="#Trap-Recovery-with-Fallback" title="Permalink"></a></h3><pre><code class="language-julia hljs">function call_with_fallback(instance, primary_func, fallback_func, params)
+    try
+        return call(instance, primary_func, params)
+    catch trap::WasmTrap
+        @warn &quot;Primary function trapped, trying fallback&quot;
+              primary=primary_func fallback=fallback_func message=trap.msg
+
+        try
+            return call(instance, fallback_func, params)
+        catch fallback_trap::WasmTrap
+            @error &quot;Both primary and fallback functions trapped&quot;
+                   primary_trap=trap.msg fallback_trap=fallback_trap.msg
+            rethrow(trap)  # Rethrow original trap
+        end
+    end
+end</code></pre><h2 id="WasmTrap-API-Reference"><a class="docs-heading-anchor" href="#WasmTrap-API-Reference">WasmTrap API Reference</a><a id="WasmTrap-API-Reference-1"></a><a class="docs-heading-anchor-permalink" href="#WasmTrap-API-Reference" title="Permalink"></a></h2><h3 id="Fields"><a class="docs-heading-anchor" href="#Fields">Fields</a><a id="Fields-1"></a><a class="docs-heading-anchor-permalink" href="#Fields" title="Permalink"></a></h3><ul><li><code>ptr::Ptr{LibWasmtime.wasm_trap_t}</code> - Raw pointer to the underlying C trap object</li><li><code>msg::AbstractString</code> - Human-readable trap message</li></ul><h3 id="Methods"><a class="docs-heading-anchor" href="#Methods">Methods</a><a id="Methods-1"></a><a class="docs-heading-anchor-permalink" href="#Methods" title="Permalink"></a></h3><h4 id="Constructors"><a class="docs-heading-anchor" href="#Constructors">Constructors</a><a id="Constructors-1"></a><a class="docs-heading-anchor-permalink" href="#Constructors" title="Permalink"></a></h4><pre><code class="language-julia hljs">WasmTrap(ptr::Ptr{LibWasmtime.wasm_trap_t})</code></pre><p>Creates a <code>WasmTrap</code> from a C pointer, automatically extracting the trap message.</p><h4 id="Comparison-Operations"><a class="docs-heading-anchor" href="#Comparison-Operations">Comparison Operations</a><a id="Comparison-Operations-1"></a><a class="docs-heading-anchor-permalink" href="#Comparison-Operations" title="Permalink"></a></h4><pre><code class="language-julia hljs">trap1 == trap2          # Compare two traps
+trap == ptr             # Compare trap with C pointer
+trap != other_trap      # Inequality comparison</code></pre><h4 id="Utility-Functions"><a class="docs-heading-anchor" href="#Utility-Functions">Utility Functions</a><a id="Utility-Functions-1"></a><a class="docs-heading-anchor-permalink" href="#Utility-Functions" title="Permalink"></a></h4><pre><code class="language-julia hljs">Base.isvalid(trap)      # Check if trap pointer is valid
+Base.show(io, trap)     # Display trap information
+Base.showerror(io, trap) # Display trap as error</code></pre><h4 id="Conversion-Functions"><a class="docs-heading-anchor" href="#Conversion-Functions">Conversion Functions</a><a id="Conversion-Functions-1"></a><a class="docs-heading-anchor-permalink" href="#Conversion-Functions" title="Permalink"></a></h4><pre><code class="language-julia hljs">Base.unsafe_convert(::Type{WasmTrap}, ptr)
+Base.unsafe_convert(::Type{Ptr{LibWasmtime.wasm_trap_t}}, trap)</code></pre><h2 id="Best-Practices"><a class="docs-heading-anchor" href="#Best-Practices">Best Practices</a><a id="Best-Practices-1"></a><a class="docs-heading-anchor-permalink" href="#Best-Practices" title="Permalink"></a></h2><h3 id="1.-Always-Handle-Traps"><a class="docs-heading-anchor" href="#1.-Always-Handle-Traps">1. Always Handle Traps</a><a id="1.-Always-Handle-Traps-1"></a><a class="docs-heading-anchor-permalink" href="#1.-Always-Handle-Traps" title="Permalink"></a></h3><p>WebAssembly traps should always be handled, as they represent runtime errors:</p><pre><code class="language-julia hljs"># ✅ Good - Handle traps appropriately
+try
+    result = call(instance, &quot;risky_function&quot;, params)
+    return result
+catch trap::WasmTrap
+    @error &quot;Function trapped&quot; message=trap.msg
+    return default_value
+end
+
+# ❌ Bad - Ignore potential traps
+result = call(instance, &quot;risky_function&quot;, params)  # May throw unhandled trap</code></pre><h3 id="2.-Log-Trap-Information"><a class="docs-heading-anchor" href="#2.-Log-Trap-Information">2. Log Trap Information</a><a id="2.-Log-Trap-Information-1"></a><a class="docs-heading-anchor-permalink" href="#2.-Log-Trap-Information" title="Permalink"></a></h3><p>Include trap messages in logs for debugging:</p><pre><code class="language-julia hljs"># ✅ Good - Include trap context
+catch trap::WasmTrap
+    @error &quot;WebAssembly trap occurred&quot;
+           func=func_name
+           params=params
+           message=trap.msg
+           stack_trace=stacktrace()
+end</code></pre><h3 id="3.-Validate-Inputs"><a class="docs-heading-anchor" href="#3.-Validate-Inputs">3. Validate Inputs</a><a id="3.-Validate-Inputs-1"></a><a class="docs-heading-anchor-permalink" href="#3.-Validate-Inputs" title="Permalink"></a></h3><p>Prevent common traps by validating inputs:</p><pre><code class="language-julia hljs">function safe_divide(instance, a, b)
+    if b == 0
+        @warn &quot;Division by zero prevented&quot;
+        return 0
+    end
+
+    return call(instance, &quot;divide&quot;, [a, b])
+end</code></pre><h3 id="4.-Use-Appropriate-Error-Recovery"><a class="docs-heading-anchor" href="#4.-Use-Appropriate-Error-Recovery">4. Use Appropriate Error Recovery</a><a id="4.-Use-Appropriate-Error-Recovery-1"></a><a class="docs-heading-anchor-permalink" href="#4.-Use-Appropriate-Error-Recovery" title="Permalink"></a></h3><p>Choose recovery strategies based on trap type:</p><pre><code class="language-julia hljs">function adaptive_trap_handling(instance, func_name, params)
+    try
+        return call(instance, func_name, params)
+    catch trap::WasmTrap
+        msg = lowercase(trap.msg)
+
+        # Recoverable errors
+        if occursin(&quot;divide by zero&quot;, msg)
+            return 0  # Safe default
+        end
+
+        # Non-recoverable errors
+        if occursin(&quot;out of bounds&quot;, msg) || occursin(&quot;stack exhausted&quot;, msg)
+            rethrow(trap)  # Let caller handle
+        end
+
+        # Unknown traps
+        @error &quot;Unknown trap type, rethrowing&quot; message=trap.msg
+        rethrow(trap)
+    end
+end</code></pre><h2 id="Performance-Considerations"><a class="docs-heading-anchor" href="#Performance-Considerations">Performance Considerations</a><a id="Performance-Considerations-1"></a><a class="docs-heading-anchor-permalink" href="#Performance-Considerations" title="Permalink"></a></h2><h3 id="Trap-Overhead"><a class="docs-heading-anchor" href="#Trap-Overhead">Trap Overhead</a><a id="Trap-Overhead-1"></a><a class="docs-heading-anchor-permalink" href="#Trap-Overhead" title="Permalink"></a></h3><p>Catching traps has minimal overhead, but creating trap objects involves:</p><ul><li>Message extraction from C runtime</li><li>String allocation for the message</li><li>Julia object creation</li></ul><h3 id="Avoiding-Traps"><a class="docs-heading-anchor" href="#Avoiding-Traps">Avoiding Traps</a><a id="Avoiding-Traps-1"></a><a class="docs-heading-anchor-permalink" href="#Avoiding-Traps" title="Permalink"></a></h3><p>The best performance strategy is preventing traps:</p><pre><code class="language-julia hljs"># ✅ Prevent traps when possible
+function optimized_divide(instance, a, b)
+    if b == 0
+        return 0  # Avoid trap entirely
+    end
+    return call(instance, &quot;divide&quot;, [a, b])
+end
+
+# ❌ Rely on trap handling
+function slow_divide(instance, a, b)
+    try
+        return call(instance, &quot;divide&quot;, [a, b])
+    catch trap::WasmTrap
+        return 0  # Trap handling is slower
+    end
+end</code></pre><h2 id="Common-Pitfalls"><a class="docs-heading-anchor" href="#Common-Pitfalls">Common Pitfalls</a><a id="Common-Pitfalls-1"></a><a class="docs-heading-anchor-permalink" href="#Common-Pitfalls" title="Permalink"></a></h2><h3 id="1.-Ignoring-Trap-Messages"><a class="docs-heading-anchor" href="#1.-Ignoring-Trap-Messages">1. Ignoring Trap Messages</a><a id="1.-Ignoring-Trap-Messages-1"></a><a class="docs-heading-anchor-permalink" href="#1.-Ignoring-Trap-Messages" title="Permalink"></a></h3><pre><code class="language-julia hljs"># ❌ Bad - Ignore valuable trap information
+catch trap::WasmTrap
+    return nothing  # Lost debugging information
+end
+
+# ✅ Good - Log trap details
+catch trap::WasmTrap
+    @error &quot;Trap occurred&quot; message=trap.msg
+    return nothing
+end</code></pre><h3 id="2.-Incorrect-Trap-Classification"><a class="docs-heading-anchor" href="#2.-Incorrect-Trap-Classification">2. Incorrect Trap Classification</a><a id="2.-Incorrect-Trap-Classification-1"></a><a class="docs-heading-anchor-permalink" href="#2.-Incorrect-Trap-Classification" title="Permalink"></a></h3><pre><code class="language-julia hljs"># ❌ Bad - Overly broad trap handling
+catch trap::WasmTrap
+    return default_value  # May mask serious errors
+end
+
+# ✅ Good - Specific trap handling
+catch trap::WasmTrap
+    if occursin(&quot;divide by zero&quot;, trap.msg)
+        return 0  # Safe recovery
+    else
+        rethrow(trap)  # Don&#39;t mask other errors
+    end
+end</code></pre><h2 id="Summary"><a class="docs-heading-anchor" href="#Summary">Summary</a><a id="Summary-1"></a><a class="docs-heading-anchor-permalink" href="#Summary" title="Permalink"></a></h2><p><code>WasmTrap</code> provides robust handling for WebAssembly runtime errors. Key points:</p><ul><li>Traps represent unrecoverable WebAssembly runtime errors</li><li>Always handle traps appropriately in production code</li><li>Use trap messages for debugging and error analysis</li><li>Implement appropriate recovery strategies based on trap type</li><li>Prefer preventing traps over handling them when possible</li><li>Log trap information for debugging and monitoring</li></ul><p>Understanding and properly handling WebAssembly traps is essential for building robust applications with WasmtimeRuntime.jl.</p></article><nav class="docs-footer"><a class="docs-footer-prevpage" href="../70-error-handling/">« Error Handling</a><a class="docs-footer-nextpage" href="../80-performance/">Performance Guide »</a><div class="flexbox-break"></div><p class="footer-message">Powered by <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> and the <a href="https://julialang.org/">Julia Programming Language</a>.</p></nav></div><div class="modal" id="documenter-settings"><div class="modal-background"></div><div class="modal-card"><header class="modal-card-head"><p class="modal-card-title">Settings</p><button class="delete"></button></header><section class="modal-card-body"><p><label class="label">Theme</label><div class="select"><select id="documenter-themepicker"><option value="auto">Automatic (OS)</option><option value="documenter-light">documenter-light</option><option value="documenter-dark">documenter-dark</option><option value="catppuccin-latte">catppuccin-latte</option><option value="catppuccin-frappe">catppuccin-frappe</option><option value="catppuccin-macchiato">catppuccin-macchiato</option><option value="catppuccin-mocha">catppuccin-mocha</option></select></div></p><hr/><p>This document was generated with <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> version 1.13.0 on <span class="colophon-date" title="Monday 7 July 2025 20:29">Monday 7 July 2025</span>. Using Julia version 1.11.5.</p></section><footer class="modal-card-foot"></footer></div></div></div></body></html>
