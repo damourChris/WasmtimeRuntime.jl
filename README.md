@@ -175,7 +175,7 @@ julia --project=. examples/vec_demo.jl
 - **[Development Documentation](https://damourChris.github.io/WasmtimeRuntime.jl/dev)**: Complete API reference and guides
 - **[Getting Started Guide](docs/src/01-getting-started.md)**: Step-by-step tutorial
 - **[Core Concepts](docs/src/02-core-concepts.md)**: Understanding the WebAssembly runtime model
-- **[API Reference](docs/src/reference.md)**: Detailed function and type documentation
+- **[API Reference](docs/src/95-reference.md)**: Detailed function and type documentation
 
 ## Current Status
 
