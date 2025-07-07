@@ -89,10 +89,14 @@ function imports(module_obj::WasmModule)
     isvalid(module_obj) || throw(WasmtimeError("Invalid module"))
 
     # Initialize the vector properly - allocate it on the stack
-    imports_vec = Ref(LibWasmtime.wasm_importtype_vec_t(C_NULL, 0))
-    LibWasmtime.wasm_module_imports(module_obj.ptr, imports_vec)
+    imports_vec = WasmImportTypeVec()
+    LibWasmtime.wasm_module_imports(module_obj, imports_vec)
 
-    # TODO: Process imports and return structured data
-    # For now, return empty dict as placeholder
-    return Dict{String,Any}()
+    imports_list = Vector{Tuple{String,WasmImportType}}(undef, length(imports_vec))
+    for (i, importtype_ptr) in enumerate(imports_vec)
+        import_ = WasmImportType(importtype_ptr)
+        import_name = name(import_)
+        imports_list[i] = (import_name, import_)
+    end
+    return imports_list
 end
