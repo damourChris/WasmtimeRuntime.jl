@@ -410,4 +410,281 @@ Random.seed!(1234)
             end
         end
     end
+
+    @testset "Module imports() Function Tests" begin
+        # Test setup
+        engine = WasmEngine()
+        store = WasmStore(engine)
+
+        @testset "Module without imports" begin
+            # Create a simple module with no imports
+            wasm_bytes = wat2wasm("""
+            (module
+              (func (export "add") (param i32 i32) (result i32)
+                local.get 0
+                local.get 1
+                i32.add)
+              (memory (export "memory") 1)
+              (global (export "counter") (mut i32) (i32.const 42))
+            )
+            """)
+
+            module_ = WasmModule(store, wasm_bytes)
+
+            @testset "should return empty imports list" begin
+                import_list = imports(module_)
+                @test import_list isa Vector{Tuple{String,WasmImportType}}
+                @test length(import_list) == 0
+                @test isempty(import_list)
+            end
+        end
+
+        @testset "Module with function imports" begin
+            # Create a module with function imports
+            wasm_bytes = wat2wasm("""
+            (module
+              (import "env" "print" (func (param i32)))
+              (import "env" "add" (func (param i32 i32) (result i32)))
+              (import "math" "sqrt" (func (param f64) (result f64)))
+
+              (func (export "main") (result i32)
+                i32.const 42)
+            )
+            """)
+
+            module_ = WasmModule(store, wasm_bytes)
+
+            @testset "should return correct number of imports" begin
+                import_list = imports(module_)
+                @test length(import_list) == 3
+            end
+
+            @testset "should return imports with correct names and types" begin
+                import_list = imports(module_)
+
+                # Check the first import (env.print)
+                import_name_1, import_1 = import_list[1]
+                @test import_name_1 == "print"
+                @test import_1 isa WasmImportType
+                @test import_1.module_name == "env"
+                @test import_1.import_name == "print"
+                @test name(import_1) == "print"
+                @test isvalid(import_1)
+
+                # Check the second import (env.add)
+                import_name_2, import_2 = import_list[2]
+                @test import_name_2 == "add"
+                @test import_2 isa WasmImportType
+                @test import_2.module_name == "env"
+                @test import_2.import_name == "add"
+                @test name(import_2) == "add"
+                @test isvalid(import_2)
+
+                # Check the third import (math.sqrt)
+                import_name_3, import_3 = import_list[3]
+                @test import_name_3 == "sqrt"
+                @test import_3 isa WasmImportType
+                @test import_3.module_name == "math"
+                @test import_3.import_name == "sqrt"
+                @test name(import_3) == "sqrt"
+                @test isvalid(import_3)
+            end
+        end
+
+        @testset "Module with memory and global imports" begin
+            # Create a module with memory and global imports
+            wasm_bytes = wat2wasm("""
+            (module
+              (import "env" "memory" (memory 1))
+              (import "env" "global_counter" (global i32))
+              (import "env" "global_mutable" (global (mut i32)))
+
+              (func (export "get_counter") (result i32)
+                global.get 1)
+            )
+            """)
+
+            module_ = WasmModule(store, wasm_bytes)
+
+            @testset "should handle memory and global imports" begin
+                import_list = imports(module_)
+                @test length(import_list) == 3
+
+                # All imports should be valid
+                for (import_name, import_obj) in import_list
+                    @test import_name isa String
+                    @test !isempty(import_name)
+                    @test import_obj isa WasmImportType
+                    @test isvalid(import_obj)
+                    @test import_obj.module_name == "env"
+                    @test name(import_obj) == import_name
+                end
+            end
+        end
+
+        @testset "Module with table imports" begin
+            # Create a module with table imports
+            wasm_bytes = wat2wasm("""
+            (module
+              (import "env" "table" (table 1 funcref))
+              (import "env" "callback" (func (param i32)))
+
+              (func (export "test") (result i32)
+                i32.const 42)
+            )
+            """)
+
+            module_ = WasmModule(store, wasm_bytes)
+
+            @testset "should handle table imports" begin
+                import_list = imports(module_)
+                @test length(import_list) == 2
+
+                # Check table import
+                table_import_name, table_import = import_list[1]
+                @test table_import_name == "table"
+                @test table_import.module_name == "env"
+                @test table_import.import_name == "table"
+
+                # Check function import
+                func_import_name, func_import = import_list[2]
+                @test func_import_name == "callback"
+                @test func_import.module_name == "env"
+                @test func_import.import_name == "callback"
+            end
+        end
+
+        @testset "Module with mixed imports from different modules" begin
+            # Create a module with imports from different modules
+            wasm_bytes = wat2wasm("""
+            (module
+              (import "console" "log" (func (param i32)))
+              (import "math" "add" (func (param i32 i32) (result i32)))
+              (import "system" "memory" (memory 1))
+              (import "config" "debug_flag" (global i32))
+
+              (func (export "test") (result i32)
+                i32.const 42)
+            )
+            """)
+
+            module_ = WasmModule(store, wasm_bytes)
+
+            @testset "should handle imports from different modules" begin
+                import_list = imports(module_)
+                @test length(import_list) == 4
+
+                # Check that we have imports from different modules
+                module_names =
+                    Set([import_obj.module_name for (_, import_obj) in import_list])
+                @test length(module_names) == 4
+                @test "console" in module_names
+                @test "math" in module_names
+                @test "system" in module_names
+                @test "config" in module_names
+
+                # Check specific imports
+                import_names = [import_name for (import_name, _) in import_list]
+                @test "log" in import_names
+                @test "add" in import_names
+                @test "memory" in import_names
+                @test "debug_flag" in import_names
+            end
+        end
+
+        @testset "imports() function error handling" begin
+            @testset "should throw error for invalid module" begin
+                # Create a module and then invalidate it
+                wasm_bytes = wat2wasm("""
+                (module
+                  (func (export "test") (result i32)
+                    i32.const 42)
+                )
+                """)
+
+                module_ = WasmModule(store, wasm_bytes)
+
+                # Invalidate the module by setting ptr to null
+                module_.ptr = C_NULL
+
+                @test_throws WasmtimeError imports(module_)
+            end
+        end
+
+        @testset "imports() function consistency" begin
+            # Test that multiple calls to imports() return consistent results
+            wasm_bytes = wat2wasm("""
+            (module
+              (import "env" "func1" (func (param i32)))
+              (import "env" "func2" (func (param i32 i32) (result i32)))
+
+              (func (export "main") (result i32)
+                i32.const 42)
+            )
+            """)
+
+            module_ = WasmModule(store, wasm_bytes)
+
+            @testset "should return consistent results across multiple calls" begin
+                import_list_1 = imports(module_)
+                import_list_2 = imports(module_)
+
+                @test length(import_list_1) == length(import_list_2)
+                @test length(import_list_1) == 2
+
+                # Compare the results
+                for i = 1:length(import_list_1)
+                    name_1, import_1 = import_list_1[i]
+                    name_2, import_2 = import_list_2[i]
+
+                    @test name_1 == name_2
+                    @test import_1.module_name == import_2.module_name
+                    @test import_1.import_name == import_2.import_name
+                    @test isvalid(import_1)
+                    @test isvalid(import_2)
+                end
+            end
+        end
+
+        @testset "imports() with complex function signatures" begin
+            # Test with complex function signatures
+            wasm_bytes = wat2wasm("""
+            (module
+              (import "env" "no_params_no_results" (func))
+              (import "env" "multiple_params" (func (param i32 i64 f32 f64)))
+              (import "env" "multiple_results" (func (result i32 i64)))
+              (import "env" "complex_sig" (func (param i32 f64) (result f32 i64)))
+
+              (func (export "test") (result i32)
+                i32.const 1)
+            )
+            """)
+
+            module_ = WasmModule(store, wasm_bytes)
+
+            @testset "should handle complex function signatures" begin
+                import_list = imports(module_)
+                @test length(import_list) == 4
+
+                # Verify all imports are valid and have correct names
+                expected_names = [
+                    "no_params_no_results",
+                    "multiple_params",
+                    "multiple_results",
+                    "complex_sig",
+                ]
+                actual_names = [import_name for (import_name, _) in import_list]
+
+                for expected_name in expected_names
+                    @test expected_name in actual_names
+                end
+
+                # Verify all imports are from the "env" module
+                for (_, import_obj) in import_list
+                    @test import_obj.module_name == "env"
+                    @test isvalid(import_obj)
+                end
+            end
+        end
+    end
 end
