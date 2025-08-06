@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><title>Performance Guide · WasmtimeRuntime.jl</title><meta name="title" content="Performance Guide · WasmtimeRuntime.jl"/><meta property="og:title" content="Performance Guide · WasmtimeRuntime.jl"/><meta property="twitter:title" content="Performance Guide · WasmtimeRuntime.jl"/><meta name="description" content="Documentation for WasmtimeRuntime.jl."/><meta property="og:description" content="Documentation for WasmtimeRuntime.jl."/><meta property="twitter:description" content="Documentation for WasmtimeRuntime.jl."/><meta property="og:url" content="https://damourChris.github.io/WasmtimeRuntime.jl/80-performance/"/><meta property="twitter:url" content="https://damourChris.github.io/WasmtimeRuntime.jl/80-performance/"/><link rel="canonical" href="https://damourChris.github.io/WasmtimeRuntime.jl/80-performance/"/><script data-outdated-warner src="../assets/warner.js"></script><link href="https://cdnjs.cloudflare.com/ajax/libs/lato-font/3.0.0/css/lato-font.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/juliamono/0.050/juliamono.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/fontawesome.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/solid.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/brands.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.8/katex.min.css" rel="stylesheet" type="text/css"/><script>documenterBaseURL=".."</script><script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.6/require.min.js" data-main="../assets/documenter.js"></script><script src="../search_index.js"></script><script src="../siteinfo.js"></script><script src="../../versions.js"></script><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../assets/themes/catppuccin-mocha.css" data-theme-name="catppuccin-mocha"/><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../assets/themes/catppuccin-macchiato.css" data-theme-name="catppuccin-macchiato"/><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../assets/themes/catppuccin-frappe.css" data-theme-name="catppuccin-frappe"/><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../assets/themes/catppuccin-latte.css" data-theme-name="catppuccin-latte"/><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../assets/themes/documenter-dark.css" data-theme-name="documenter-dark" data-theme-primary-dark/><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../assets/themes/documenter-light.css" data-theme-name="documenter-light" data-theme-primary/><script src="../assets/themeswap.js"></script></head><body><div id="documenter"><nav class="docs-sidebar"><div class="docs-package-name"><span class="docs-autofit"><a href="../">WasmtimeRuntime.jl</a></span></div><button class="docs-search-query input is-rounded is-small is-clickable my-2 mx-auto py-1 px-2" id="documenter-search-query">Search docs (Ctrl + /)</button><ul class="docs-menu"><li><a class="tocitem" href="../">WasmtimeRuntime</a></li><li><a class="tocitem" href="../01-getting-started/">Getting Started with WasmtimeRuntime.jl</a></li><li><a class="tocitem" href="../02-core-concepts/">Core Concepts</a></li><li><a class="tocitem" href="../10-configuration/">Configuration Guide</a></li><li><a class="tocitem" href="../20-values-and-types/">Values and Type System</a></li><li><a class="tocitem" href="../21-generic-vectors/">Generic Vector Wrapper (<code>WasmVec</code>)</a></li><li><a class="tocitem" href="../30-modules/">WebAssembly Modules</a></li><li><a class="tocitem" href="../40-instances/">WebAssembly Instances</a></li><li><a class="tocitem" href="../50-functions/">Function Calling and Type Conversion</a></li><li><a class="tocitem" href="../51-memory/">WebAssembly Memory</a></li><li><a class="tocitem" href="../52-tables/">WebAssembly Tables</a></li><li><a class="tocitem" href="../53-global/">WebAssembly Global Variables</a></li><li><a class="tocitem" href="../54-externs/">WebAssembly Externs</a></li><li><a class="tocitem" href="../55-exports/">WebAssembly Exports</a></li><li><a class="tocitem" href="../56-imports/">WebAssembly Import Types</a></li><li><a class="tocitem" href="../60-objects/">WebAssembly Objects: Memory, Globals, and Tables</a></li><li><a class="tocitem" href="../70-error-handling/">Error Handling</a></li><li><a class="tocitem" href="../71-traps/">WebAssembly Traps</a></li><li class="is-active"><a class="tocitem" href>Performance Guide</a><ul class="internal"><li><a class="tocitem" href="#Engine-Configuration-for-Performance-(-Working)"><span>Engine Configuration for Performance (✅ Working)</span></a></li><li><a class="tocitem" href="#Resource-Management-Optimization-(-Working)"><span>Resource Management Optimization (✅ Working)</span></a></li><li><a class="tocitem" href="#Function-Call-Optimization-(-Coming-Soon)"><span>Function Call Optimization (📋 Coming Soon)</span></a></li><li><a class="tocitem" href="#Memory-Management-Performance"><span>Memory Management Performance</span></a></li><li><a class="tocitem" href="#Concurrent-Execution-Patterns"><span>Concurrent Execution Patterns</span></a></li><li><a class="tocitem" href="#Fuel-and-Resource-Limiting"><span>Fuel and Resource Limiting</span></a></li><li><a class="tocitem" href="#Performance-Monitoring"><span>Performance Monitoring</span></a></li><li><a class="tocitem" href="#Optimization-Techniques"><span>Optimization Techniques</span></a></li><li><a class="tocitem" href="#Performance-Best-Practices"><span>Performance Best Practices</span></a></li></ul></li><li><a class="tocitem" href="../81-conversions/">Conversion</a></li><li><a class="tocitem" href="../90-contributing/">Contributing guidelines</a></li><li><a class="tocitem" href="../90-implementation-status/">Implementation Status</a></li><li><a class="tocitem" href="../91-developer/">Developer documentation</a></li><li><a class="tocitem" href="../95-reference/">Reference</a></li></ul><div class="docs-version-selector field has-addons"><div class="control"><span class="docs-label button is-static is-size-7">Version</span></div><div class="docs-selector control is-expanded"><div class="select is-fullwidth is-size-7"><select id="documenter-version-selector"></select></div></div></div></nav><div class="docs-main"><header class="docs-navbar"><a class="docs-sidebar-button docs-navbar-link fa-solid fa-bars is-hidden-desktop" id="documenter-sidebar-button" href="#"></a><nav class="breadcrumb"><ul class="is-hidden-mobile"><li class="is-active"><a href>Performance Guide</a></li></ul><ul class="is-hidden-tablet"><li class="is-active"><a href>Performance Guide</a></li></ul></nav><div class="docs-right"><a class="docs-navbar-link" href="https://github.com/damourChris/WasmtimeRuntime.jl/blob/main/docs/src/80-performance.md#" title="Edit source on GitHub"><span class="docs-icon fa-solid"></span></a><a class="docs-settings-button docs-navbar-link fa-solid fa-gear" id="documenter-settings-button" href="#" title="Settings"></a><a class="docs-article-toggle-button fa-solid fa-chevron-up" id="documenter-article-toggle-button" href="javascript:;" title="Collapse all docstrings"></a></div></header><article class="content" id="documenter-page"><h1 id="Performance-Guide"><a class="docs-heading-anchor" href="#Performance-Guide">Performance Guide</a><a id="Performance-Guide-1"></a><a class="docs-heading-anchor-permalink" href="#Performance-Guide" title="Permalink"></a></h1><p>This guide covers performance optimization techniques for WasmtimeRuntime.jl, focusing on currently implemented features and configuration options.</p><h2 id="Engine-Configuration-for-Performance-(-Working)"><a class="docs-heading-anchor" href="#Engine-Configuration-for-Performance-(-Working)">Engine Configuration for Performance (✅ Working)</a><a id="Engine-Configuration-for-Performance-(-Working)-1"></a><a class="docs-heading-anchor-permalink" href="#Engine-Configuration-for-Performance-(-Working)" title="Permalink"></a></h2><h3 id="Optimization-Levels"><a class="docs-heading-anchor" href="#Optimization-Levels">Optimization Levels</a><a id="Optimization-Levels-1"></a><a class="docs-heading-anchor-permalink" href="#Optimization-Levels" title="Permalink"></a></h3><p>Choose the right optimization level for your use case:</p><pre><code class="language-julia hljs"># Development: Fast compilation, slower execution
+dev_config = WasmConfig(optimization_level = None)
+
+# Balanced: Good compromise between compilation time and execution speed
+balanced_config = WasmConfig(optimization_level = Speed)
+
+# Production: Slower compilation, fastest execution
+prod_config = WasmConfig(optimization_level = SpeedAndSize)</code></pre><p><strong>Performance Impact:</strong></p><ul><li><code>None</code>: ~10x faster compilation, ~3-5x slower execution</li><li><code>Speed</code>: Balanced performance</li><li><code>SpeedAndSize</code>: ~3-5x slower compilation, optimal execution speed</li></ul><h3 id="Debug-Information-Impact"><a class="docs-heading-anchor" href="#Debug-Information-Impact">Debug Information Impact</a><a id="Debug-Information-Impact-1"></a><a class="docs-heading-anchor-permalink" href="#Debug-Information-Impact" title="Permalink"></a></h3><p>Debug information affects both compilation time and memory usage:</p><pre><code class="language-julia hljs"># Production configuration - no debug info
+prod_config = WasmConfig(
+    debug_info = false,
+    optimization_level = SpeedAndSize
+)
+
+# Development configuration - with debug info
+dev_config = WasmConfig(
+    debug_info = true,
+    optimization_level = None
+)</code></pre><p><strong>Impact:</strong> Debug info can increase:</p><ul><li>Compilation time by 20-30%</li><li>Memory usage by 15-25%</li><li>Binary size by 30-50%</li></ul><h3 id="Profiling-Configuration"><a class="docs-heading-anchor" href="#Profiling-Configuration">Profiling Configuration</a><a id="Profiling-Configuration-1"></a><a class="docs-heading-anchor-permalink" href="#Profiling-Configuration" title="Permalink"></a></h3><p>Enable profiling only when needed:</p><pre><code class="language-julia hljs"># Production without profiling
+config = WasmConfig(profiling_strategy = NoProfilingStrategy)
+
+# Performance analysis with profiling
+profile_config = WasmConfig(
+    profiling_strategy = VTuneProfilingStrategy,
+    optimization_level = Speed  # Don&#39;t use None with profiling
+)</code></pre><h2 id="Resource-Management-Optimization-(-Working)"><a class="docs-heading-anchor" href="#Resource-Management-Optimization-(-Working)">Resource Management Optimization (✅ Working)</a><a id="Resource-Management-Optimization-(-Working)-1"></a><a class="docs-heading-anchor-permalink" href="#Resource-Management-Optimization-(-Working)" title="Permalink"></a></h2><h3 id="Engine-Reuse"><a class="docs-heading-anchor" href="#Engine-Reuse">Engine Reuse</a><a id="Engine-Reuse-1"></a><a class="docs-heading-anchor-permalink" href="#Engine-Reuse" title="Permalink"></a></h3><p>Engines are expensive to create but cheap to share:</p><pre><code class="language-julia hljs"># ❌ Inefficient: Creating engines repeatedly
+function bad_pattern()
+    for i in 1:100
+        engine = WasmEngine()  # Expensive!
+        store = WasmStore(engine)
+        # ... use store
+    end
+end
+
+# ✅ Efficient: Reuse engine
+function good_pattern()
+    engine = WasmEngine()  # Create once
+    for i in 1:100
+        store = WasmStore(engine)  # Cheap!
+        # ... use store
+    end
+end</code></pre><h3 id="Module-Caching"><a class="docs-heading-anchor" href="#Module-Caching">Module Caching</a><a id="Module-Caching-1"></a><a class="docs-heading-anchor-permalink" href="#Module-Caching" title="Permalink"></a></h3><p>Compile modules once, instantiate many times:</p><pre><code class="language-julia hljs"># ✅ Efficient module management
+struct ModuleCache
+    engine::WasmEngine
+    modules::Dict{String, WasmModule}
+end
+
+function get_module(cache::ModuleCache, path::String)
+    if !haskey(cache.modules, path)
+        wasm_bytes = read(path)
+        cache.modules[path] = WasmModule(cache.engine, wasm_bytes)
+    end
+    return cache.modules[path]
+end
+
+# Usage
+cache = ModuleCache(WasmEngine(), Dict())
+module1 = get_module(cache, &quot;module.wasm&quot;)  # Compiles
+module2 = get_module(cache, &quot;module.wasm&quot;)  # Cache hit!</code></pre><h3 id="Store-Lifecycle-Management"><a class="docs-heading-anchor" href="#Store-Lifecycle-Management">Store Lifecycle Management</a><a id="Store-Lifecycle-Management-1"></a><a class="docs-heading-anchor-permalink" href="#Store-Lifecycle-Management" title="Permalink"></a></h3><p>Optimize store creation patterns:</p><pre><code class="language-julia hljs"># ✅ Batch operations per store
+function batch_operations(engine, module_obj, operations)
+    store = WasmStore(engine)
+    instance = WasmInstance(store, module_obj)
+
+    # Note: Function calling not yet implemented
+    # This demonstrates the intended optimization pattern
+    # when function calling becomes available
+
+    return instance
+    # Store and instance cleaned up automatically
+end
+
+# ❌ One store per operation (inefficient when function calling is available)
+function inefficient_operations(engine, module_obj, operations)
+    results = []
+    for op in operations
+        store = WasmStore(engine)  # Expensive per operation!
+        instance = WasmInstance(store, module_obj)
+        # result = call(instance, op.func_name, op.params)  # Future API
+        # push!(results, result)
+    end
+    return results
+end</code></pre><h2 id="Function-Call-Optimization-(-Coming-Soon)"><a class="docs-heading-anchor" href="#Function-Call-Optimization-(-Coming-Soon)">Function Call Optimization (📋 Coming Soon)</a><a id="Function-Call-Optimization-(-Coming-Soon)-1"></a><a class="docs-heading-anchor-permalink" href="#Function-Call-Optimization-(-Coming-Soon)" title="Permalink"></a></h2><p><strong>⚠️ Note:</strong> Function calling functionality is under development. Performance guidance will be added when implemented.</p><h3 id="Type-Safe-Function-Calls"><a class="docs-heading-anchor" href="#Type-Safe-Function-Calls">Type-Safe Function Calls</a><a id="Type-Safe-Function-Calls-1"></a><a class="docs-heading-anchor-permalink" href="#Type-Safe-Function-Calls" title="Permalink"></a></h3><p>Use typed functions for better performance:</p><pre><code class="language-julia hljs"># ✅ Type-safe calls (faster)
+add_func = TypedFunc{Tuple{Int32, Int32}, Int32}(func)
+result = call(add_func, Int32(1), Int32(2))
+
+# ❌ Generic calls with type conversion (slower)
+result = call(instance, &quot;add&quot;, [1, 2])  # Requires type inference and conversion</code></pre><h3 id="Batch-Parameter-Conversion"><a class="docs-heading-anchor" href="#Batch-Parameter-Conversion">Batch Parameter Conversion</a><a id="Batch-Parameter-Conversion-1"></a><a class="docs-heading-anchor-permalink" href="#Batch-Parameter-Conversion" title="Permalink"></a></h3><p>Pre-convert parameters for repeated calls:</p><pre><code class="language-julia hljs"># ✅ Efficient batch processing
+function batch_process_optimized(instance, func_name, param_sets)
+    func = get_func(instance, func_name)
+
+    # Pre-convert all parameters
+    converted_params = [
+        [to_wasm(p) for p in params]
+        for params in param_sets
+    ]
+
+    # Efficient calls with pre-converted parameters
+    return [call(func, params) for params in converted_params]
+end
+
+# ❌ Convert parameters on each call
+function batch_process_slow(instance, func_name, param_sets)
+    return [call(instance, func_name, params) for params in param_sets]
+end</code></pre><h2 id="Memory-Management-Performance"><a class="docs-heading-anchor" href="#Memory-Management-Performance">Memory Management Performance</a><a id="Memory-Management-Performance-1"></a><a class="docs-heading-anchor-permalink" href="#Memory-Management-Performance" title="Permalink"></a></h2><h3 id="Memory-Layout-Optimization"><a class="docs-heading-anchor" href="#Memory-Layout-Optimization">Memory Layout Optimization</a><a id="Memory-Layout-Optimization-1"></a><a class="docs-heading-anchor-permalink" href="#Memory-Layout-Optimization" title="Permalink"></a></h3><p>Optimize memory access patterns:</p><pre><code class="language-julia hljs"># ✅ Sequential memory access (cache-friendly)
+function process_memory_sequential(memory, start_offset, count)
+    for i in 0:count-1
+        offset = start_offset + i * 4  # 4 bytes per item
+        # Process memory at offset
+    end
+end
+
+# ❌ Random memory access (cache-unfriendly)
+function process_memory_random(memory, offsets)
+    for offset in shuffle(offsets)  # Random order
+        # Process memory at offset
+    end
+end</code></pre><h3 id="Stack-Size-Optimization"><a class="docs-heading-anchor" href="#Stack-Size-Optimization">Stack Size Optimization</a><a id="Stack-Size-Optimization-1"></a><a class="docs-heading-anchor-permalink" href="#Stack-Size-Optimization" title="Permalink"></a></h3><p>Configure appropriate stack sizes:</p><pre><code class="language-julia hljs"># For recursive algorithms
+large_stack_config = Config(max_wasm_stack = 4 * 1024 * 1024)  # 4MB
+
+# For simple computations
+small_stack_config = Config(max_wasm_stack = 256 * 1024)       # 256KB
+
+# Memory-constrained environments
+minimal_stack_config = Config(max_wasm_stack = 64 * 1024)      # 64KB</code></pre><h2 id="Concurrent-Execution-Patterns"><a class="docs-heading-anchor" href="#Concurrent-Execution-Patterns">Concurrent Execution Patterns</a><a id="Concurrent-Execution-Patterns-1"></a><a class="docs-heading-anchor-permalink" href="#Concurrent-Execution-Patterns" title="Permalink"></a></h2><h3 id="Engine-Sharing-Across-Threads"><a class="docs-heading-anchor" href="#Engine-Sharing-Across-Threads">Engine Sharing Across Threads</a><a id="Engine-Sharing-Across-Threads-1"></a><a class="docs-heading-anchor-permalink" href="#Engine-Sharing-Across-Threads" title="Permalink"></a></h3><pre><code class="language-julia hljs"># Shared engine, per-thread stores
+const SHARED_ENGINE = Engine(Config(optimization_level = SpeedAndSize))
+
+function parallel_wasm_execution(module_path, operations)
+    module_obj = WasmModule(SHARED_ENGINE, module_path)
+
+    # Use ThreadsX for parallel execution
+    results = ThreadsX.map(operations) do op
+        # Each thread gets its own store
+        store = Store(SHARED_ENGINE)
+        instance = Instance(store, module_obj)
+        return call(instance, op.func_name, op.params)
+    end
+
+    return results
+end</code></pre><h3 id="Thread-Local-Storage-Pattern"><a class="docs-heading-anchor" href="#Thread-Local-Storage-Pattern">Thread-Local Storage Pattern</a><a id="Thread-Local-Storage-Pattern-1"></a><a class="docs-heading-anchor-permalink" href="#Thread-Local-Storage-Pattern" title="Permalink"></a></h3><pre><code class="language-julia hljs"># Thread-local caches for better performance
+const THREAD_LOCAL_CACHE = Dict{Int, ModuleCache}()
+
+function get_thread_cache()
+    tid = Threads.threadid()
+    if !haskey(THREAD_LOCAL_CACHE, tid)
+        THREAD_LOCAL_CACHE[tid] = ModuleCache(SHARED_ENGINE, Dict())
+    end
+    return THREAD_LOCAL_CACHE[tid]
+end</code></pre><h2 id="Fuel-and-Resource-Limiting"><a class="docs-heading-anchor" href="#Fuel-and-Resource-Limiting">Fuel and Resource Limiting</a><a id="Fuel-and-Resource-Limiting-1"></a><a class="docs-heading-anchor-permalink" href="#Fuel-and-Resource-Limiting" title="Permalink"></a></h2><h3 id="Smart-Fuel-Management"><a class="docs-heading-anchor" href="#Smart-Fuel-Management">Smart Fuel Management</a><a id="Smart-Fuel-Management-1"></a><a class="docs-heading-anchor-permalink" href="#Smart-Fuel-Management" title="Permalink"></a></h3><p>Balance security and performance:</p><pre><code class="language-julia hljs"># High-performance configuration (no fuel)
+perf_config = Config(consume_fuel = false)
+
+# Secure configuration with fuel limiting
+secure_config = Config(consume_fuel = true)
+
+function adaptive_fuel_management(store, estimated_complexity)
+    if estimated_complexity &gt; 1000
+        # Complex operation: add more fuel
+        add_fuel!(store, 100000)
+    else
+        # Simple operation: minimal fuel
+        add_fuel!(store, 10000)
+    end
+end</code></pre><h3 id="Epoch-Based-Interruption"><a class="docs-heading-anchor" href="#Epoch-Based-Interruption">Epoch-Based Interruption</a><a id="Epoch-Based-Interruption-1"></a><a class="docs-heading-anchor-permalink" href="#Epoch-Based-Interruption" title="Permalink"></a></h3><p>For long-running tasks:</p><pre><code class="language-julia hljs"># Enable epoch interruption for responsiveness
+responsive_config = Config(
+    epoch_interruption = true,
+    consume_fuel = false  # Use epochs instead of fuel
+)
+
+function long_running_computation(store, instance)
+    # Set reasonable epoch deadline
+    set_epoch_deadline!(store, 1000)  # Allow 1000 epoch ticks
+
+    try
+        return call(instance, &quot;long_computation&quot;, [])
+    catch e::WasmtimeError
+        if occursin(&quot;epoch&quot;, lowercase(e.message))
+            @warn &quot;Computation interrupted by epoch deadline&quot;
+            return nothing
+        else
+            rethrow(e)
+        end
+    end
+end</code></pre><h2 id="Performance-Monitoring"><a class="docs-heading-anchor" href="#Performance-Monitoring">Performance Monitoring</a><a id="Performance-Monitoring-1"></a><a class="docs-heading-anchor-permalink" href="#Performance-Monitoring" title="Permalink"></a></h2><h3 id="Timing-Measurements"><a class="docs-heading-anchor" href="#Timing-Measurements">Timing Measurements</a><a id="Timing-Measurements-1"></a><a class="docs-heading-anchor-permalink" href="#Timing-Measurements" title="Permalink"></a></h3><pre><code class="language-julia hljs">function benchmark_wasm_call(instance, func_name, params, iterations=1000)
+    # Warmup
+    for _ in 1:10
+        call(instance, func_name, params)
+    end
+
+    # Benchmark
+    times = Float64[]
+    for _ in 1:iterations
+        start_time = time_ns()
+        call(instance, func_name, params)
+        end_time = time_ns()
+        push!(times, (end_time - start_time) / 1e9)  # Convert to seconds
+    end
+
+    return (
+        mean = sum(times) / length(times),
+        min = minimum(times),
+        max = maximum(times),
+        std = sqrt(sum((t - sum(times)/length(times))^2 for t in times) / length(times))
+    )
+end</code></pre><h3 id="Memory-Usage-Monitoring"><a class="docs-heading-anchor" href="#Memory-Usage-Monitoring">Memory Usage Monitoring</a><a id="Memory-Usage-Monitoring-1"></a><a class="docs-heading-anchor-permalink" href="#Memory-Usage-Monitoring" title="Permalink"></a></h3><pre><code class="language-julia hljs">function monitor_memory_usage(f)
+    gc_before = GC.gc_num()
+    memory_before = Sys.total_memory()
+
+    result = f()
+
+    GC.gc()  # Force garbage collection
+    gc_after = GC.gc_num()
+    memory_after = Sys.total_memory()
+
+    return (
+        result = result,
+        gc_runs = gc_after.poolalloc - gc_before.poolalloc,
+        memory_delta = memory_after - memory_before
+    )
+end</code></pre><h3 id="Performance-Profiling-Integration"><a class="docs-heading-anchor" href="#Performance-Profiling-Integration">Performance Profiling Integration</a><a id="Performance-Profiling-Integration-1"></a><a class="docs-heading-anchor-permalink" href="#Performance-Profiling-Integration" title="Permalink"></a></h3><pre><code class="language-julia hljs">using Profile
+
+function profile_wasm_execution(instance, func_name, params)
+    # Clear previous profiles
+    Profile.clear()
+
+    # Profile the execution
+    @profile begin
+        for _ in 1:100
+            call(instance, func_name, params)
+        end
+    end
+
+    # Print profile results
+    Profile.print()
+end</code></pre><h2 id="Optimization-Techniques"><a class="docs-heading-anchor" href="#Optimization-Techniques">Optimization Techniques</a><a id="Optimization-Techniques-1"></a><a class="docs-heading-anchor-permalink" href="#Optimization-Techniques" title="Permalink"></a></h2><h3 id="Instance-Pooling"><a class="docs-heading-anchor" href="#Instance-Pooling">Instance Pooling</a><a id="Instance-Pooling-1"></a><a class="docs-heading-anchor-permalink" href="#Instance-Pooling" title="Permalink"></a></h3><pre><code class="language-julia hljs">mutable struct InstancePool
+    engine::Engine
+    module_obj::WasmModule
+    available::Channel{Instance}
+    max_size::Int
+    current_size::Int
+end
+
+function InstancePool(engine, module_obj, max_size=10)
+    return InstancePool(
+        engine,
+        module_obj,
+        Channel{Instance}(max_size),
+        max_size,
+        0
+    )
+end
+
+function borrow_instance(pool::InstancePool)
+    if isready(pool.available)
+        return take!(pool.available)
+    elseif pool.current_size &lt; pool.max_size
+        pool.current_size += 1
+        store = Store(pool.engine)
+        return Instance(store, pool.module_obj)
+    else
+        # Block until instance available
+        return take!(pool.available)
+    end
+end
+
+function return_instance(pool::InstancePool, instance::Instance)
+    put!(pool.available, instance)
+end
+
+# Usage with do-block for automatic return
+function with_pooled_instance(f, pool::InstancePool)
+    instance = borrow_instance(pool)
+    try
+        return f(instance)
+    finally
+        return_instance(pool, instance)
+    end
+end</code></pre><h3 id="JIT-Warmup-Strategy"><a class="docs-heading-anchor" href="#JIT-Warmup-Strategy">JIT Warmup Strategy</a><a id="JIT-Warmup-Strategy-1"></a><a class="docs-heading-anchor-permalink" href="#JIT-Warmup-Strategy" title="Permalink"></a></h3><pre><code class="language-julia hljs">function warmup_module(instance, exported_functions)
+    @info &quot;Warming up WebAssembly module...&quot;
+
+    for func_name in exported_functions
+        try
+            # Call with dummy parameters to trigger JIT compilation
+            # This is function-specific and requires knowledge of signatures
+            call(instance, func_name, [0])
+        catch e::WasmtimeError
+            # Expected for functions with different signatures
+            @debug &quot;Warmup failed for $func_name: $(e.message)&quot;
+        end
+    end
+
+    @info &quot;Module warmup completed&quot;
+end</code></pre><h2 id="Performance-Best-Practices"><a class="docs-heading-anchor" href="#Performance-Best-Practices">Performance Best Practices</a><a id="Performance-Best-Practices-1"></a><a class="docs-heading-anchor-permalink" href="#Performance-Best-Practices" title="Permalink"></a></h2><h3 id="Configuration-Guidelines"><a class="docs-heading-anchor" href="#Configuration-Guidelines">Configuration Guidelines</a><a id="Configuration-Guidelines-1"></a><a class="docs-heading-anchor-permalink" href="#Configuration-Guidelines" title="Permalink"></a></h3><ol><li><strong>Production</strong>: Use <code>SpeedAndSize</code> optimization, disable debug info</li><li><strong>Development</strong>: Use <code>None</code> optimization, enable debug info</li><li><strong>Testing</strong>: Use <code>Speed</code> optimization, selective debug info</li><li><strong>Profiling</strong>: Use <code>Speed</code> optimization, enable profiling strategy</li></ol><h3 id="Resource-Management-Guidelines"><a class="docs-heading-anchor" href="#Resource-Management-Guidelines">Resource Management Guidelines</a><a id="Resource-Management-Guidelines-1"></a><a class="docs-heading-anchor-permalink" href="#Resource-Management-Guidelines" title="Permalink"></a></h3><ol><li><strong>Reuse engines</strong> across multiple stores and modules</li><li><strong>Cache compiled modules</strong> when loading the same WASM multiple times</li><li><strong>Batch operations</strong> within single store instances</li><li><strong>Use typed functions</strong> for frequently called functions</li><li><strong>Minimize parameter conversion</strong> overhead</li></ol><h3 id="Memory-Guidelines"><a class="docs-heading-anchor" href="#Memory-Guidelines">Memory Guidelines</a><a id="Memory-Guidelines-1"></a><a class="docs-heading-anchor-permalink" href="#Memory-Guidelines" title="Permalink"></a></h3><ol><li><strong>Set appropriate stack sizes</strong> based on recursion depth</li><li><strong>Use fuel limiting</strong> only when security is required</li><li><strong>Prefer epoch interruption</strong> over fuel for long-running tasks</li><li><strong>Monitor memory usage</strong> in long-running applications</li></ol><h3 id="Concurrency-Guidelines"><a class="docs-heading-anchor" href="#Concurrency-Guidelines">Concurrency Guidelines</a><a id="Concurrency-Guidelines-1"></a><a class="docs-heading-anchor-permalink" href="#Concurrency-Guidelines" title="Permalink"></a></h3><ol><li><strong>Share engines</strong> across threads safely</li><li><strong>Use thread-local stores</strong> for concurrent execution</li><li><strong>Implement instance pooling</strong> for high-throughput scenarios</li><li><strong>Avoid shared state</strong> between WebAssembly instances</li></ol><p>By following these performance optimization techniques, you can achieve optimal performance for your WebAssembly applications while maintaining security and reliability.</p></article><nav class="docs-footer"><a class="docs-footer-prevpage" href="../71-traps/">« WebAssembly Traps</a><a class="docs-footer-nextpage" href="../81-conversions/">Conversion »</a><div class="flexbox-break"></div><p class="footer-message">Powered by <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> and the <a href="https://julialang.org/">Julia Programming Language</a>.</p></nav></div><div class="modal" id="documenter-settings"><div class="modal-background"></div><div class="modal-card"><header class="modal-card-head"><p class="modal-card-title">Settings</p><button class="delete"></button></header><section class="modal-card-body"><p><label class="label">Theme</label><div class="select"><select id="documenter-themepicker"><option value="auto">Automatic (OS)</option><option value="documenter-light">documenter-light</option><option value="documenter-dark">documenter-dark</option><option value="catppuccin-latte">catppuccin-latte</option><option value="catppuccin-frappe">catppuccin-frappe</option><option value="catppuccin-macchiato">catppuccin-macchiato</option><option value="catppuccin-mocha">catppuccin-mocha</option></select></div></p><hr/><p>This document was generated with <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> version 1.14.1 on <span class="colophon-date" title="Wednesday 6 August 2025 12:52">Wednesday 6 August 2025</span>. Using Julia version 1.11.6.</p></section><footer class="modal-card-foot"></footer></div></div></div></body></html>

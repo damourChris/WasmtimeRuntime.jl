@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><title>WebAssembly Modules · WasmtimeRuntime.jl</title><meta name="title" content="WebAssembly Modules · WasmtimeRuntime.jl"/><meta property="og:title" content="WebAssembly Modules · WasmtimeRuntime.jl"/><meta property="twitter:title" content="WebAssembly Modules · WasmtimeRuntime.jl"/><meta name="description" content="Documentation for WasmtimeRuntime.jl."/><meta property="og:description" content="Documentation for WasmtimeRuntime.jl."/><meta property="twitter:description" content="Documentation for WasmtimeRuntime.jl."/><meta property="og:url" content="https://damourChris.github.io/WasmtimeRuntime.jl/30-modules/"/><meta property="twitter:url" content="https://damourChris.github.io/WasmtimeRuntime.jl/30-modules/"/><link rel="canonical" href="https://damourChris.github.io/WasmtimeRuntime.jl/30-modules/"/><script data-outdated-warner src="../assets/warner.js"></script><link href="https://cdnjs.cloudflare.com/ajax/libs/lato-font/3.0.0/css/lato-font.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/juliamono/0.050/juliamono.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/fontawesome.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/solid.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/brands.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.8/katex.min.css" rel="stylesheet" type="text/css"/><script>documenterBaseURL=".."</script><script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.6/require.min.js" data-main="../assets/documenter.js"></script><script src="../search_index.js"></script><script src="../siteinfo.js"></script><script src="../../versions.js"></script><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../assets/themes/catppuccin-mocha.css" data-theme-name="catppuccin-mocha"/><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../assets/themes/catppuccin-macchiato.css" data-theme-name="catppuccin-macchiato"/><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../assets/themes/catppuccin-frappe.css" data-theme-name="catppuccin-frappe"/><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../assets/themes/catppuccin-latte.css" data-theme-name="catppuccin-latte"/><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../assets/themes/documenter-dark.css" data-theme-name="documenter-dark" data-theme-primary-dark/><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../assets/themes/documenter-light.css" data-theme-name="documenter-light" data-theme-primary/><script src="../assets/themeswap.js"></script></head><body><div id="documenter"><nav class="docs-sidebar"><div class="docs-package-name"><span class="docs-autofit"><a href="../">WasmtimeRuntime.jl</a></span></div><button class="docs-search-query input is-rounded is-small is-clickable my-2 mx-auto py-1 px-2" id="documenter-search-query">Search docs (Ctrl + /)</button><ul class="docs-menu"><li><a class="tocitem" href="../">WasmtimeRuntime</a></li><li><a class="tocitem" href="../01-getting-started/">Getting Started with WasmtimeRuntime.jl</a></li><li><a class="tocitem" href="../02-core-concepts/">Core Concepts</a></li><li><a class="tocitem" href="../10-configuration/">Configuration Guide</a></li><li><a class="tocitem" href="../20-values-and-types/">Values and Type System</a></li><li><a class="tocitem" href="../21-generic-vectors/">Generic Vector Wrapper (<code>WasmVec</code>)</a></li><li class="is-active"><a class="tocitem" href>WebAssembly Modules</a><ul class="internal"><li><a class="tocitem" href="#Module-Basics"><span>Module Basics</span></a></li><li><a class="tocitem" href="#Module-Validation"><span>Module Validation</span></a></li><li><a class="tocitem" href="#Module-Introspection"><span>Module Introspection</span></a></li><li><a class="tocitem" href="#Module-Lifecycle"><span>Module Lifecycle</span></a></li><li><a class="tocitem" href="#Error-Handling"><span>Error Handling</span></a></li><li><a class="tocitem" href="#Advanced-Module-Operations"><span>Advanced Module Operations</span></a></li><li><a class="tocitem" href="#WAT-to-WASM-Conversion-(Future)"><span>WAT to WASM Conversion (Future)</span></a></li><li><a class="tocitem" href="#Best-Practices"><span>Best Practices</span></a></li><li><a class="tocitem" href="#Debugging-Modules"><span>Debugging Modules</span></a></li></ul></li><li><a class="tocitem" href="../40-instances/">WebAssembly Instances</a></li><li><a class="tocitem" href="../50-functions/">Function Calling and Type Conversion</a></li><li><a class="tocitem" href="../51-memory/">WebAssembly Memory</a></li><li><a class="tocitem" href="../52-tables/">WebAssembly Tables</a></li><li><a class="tocitem" href="../53-global/">WebAssembly Global Variables</a></li><li><a class="tocitem" href="../54-externs/">WebAssembly Externs</a></li><li><a class="tocitem" href="../55-exports/">WebAssembly Exports</a></li><li><a class="tocitem" href="../56-imports/">WebAssembly Import Types</a></li><li><a class="tocitem" href="../60-objects/">WebAssembly Objects: Memory, Globals, and Tables</a></li><li><a class="tocitem" href="../70-error-handling/">Error Handling</a></li><li><a class="tocitem" href="../71-traps/">WebAssembly Traps</a></li><li><a class="tocitem" href="../80-performance/">Performance Guide</a></li><li><a class="tocitem" href="../81-conversions/">Conversion</a></li><li><a class="tocitem" href="../90-contributing/">Contributing guidelines</a></li><li><a class="tocitem" href="../90-implementation-status/">Implementation Status</a></li><li><a class="tocitem" href="../91-developer/">Developer documentation</a></li><li><a class="tocitem" href="../95-reference/">Reference</a></li></ul><div class="docs-version-selector field has-addons"><div class="control"><span class="docs-label button is-static is-size-7">Version</span></div><div class="docs-selector control is-expanded"><div class="select is-fullwidth is-size-7"><select id="documenter-version-selector"></select></div></div></div></nav><div class="docs-main"><header class="docs-navbar"><a class="docs-sidebar-button docs-navbar-link fa-solid fa-bars is-hidden-desktop" id="documenter-sidebar-button" href="#"></a><nav class="breadcrumb"><ul class="is-hidden-mobile"><li class="is-active"><a href>WebAssembly Modules</a></li></ul><ul class="is-hidden-tablet"><li class="is-active"><a href>WebAssembly Modules</a></li></ul></nav><div class="docs-right"><a class="docs-navbar-link" href="https://github.com/damourChris/WasmtimeRuntime.jl/blob/main/docs/src/30-modules.md#" title="Edit source on GitHub"><span class="docs-icon fa-solid"></span></a><a class="docs-settings-button docs-navbar-link fa-solid fa-gear" id="documenter-settings-button" href="#" title="Settings"></a><a class="docs-article-toggle-button fa-solid fa-chevron-up" id="documenter-article-toggle-button" href="javascript:;" title="Collapse all docstrings"></a></div></header><article class="content" id="documenter-page"><h1 id="WebAssembly-Modules"><a class="docs-heading-anchor" href="#WebAssembly-Modules">WebAssembly Modules</a><a id="WebAssembly-Modules-1"></a><a class="docs-heading-anchor-permalink" href="#WebAssembly-Modules" title="Permalink"></a></h1><p>WebAssembly modules are the fundamental unit of code in WebAssembly. This guide covers module creation, validation, introspection, and management.</p><h2 id="Module-Basics"><a class="docs-heading-anchor" href="#Module-Basics">Module Basics</a><a id="Module-Basics-1"></a><a class="docs-heading-anchor-permalink" href="#Module-Basics" title="Permalink"></a></h2><h3 id="Creating-Modules"><a class="docs-heading-anchor" href="#Creating-Modules">Creating Modules</a><a id="Creating-Modules-1"></a><a class="docs-heading-anchor-permalink" href="#Creating-Modules" title="Permalink"></a></h3><h4 id="From-Bytes"><a class="docs-heading-anchor" href="#From-Bytes">From Bytes</a><a id="From-Bytes-1"></a><a class="docs-heading-anchor-permalink" href="#From-Bytes" title="Permalink"></a></h4><pre><code class="language-julia hljs"># Read WebAssembly binary
+wasm_bytes = read(&quot;module.wasm&quot;)
+module_obj = WasmModule(engine, wasm_bytes)</code></pre><h4 id="From-WebAssembly-Text-(WAT)-(-Working-Feature)"><a class="docs-heading-anchor" href="#From-WebAssembly-Text-(WAT)-(-Working-Feature)">From WebAssembly Text (WAT) (✅ Working Feature)</a><a id="From-WebAssembly-Text-(WAT)-(-Working-Feature)-1"></a><a class="docs-heading-anchor-permalink" href="#From-WebAssembly-Text-(WAT)-(-Working-Feature)" title="Permalink"></a></h4><pre><code class="language-julia hljs"># WAT to WASM conversion is implemented and working
+wat_content = &quot;&quot;&quot;
+(module
+  (func $add (param $x i32) (param $y i32) (result i32)
+    local.get $x
+    local.get $y
+    i32.add)
+  (export &quot;add&quot; (func $add)))
+&quot;&quot;&quot;
+
+# Convert WAT to WASM bytes
+wasm_bytes = wat2wasm(wat_content)
+module_obj = WasmModule(engine, wasm_bytes)</code></pre><h4 id="From-File-Path-(File-Reading)"><a class="docs-heading-anchor" href="#From-File-Path-(File-Reading)">From File Path (File Reading)</a><a id="From-File-Path-(File-Reading)-1"></a><a class="docs-heading-anchor-permalink" href="#From-File-Path-(File-Reading)" title="Permalink"></a></h4><pre><code class="language-julia hljs"># Read file and create module
+wasm_bytes = read(&quot;path/to/module.wasm&quot;)
+module_obj = WasmModule(engine, wasm_bytes)</code></pre><h3 id="Module-Properties"><a class="docs-heading-anchor" href="#Module-Properties">Module Properties</a><a id="Module-Properties-1"></a><a class="docs-heading-anchor-permalink" href="#Module-Properties" title="Permalink"></a></h3><pre><code class="language-julia hljs">module_obj = WasmModule(engine, wasm_bytes)
+
+# Check validity
+isvalid(module_obj)  # Returns true if module is valid
+
+# Access underlying engine
+module_obj.engine === engine  # true</code></pre><h2 id="Module-Validation"><a class="docs-heading-anchor" href="#Module-Validation">Module Validation</a><a id="Module-Validation-1"></a><a class="docs-heading-anchor-permalink" href="#Module-Validation" title="Permalink"></a></h2><h3 id="Validating-WebAssembly-Bytes"><a class="docs-heading-anchor" href="#Validating-WebAssembly-Bytes">Validating WebAssembly Bytes</a><a id="Validating-WebAssembly-Bytes-1"></a><a class="docs-heading-anchor-permalink" href="#Validating-WebAssembly-Bytes" title="Permalink"></a></h3><p>Before creating a module, validate the WebAssembly bytes:</p><pre><code class="language-julia hljs">engine = WasmEngine()
+wasm_bytes = read(&quot;module.wasm&quot;)
+
+# Validate before creating module
+if validate(engine, wasm_bytes)
+    module_obj = WasmModule(engine, wasm_bytes)
+    println(&quot;Module is valid!&quot;)
+else
+    println(&quot;Invalid WebAssembly bytes&quot;)
+end</code></pre><h3 id="Validation-Behavior"><a class="docs-heading-anchor" href="#Validation-Behavior">Validation Behavior</a><a id="Validation-Behavior-1"></a><a class="docs-heading-anchor-permalink" href="#Validation-Behavior" title="Permalink"></a></h3><pre><code class="language-julia hljs"># Valid empty module
+empty_wasm = UInt8[0x00, 0x61, 0x73, 0x6d, 0x01, 0x00, 0x00, 0x00]
+validate(engine, empty_wasm)  # true
+
+# Invalid bytes
+invalid_wasm = UInt8[0x00, 0x00, 0x00, 0x00]
+validate(engine, invalid_wasm)  # false
+
+# Empty bytes
+validate(engine, UInt8[])  # false</code></pre><h2 id="Module-Introspection"><a class="docs-heading-anchor" href="#Module-Introspection">Module Introspection</a><a id="Module-Introspection-1"></a><a class="docs-heading-anchor-permalink" href="#Module-Introspection" title="Permalink"></a></h2><h3 id="Exports-(-Partial-Implementation)"><a class="docs-heading-anchor" href="#Exports-(-Partial-Implementation)">Exports (🚧 Partial Implementation)</a><a id="Exports-(-Partial-Implementation)-1"></a><a class="docs-heading-anchor-permalink" href="#Exports-(-Partial-Implementation)" title="Permalink"></a></h3><p>Query what the module exports:</p><pre><code class="language-julia hljs">module_obj = WasmModule(engine, wasm_bytes)
+module_exports = exports(module_obj)
+
+# Currently returns Dict{String, Any}() - placeholder data
+# Full export introspection planned for future release</code></pre><h3 id="Imports-(-Partial-Implementation)"><a class="docs-heading-anchor" href="#Imports-(-Partial-Implementation)">Imports (🚧 Partial Implementation)</a><a id="Imports-(-Partial-Implementation)-1"></a><a class="docs-heading-anchor-permalink" href="#Imports-(-Partial-Implementation)" title="Permalink"></a></h3><p>Query what the module requires as imports:</p><pre><code class="language-julia hljs">module_imports = imports(module_obj)
+
+# Currently returns Dict{String, Any}() - placeholder data
+# Full import introspection planned for future release</code></pre><h3 id="Module-Structure-(-Limited)"><a class="docs-heading-anchor" href="#Module-Structure-(-Limited)">Module Structure (🚧 Limited)</a><a id="Module-Structure-(-Limited)-1"></a><a class="docs-heading-anchor-permalink" href="#Module-Structure-(-Limited)" title="Permalink"></a></h3><pre><code class="language-julia hljs"># Basic module information (returns placeholder data)
+println(&quot;Module exports: &quot;, length(exports(module_obj)))  # Currently 0
+println(&quot;Module imports: &quot;, length(imports(module_obj)))  # Currently 0</code></pre><h2 id="Module-Lifecycle"><a class="docs-heading-anchor" href="#Module-Lifecycle">Module Lifecycle</a><a id="Module-Lifecycle-1"></a><a class="docs-heading-anchor-permalink" href="#Module-Lifecycle" title="Permalink"></a></h2><h3 id="Creation-and-Memory-Management"><a class="docs-heading-anchor" href="#Creation-and-Memory-Management">Creation and Memory Management</a><a id="Creation-and-Memory-Management-1"></a><a class="docs-heading-anchor-permalink" href="#Creation-and-Memory-Management" title="Permalink"></a></h3><p>Modules are automatically memory-managed:</p><pre><code class="language-julia hljs">function create_module()
+    engine = WasmEngine()
+    wasm_bytes = read(&quot;module.wasm&quot;)
+    return WasmModule(engine, wasm_bytes)
+end
+
+module_obj = create_module()
+# Module and engine are cleaned up when GC&#39;d</code></pre><h3 id="Module-Reuse"><a class="docs-heading-anchor" href="#Module-Reuse">Module Reuse</a><a id="Module-Reuse-1"></a><a class="docs-heading-anchor-permalink" href="#Module-Reuse" title="Permalink"></a></h3><p>Modules can be instantiated multiple times:</p><pre><code class="language-julia hljs">engine = WasmEngine()
+module_obj = WasmModule(engine, wasm_bytes)
+
+# Create multiple instances
+store1 = WasmStore(engine)
+store2 = WasmStore(engine)
+
+instance1 = Instance(store1, module_obj)
+instance2 = Instance(store2, module_obj)
+
+# Each instance has separate state</code></pre><h3 id="Sharing-Across-Engines"><a class="docs-heading-anchor" href="#Sharing-Across-Engines">Sharing Across Engines</a><a id="Sharing-Across-Engines-1"></a><a class="docs-heading-anchor-permalink" href="#Sharing-Across-Engines" title="Permalink"></a></h3><p>Modules are tied to their engine:</p><pre><code class="language-julia hljs">engine1 = Engine()
+engine2 = Engine()
+
+module_obj = WasmModule(engine1, wasm_bytes)
+
+# This works - same engine
+store1 = Store(engine1)
+instance1 = Instance(store1, module_obj)
+
+# This would fail - different engine
+store2 = Store(engine2)
+# instance2 = Instance(store2, module_obj)  # Error!</code></pre><h2 id="Error-Handling"><a class="docs-heading-anchor" href="#Error-Handling">Error Handling</a><a id="Error-Handling-1"></a><a class="docs-heading-anchor-permalink" href="#Error-Handling" title="Permalink"></a></h2><h3 id="Module-Creation-Errors"><a class="docs-heading-anchor" href="#Module-Creation-Errors">Module Creation Errors</a><a id="Module-Creation-Errors-1"></a><a class="docs-heading-anchor-permalink" href="#Module-Creation-Errors" title="Permalink"></a></h3><pre><code class="language-julia hljs">try
+    # Invalid WebAssembly bytes
+    invalid_bytes = UInt8[0x00, 0x00, 0x00, 0x00]
+    module_obj = WasmModule(engine, invalid_bytes)
+catch e::WasmtimeError
+    println(&quot;Failed to create module: $(e.message)&quot;)
+end</code></pre><h3 id="File-System-Errors"><a class="docs-heading-anchor" href="#File-System-Errors">File System Errors</a><a id="File-System-Errors-1"></a><a class="docs-heading-anchor-permalink" href="#File-System-Errors" title="Permalink"></a></h3><pre><code class="language-julia hljs">try
+    # Non-existent file
+    module_obj = WasmModule(engine, &quot;nonexistent.wasm&quot;)
+catch e::SystemError
+    println(&quot;File not found: $(e.msg)&quot;)
+end
+
+try
+    # File with invalid content
+    module_obj = WasmModule(engine, &quot;invalid_file.txt&quot;)
+catch e::WasmtimeError
+    println(&quot;Invalid WebAssembly content: $(e.message)&quot;)
+end</code></pre><h3 id="Validation-Errors"><a class="docs-heading-anchor" href="#Validation-Errors">Validation Errors</a><a id="Validation-Errors-1"></a><a class="docs-heading-anchor-permalink" href="#Validation-Errors" title="Permalink"></a></h3><pre><code class="language-julia hljs"># Safe module creation with validation
+function safe_create_module(engine, bytes_or_path)
+    try
+        if isa(bytes_or_path, String)
+            # File path
+            bytes = read(bytes_or_path)
+        else
+            # Byte array
+            bytes = bytes_or_path
+        end
+
+        if !validate(engine, bytes)
+            throw(WasmtimeError(&quot;Invalid WebAssembly module&quot;))
+        end
+
+        return WasmModule(engine, bytes)
+    catch e
+        rethrow(e)
+    end
+end</code></pre><h2 id="Advanced-Module-Operations"><a class="docs-heading-anchor" href="#Advanced-Module-Operations">Advanced Module Operations</a><a id="Advanced-Module-Operations-1"></a><a class="docs-heading-anchor-permalink" href="#Advanced-Module-Operations" title="Permalink"></a></h2><h3 id="Module-Compilation-Performance"><a class="docs-heading-anchor" href="#Module-Compilation-Performance">Module Compilation Performance</a><a id="Module-Compilation-Performance-1"></a><a class="docs-heading-anchor-permalink" href="#Module-Compilation-Performance" title="Permalink"></a></h3><pre><code class="language-julia hljs"># For better performance, reuse engines
+engine = Engine(Config(optimization_level = SpeedAndSize))
+
+# Compile multiple modules with the same engine
+modules = []
+for wasm_file in [&quot;module1.wasm&quot;, &quot;module2.wasm&quot;, &quot;module3.wasm&quot;]
+    push!(modules, WasmModule(engine, wasm_file))
+end</code></pre><h3 id="Module-Caching-Pattern"><a class="docs-heading-anchor" href="#Module-Caching-Pattern">Module Caching Pattern</a><a id="Module-Caching-Pattern-1"></a><a class="docs-heading-anchor-permalink" href="#Module-Caching-Pattern" title="Permalink"></a></h3><pre><code class="language-julia hljs"># Simple module cache
+module_cache = Dict{String, WasmModule}()
+
+function get_module(engine, file_path)
+    if haskey(module_cache, file_path)
+        return module_cache[file_path]
+    else
+        module_obj = WasmModule(engine, file_path)
+        module_cache[file_path] = module_obj
+        return module_obj
+    end
+end</code></pre><h3 id="Batch-Module-Processing"><a class="docs-heading-anchor" href="#Batch-Module-Processing">Batch Module Processing</a><a id="Batch-Module-Processing-1"></a><a class="docs-heading-anchor-permalink" href="#Batch-Module-Processing" title="Permalink"></a></h3><pre><code class="language-julia hljs">function process_modules(engine, wasm_files)
+    results = []
+
+    for file in wasm_files
+        try
+            # Validate first
+            bytes = read(file)
+            if validate(engine, bytes)
+                module_obj = WasmModule(engine, bytes)
+                push!(results, (file, module_obj, :success))
+            else
+                push!(results, (file, nothing, :invalid))
+            end
+        catch e
+            push!(results, (file, nothing, :error))
+        end
+    end
+
+    return results
+end</code></pre><h2 id="WAT-to-WASM-Conversion-(Future)"><a class="docs-heading-anchor" href="#WAT-to-WASM-Conversion-(Future)">WAT to WASM Conversion (Future)</a><a id="WAT-to-WASM-Conversion-(Future)-1"></a><a class="docs-heading-anchor-permalink" href="#WAT-to-WASM-Conversion-(Future)" title="Permalink"></a></h2><p>The <code>wat_to_wasm</code> function is planned but not yet implemented:</p><pre><code class="language-julia hljs"># Placeholder implementation
+function convert_wat_when_available()
+    wat_content = &quot;&quot;&quot;
+    (module
+      (func $hello (result i32)
+        i32.const 42)
+      (export &quot;hello&quot; (func $hello)))
+    &quot;&quot;&quot;
+
+    try
+        wasm_bytes = wat_to_wasm(wat_content)
+        return WasmModule(engine, wasm_bytes)
+    catch e::WasmtimeError
+        if occursin(&quot;not yet implemented&quot;, e.message)
+            println(&quot;WAT conversion not available yet&quot;)
+            return nothing
+        else
+            rethrow(e)
+        end
+    end
+end</code></pre><h2 id="Best-Practices"><a class="docs-heading-anchor" href="#Best-Practices">Best Practices</a><a id="Best-Practices-1"></a><a class="docs-heading-anchor-permalink" href="#Best-Practices" title="Permalink"></a></h2><h3 id="Module-Creation"><a class="docs-heading-anchor" href="#Module-Creation">Module Creation</a><a id="Module-Creation-1"></a><a class="docs-heading-anchor-permalink" href="#Module-Creation" title="Permalink"></a></h3><ol><li><strong>Validate before creating</strong>: Always validate WebAssembly bytes</li><li><strong>Reuse engines</strong>: Share engines across multiple modules</li><li><strong>Handle errors gracefully</strong>: Wrap module creation in try-catch</li><li><strong>Cache compiled modules</strong>: Avoid recompiling the same module</li></ol><h3 id="Performance"><a class="docs-heading-anchor" href="#Performance">Performance</a><a id="Performance-1"></a><a class="docs-heading-anchor-permalink" href="#Performance" title="Permalink"></a></h3><ol><li><strong>Use appropriate optimization</strong>: Configure engine optimization level</li><li><strong>Minimize module recreation</strong>: Reuse modules when possible</li><li><strong>Batch operations</strong>: Process multiple modules efficiently</li></ol><h3 id="Error-Recovery"><a class="docs-heading-anchor" href="#Error-Recovery">Error Recovery</a><a id="Error-Recovery-1"></a><a class="docs-heading-anchor-permalink" href="#Error-Recovery" title="Permalink"></a></h3><pre><code class="language-julia hljs">function robust_module_creation(engine, source)
+    # Try different creation methods
+    if isa(source, String) &amp;&amp; isfile(source)
+        try
+            return WasmModule(engine, source)
+        catch e
+            @warn &quot;Failed to load from file: $source&quot; exception=e
+        end
+    end
+
+    if isa(source, Vector{UInt8})
+        if validate(engine, source)
+            try
+                return WasmModule(engine, source)
+            catch e
+                @warn &quot;Failed to create from bytes&quot; exception=e
+            end
+        else
+            @warn &quot;Invalid WebAssembly bytes&quot;
+        end
+    end
+
+    return nothing
+end</code></pre><h2 id="Debugging-Modules"><a class="docs-heading-anchor" href="#Debugging-Modules">Debugging Modules</a><a id="Debugging-Modules-1"></a><a class="docs-heading-anchor-permalink" href="#Debugging-Modules" title="Permalink"></a></h2><h3 id="Module-Inspection"><a class="docs-heading-anchor" href="#Module-Inspection">Module Inspection</a><a id="Module-Inspection-1"></a><a class="docs-heading-anchor-permalink" href="#Module-Inspection" title="Permalink"></a></h3><pre><code class="language-julia hljs">function inspect_module(module_obj)
+    println(&quot;Module validity: &quot;, isvalid(module_obj))
+    println(&quot;Module pointer: &quot;, module_obj.ptr)
+    println(&quot;Engine pointer: &quot;, module_obj.engine.ptr)
+
+    # Introspection (when implemented)
+    exports_info = exports(module_obj)
+    imports_info = imports(module_obj)
+
+    println(&quot;Exports count: &quot;, length(exports_info))
+    println(&quot;Imports count: &quot;, length(imports_info))
+end</code></pre><h3 id="Common-Issues"><a class="docs-heading-anchor" href="#Common-Issues">Common Issues</a><a id="Common-Issues-1"></a><a class="docs-heading-anchor-permalink" href="#Common-Issues" title="Permalink"></a></h3><ol><li><strong>Module creation fails</strong>: Check WebAssembly bytes validity</li><li><strong>Engine mismatch</strong>: Ensure module and store use same engine</li><li><strong>File not found</strong>: Verify file paths and permissions</li><li><strong>Memory issues</strong>: Monitor module lifecycle and cleanup</li></ol><p>The module system provides a robust foundation for WebAssembly execution while maintaining Julia&#39;s ease of use and safety guarantees.</p></article><nav class="docs-footer"><a class="docs-footer-prevpage" href="../21-generic-vectors/">« Generic Vector Wrapper (<code>WasmVec</code>)</a><a class="docs-footer-nextpage" href="../40-instances/">WebAssembly Instances »</a><div class="flexbox-break"></div><p class="footer-message">Powered by <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> and the <a href="https://julialang.org/">Julia Programming Language</a>.</p></nav></div><div class="modal" id="documenter-settings"><div class="modal-background"></div><div class="modal-card"><header class="modal-card-head"><p class="modal-card-title">Settings</p><button class="delete"></button></header><section class="modal-card-body"><p><label class="label">Theme</label><div class="select"><select id="documenter-themepicker"><option value="auto">Automatic (OS)</option><option value="documenter-light">documenter-light</option><option value="documenter-dark">documenter-dark</option><option value="catppuccin-latte">catppuccin-latte</option><option value="catppuccin-frappe">catppuccin-frappe</option><option value="catppuccin-macchiato">catppuccin-macchiato</option><option value="catppuccin-mocha">catppuccin-mocha</option></select></div></p><hr/><p>This document was generated with <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> version 1.14.1 on <span class="colophon-date" title="Wednesday 6 August 2025 12:52">Wednesday 6 August 2025</span>. Using Julia version 1.11.6.</p></section><footer class="modal-card-foot"></footer></div></div></div></body></html>
