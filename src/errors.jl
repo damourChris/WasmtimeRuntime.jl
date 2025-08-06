@@ -1,6 +1,5 @@
 # Error handling for WasmtimeRuntime
 
-# Error handling types
 struct WasmtimeError <: Exception
     message::String
     code::Union{Int,Nothing}
@@ -12,13 +11,24 @@ end
 Base.showerror(io::IO, e::WasmtimeError) = print(io, "WasmtimeError: ", e.message)
 
 # Utility function for error handling
-function check_error(error_ptr::Ptr{LibWasmtime.wasmtime_error})
-    if error_ptr != C_NULL
-        # Get error message if available
-        msg = "Wasmtime operation failed"
-        # TODO: Extract actual error message from wasmtime_error
-        LibWasmtime.wasmtime_error_delete(error_ptr)
-        throw(WasmtimeError(msg))
+function throw_wasmtime_error(error_ptr::Ptr{LibWasmtime.wasmtime_error})
+    msg_buf = WasmByteVec()
+    LibWasmtime.wasmtime_error_message(error_ptr, msg_buf)
+    error_msg = unsafe_string(msg_buf.data, msg_buf.size)
+    LibWasmtime.wasmtime_error_delete(error_ptr)
+    throw(WasmtimeError(error_msg))
+end
+
+"""
+    @throw_if_error
+
+Throw if the returned error pointer isn't null.
+"""
+macro throw_if_error(error_ptr)
+    quote
+        if $(esc(error_ptr)) != C_NULL
+            throw_wasmtime_error($(esc(error_ptr)))
+        end
     end
 end
 
